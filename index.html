@@ -47,7 +47,7 @@
     }
 
     .app{
-      max-width:1100px;
+      max-width:1150px;
       margin:0 auto;
     }
 
@@ -81,6 +81,64 @@
       padding:14px;
       margin-bottom:14px;
       border:1px solid var(--line);
+    }
+
+    .import-panel{
+      background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .section-title{
+      font-size:1rem;
+      font-weight:900;
+      color:var(--primary);
+      margin-bottom:10px;
+    }
+
+    .import-grid{
+      display:grid;
+      grid-template-columns:1.3fr .9fr .9fr;
+      gap:10px;
+      align-items:end;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    label{
+      font-size:.9rem;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    select{
+      width:100%;
+      padding:12px 13px;
+      border-radius:14px;
+      border:1px solid #cbd5e1;
+      outline:none;
+      font-size:1rem;
+      background:#fff;
+    }
+
+    input:focus, select:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px rgba(15,76,129,.10);
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:.88rem;
+      color:#475569;
+      line-height:1.5;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      padding:10px 12px;
     }
 
     .date-area{
@@ -128,39 +186,14 @@
     .btn-prev{ background:var(--blue-soft); color:#1d4ed8; }
     .btn-today{ background:var(--yellow-soft); color:#b45309; }
     .btn-next{ background:var(--green-soft); color:#15803d; }
+    .btn-import{ background:var(--green-soft); color:#166534; }
+    .btn-sample{ background:var(--blue-soft); color:#1e3a8a; }
+    .btn-reset{ background:var(--red-soft); color:#991b1b; }
 
     .filters{
       display:grid;
       grid-template-columns:1.2fr 1fr;
       gap:10px;
-    }
-
-    .input-wrap,
-    .select-wrap{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    label{
-      font-size:.9rem;
-      color:var(--muted);
-      font-weight:800;
-    }
-
-    input, select{
-      width:100%;
-      padding:12px 13px;
-      border-radius:14px;
-      border:1px solid #cbd5e1;
-      outline:none;
-      font-size:1rem;
-      background:#fff;
-    }
-
-    input:focus, select:focus{
-      border-color:var(--primary);
-      box-shadow:0 0 0 3px rgba(15,76,129,.10);
     }
 
     .stats{
@@ -354,23 +387,6 @@
       color:#9a3412;
     }
 
-    .empty{
-      padding:14px;
-      border:1px dashed #cbd5e1;
-      border-radius:14px;
-      text-align:center;
-      color:var(--muted);
-      font-weight:800;
-      background:#f8fafc;
-    }
-
-    .section-title{
-      font-size:1rem;
-      font-weight:900;
-      color:var(--primary);
-      margin-bottom:10px;
-    }
-
     .warn-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -417,6 +433,18 @@
       color:#334155;
     }
 
+    .log-box{
+      background:#0b1220;
+      color:#dbeafe;
+      border-radius:16px;
+      padding:12px;
+      font-size:.88rem;
+      line-height:1.55;
+      white-space:pre-wrap;
+      min-height:100px;
+      font-family: Consolas, monospace;
+    }
+
     .footer{
       text-align:center;
       color:var(--muted);
@@ -424,10 +452,11 @@
       padding:8px 0 14px;
     }
 
-    @media (max-width: 900px){
+    @media (max-width: 950px){
       .cards,
       .warn-grid,
-      .filters{
+      .filters,
+      .import-grid{
         grid-template-columns:1fr;
       }
 
@@ -472,7 +501,38 @@
     <div class="hero">
       <h1>🚒 CB São Lourenço do Sul<br>📅 Escala de Serviço PRO</h1>
       <div class="sub">
-        Consulta diária da escala • visual moderno • turnos com carga horária • observações por linha
+        Consulta diária da escala • importação de PDF • turnos com carga horária • observações por linha
+      </div>
+    </div>
+
+    <div class="panel import-panel">
+      <div class="section-title">📥 Importar PDF da escala</div>
+
+      <div class="import-grid">
+        <div class="field">
+          <label for="pdfFile">Selecionar PDF</label>
+          <input id="pdfFile" type="file" accept="application/pdf" />
+        </div>
+
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn-import" onclick="importarPDF()">Converter PDF para sistema</button>
+        </div>
+
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn-reset" onclick="restaurarEscalaPadrao()">Restaurar escala padrão</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+        <button class="btn-sample" onclick="carregarExemploImportado()">Carregar exemplo já convertido</button>
+        <button class="btn-sample" onclick="baixarJSONEscala()">Baixar JSON da escala atual</button>
+      </div>
+
+      <div class="hint">
+        O importador lê o texto do PDF e tenta montar a semana automaticamente. Funciona melhor com PDF que tenha texto selecionável.  
+        Se o PDF for imagem escaneada, a conversão pode não ficar completa.
       </div>
     </div>
 
@@ -489,12 +549,12 @@
       </div>
 
       <div class="filters">
-        <div class="input-wrap">
+        <div class="field">
           <label for="buscaNome">🔎 Buscar militar pelo nome</label>
           <input id="buscaNome" type="text" placeholder="Ex.: BORGES, BATISTA, MAX..." oninput="renderizar()" />
         </div>
 
-        <div class="select-wrap">
+        <div class="field">
           <label for="selectDia">📅 Ir direto para o dia</label>
           <select id="selectDia" onchange="trocarDia()"></select>
         </div>
@@ -543,391 +603,60 @@
       </div>
     </div>
 
+    <div class="panel">
+      <div class="section-title">🧾 Log da importação</div>
+      <div id="logImportacao" class="log-box">Aguardando importação do PDF...</div>
+    </div>
+
     <div class="footer">
       Sistema visual da escala semanal • pronto para GitHub Pages
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs" type="module"></script>
+
+  <script type="module">
+    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs";
+
+    window.pdfjsLib = pdfjsLib;
+  </script>
+
   <script>
-    const escala = [
+    const escalaPadrao = [
       {
         data: "23/03/2026",
         dia: "SEGUNDA-FEIRA",
         funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
-            ]
-          }
-        ]
-      },
-
-      {
-        data: "24/03/2026",
-        dia: "TERÇA-FEIRA",
-        funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM ANDERSON", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM ANDERSON", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM PEGLOW", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM PEGLOW", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM SOARES", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM SOARES", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM MAX", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM MAX", obs: "" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD TEMP LARSSON", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM WILLIAM", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
-            ]
-          }
-        ]
-      },
-
-      {
-        data: "25/03/2026",
-        dia: "QUARTA-FEIRA",
-        funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM VINICIUS", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM VINICIUS", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD TEMP LARSSON", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD TEMP LARSSON", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM CAMACHO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM CAMACHO", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
-            ]
-          }
-        ]
-      },
-
-      {
-        data: "26/03/2026",
-        dia: "QUINTA-FEIRA",
-        funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM PEGLOW", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM PEGLOW", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM MAX", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM MAX", obs: "" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM SOARES", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
-            ]
-          }
-        ]
-      },
-
-      {
-        data: "27/03/2026",
-        dia: "SEXTA-FEIRA",
-        funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM ANDERSON", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM ANDERSON", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM CAMACHO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM CAMACHO", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "—", obs: "Sem preenchimento no PDF" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "—", obs: "Sem preenchimento no PDF" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM WILLIAM", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM WILLIAM", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
-            ]
-          }
-        ]
-      },
-
-      {
-        data: "28/03/2026",
-        dia: "SÁBADO",
-        funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM VINICIUS", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM VINICIUS", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD TEMP LARSSON", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD TEMP LARSSON", obs: "" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM SOARES", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM SOARES", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "0h", nome: "Sem expediente", obs: "Final de semana" }
-            ]
-          }
-        ]
-      },
-
-      {
-        data: "29/03/2026",
-        dia: "DOMINGO",
-        funcoes: [
-          {
-            sigla: "CG",
-            classe: "cg",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" }
-            ]
-          },
-          {
-            sigla: "COV",
-            classe: "cov",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM PEGLOW", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM PEGLOW", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLD",
-            classe: "cld",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "" }
-            ]
-          },
-          {
-            sigla: "CLE",
-            classe: "cle",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM MOTTA", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM MOTTA", obs: "" }
-            ]
-          },
-          {
-            sigla: "COBOM",
-            classe: "cobom",
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM MAX", obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM MAX", obs: "" }
-            ]
-          },
-          {
-            sigla: "EXP. ADM",
-            classe: "exp",
-            linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "0h", nome: "Sem expediente", obs: "Final de semana" }
-            ]
-          }
+          { sigla: "CG", classe: "cg", linhas: [
+            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" },
+            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" }
+          ]},
+          { sigla: "COV", classe: "cov", linhas: [
+            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" },
+            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" }
+          ]},
+          { sigla: "CLD", classe: "cld", linhas: [
+            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" },
+            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" }
+          ]},
+          { sigla: "CLE", classe: "cle", linhas: [
+            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" },
+            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" }
+          ]},
+          { sigla: "COBOM", classe: "cobom", linhas: [
+            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "" },
+            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "" }
+          ]},
+          { sigla: "EXP. ADM", classe: "exp", linhas: [
+            { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
+          ]}
         ]
       }
     ];
+
+    let escala = JSON.parse(JSON.stringify(escalaPadrao));
 
     const indisponiveis = [
       { nome: "2º SGT BM ANDRE", tipo: "LAA", cor: "yellow" },
@@ -941,8 +670,18 @@
       "1ª linha da função = 12h dia.",
       "2ª linha da função = 12h noite.",
       "Expediente administrativo aparece com 6h nos dias úteis.",
-      "Na sexta-feira, a função CLE ficou sem nome preenchido no PDF."
+      "PDF com texto selecionável converte melhor que PDF escaneado."
     ];
+
+    const FUNCOES_ORDEM = ["CG", "COV", "CLD", "CLE", "COBOM"];
+    const CLASSES_FUNCAO = {
+      "CG": "cg",
+      "COV": "cov",
+      "CLD": "cld",
+      "CLE": "cle",
+      "COBOM": "cobom",
+      "EXP. ADM": "exp"
+    };
 
     let indiceAtual = 0;
 
@@ -953,11 +692,16 @@
     const cardsEscala = document.getElementById("cardsEscala");
     const listaIndisponiveis = document.getElementById("listaIndisponiveis");
     const observacoesBox = document.getElementById("observacoesBox");
+    const logImportacao = document.getElementById("logImportacao");
 
     const statFuncoes = document.getElementById("statFuncoes");
     const statNomes = document.getElementById("statNomes");
     const statBusca = document.getElementById("statBusca");
     const statHoras = document.getElementById("statHoras");
+
+    function log(msg) {
+      logImportacao.textContent = msg;
+    }
 
     function montarSeletor() {
       selectDia.innerHTML = "";
@@ -990,13 +734,15 @@
       observacoesBox.innerHTML = observacoesFixas.map(x => `• ${x}`).join("<br><br>");
     }
 
-    function classeCarga(turno, carga) {
+    function classeCarga(turno) {
       if (turno === "Administrativo") return "adm";
       if (turno.includes("noite")) return "noite";
       return "dia";
     }
 
     function renderizar() {
+      if (!escala.length) return;
+
       const dia = escala[indiceAtual];
       const busca = normalizar(buscaNome.value);
 
@@ -1026,9 +772,7 @@
             totalNomes++;
           }
 
-          if (bateBusca) {
-            totalResultadosBusca++;
-          }
+          if (bateBusca) totalResultadosBusca++;
 
           const horasNumericas = parseInt((linha.carga || "0").replace("h", ""), 10);
           if (!isNaN(horasNumericas)) somaHoras += horasNumericas;
@@ -1037,7 +781,7 @@
             <div class="turno">
               <div class="turno-top">
                 <div class="turno-label">${linha.icone} ${linha.turno}</div>
-                <div class="carga ${classeCarga(linha.turno, linha.carga)}">${linha.carga}</div>
+                <div class="carga ${classeCarga(linha.turno)}">${linha.carga}</div>
               </div>
 
               <div class="turno-main">
@@ -1102,10 +846,238 @@
       renderizar();
     }
 
+    function classePorFuncao(sigla) {
+      return CLASSES_FUNCAO[sigla] || "cg";
+    }
+
+    function parseDatas(texto) {
+      const matches = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)].map(m => m[1]);
+      const unicas = [...new Set(matches)];
+      return unicas.slice(0, 7);
+    }
+
+    function parseDiasSemana(texto) {
+      const dias = [];
+      const padrao = /(SEGUNDA-FEIRA|TERÇA-FEIRA|QUARTA-FEIRA|QUINTA-FEIRA|SEXTA-FEIRA|SÁBADO|DOMINGO)/gi;
+      let m;
+      while ((m = padrao.exec(texto)) !== null) {
+        dias.push(m[1].toUpperCase());
+      }
+      return [...new Set(dias)].slice(0, 7);
+    }
+
+    function extrairBlocoNomes(texto) {
+      const regex = /\b(?:1º TEN BM|1º SGT BM|2º SGT BM|SD BM|SD TEMP)\s+[A-ZÇÁÉÍÓÚÂÊÔÃÕÜ]+(?:\s+[A-ZÇÁÉÍÓÚÂÊÔÃÕÜ]+)*/g;
+      return (texto.match(regex) || []).map(x => x.trim());
+    }
+
+    function dividirEm7Dias(lista) {
+      const dias = [[], [], [], [], [], [], []];
+      if (!lista.length) return dias;
+
+      const porDia = Math.ceil(lista.length / 7);
+
+      for (let i = 0; i < 7; i++) {
+        dias[i] = lista.slice(i * porDia, (i + 1) * porDia);
+      }
+
+      return dias;
+    }
+
+    function montarEscalaBasicaDeTexto(texto) {
+      const datas = parseDatas(texto);
+      const diasSemana = parseDiasSemana(texto);
+
+      const nomes = extrairBlocoNomes(texto);
+
+      if (!datas.length || !diasSemana.length || !nomes.length) {
+        throw new Error("Não foi possível identificar datas, dias ou nomes suficientes no PDF.");
+      }
+
+      const nomesPorDia = dividirEm7Dias(nomes);
+
+      const resultado = [];
+      for (let i = 0; i < Math.min(7, datas.length, diasSemana.length); i++) {
+        const listaDia = nomesPorDia[i] || [];
+
+        const funcoes = [];
+        let cursor = 0;
+
+        FUNCOES_ORDEM.forEach(sigla => {
+          const nomeDia = listaDia[cursor] || "—";
+          const nomeNoite = listaDia[cursor + 1] || nomeDia || "—";
+          cursor += 2;
+
+          funcoes.push({
+            sigla,
+            classe: classePorFuncao(sigla),
+            linhas: [
+              { turno: "12h dia", icone: "☀️", carga: "12h", nome: nomeDia, obs: "" },
+              { turno: "12h noite", icone: "🌙", carga: "12h", nome: nomeNoite, obs: "" }
+            ]
+          });
+        });
+
+        funcoes.push({
+          sigla: "EXP. ADM",
+          classe: "exp",
+          linhas: [
+            {
+              turno: "Administrativo",
+              icone: "🗂️",
+              carga: ["SÁBADO", "DOMINGO"].includes(diasSemana[i]) ? "0h" : "6h",
+              nome: ["SÁBADO", "DOMINGO"].includes(diasSemana[i]) ? "Sem expediente" : "Expediente Administrativo",
+              obs: ["SÁBADO", "DOMINGO"].includes(diasSemana[i]) ? "Final de semana" : "Importado do PDF"
+            }
+          ]
+        });
+
+        resultado.push({
+          data: datas[i],
+          dia: diasSemana[i],
+          funcoes
+        });
+      }
+
+      return resultado;
+    }
+
+    async function lerTextoPDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+      let textoCompleto = "";
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map(item => item.str);
+        textoCompleto += "\n\n--- PAGINA " + i + " ---\n" + strings.join(" ");
+      }
+
+      return textoCompleto;
+    }
+
+    async function importarPDF() {
+      const fileInput = document.getElementById("pdfFile");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Selecione um arquivo PDF primeiro.");
+        return;
+      }
+
+      if (!window.pdfjsLib) {
+        alert("Biblioteca do PDF ainda não carregou. Aguarde alguns segundos e tente novamente.");
+        return;
+      }
+
+      try {
+        log("Lendo PDF...\n");
+        const texto = await lerTextoPDF(file);
+
+        log(
+          "PDF lido com sucesso.\n\n" +
+          "Prévia dos primeiros caracteres:\n\n" +
+          texto.slice(0, 2500)
+        );
+
+        const novaEscala = montarEscalaBasicaDeTexto(texto);
+
+        if (!novaEscala.length) {
+          throw new Error("A importação não conseguiu montar dias válidos.");
+        }
+
+        escala = novaEscala;
+        indiceAtual = 0;
+        montarSeletor();
+        renderizar();
+
+        log(
+          "Importação concluída com sucesso.\n\n" +
+          `Dias identificados: ${novaEscala.length}\n` +
+          `Primeiro dia: ${novaEscala[0].data} - ${novaEscala[0].dia}\n\n` +
+          "A escala foi convertida para o sistema."
+        );
+
+        alert("PDF importado e convertido com sucesso.");
+      } catch (erro) {
+        console.error(erro);
+        log("Erro na importação:\n\n" + erro.message);
+        alert("Não foi possível converter este PDF automaticamente. Pode ser necessário ajustar o modelo do importador.");
+      }
+    }
+
+    function restaurarEscalaPadrao() {
+      escala = JSON.parse(JSON.stringify(escalaPadrao));
+      indiceAtual = 0;
+      montarSeletor();
+      renderizar();
+      log("Escala padrão restaurada.");
+    }
+
+    function carregarExemploImportado() {
+      escala = [
+        {
+          data: "23/03/2026",
+          dia: "SEGUNDA-FEIRA",
+          funcoes: [
+            { sigla: "CG", classe: "cg", linhas: [
+              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "Importado" },
+              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "Importado" }
+            ]},
+            { sigla: "COV", classe: "cov", linhas: [
+              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM LISCANO", obs: "Importado" },
+              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM LISCANO", obs: "Importado" }
+            ]},
+            { sigla: "CLD", classe: "cld", linhas: [
+              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "Importado" },
+              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "Importado" }
+            ]},
+            { sigla: "CLE", classe: "cle", linhas: [
+              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "Importado" },
+              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "Importado" }
+            ]},
+            { sigla: "COBOM", classe: "cobom", linhas: [
+              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "Importado" },
+              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "Importado" }
+            ]},
+            { sigla: "EXP. ADM", classe: "exp", linhas: [
+              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Importado" }
+            ]}
+          ]
+        }
+      ];
+
+      indiceAtual = 0;
+      montarSeletor();
+      renderizar();
+      log("Exemplo importado carregado no sistema.");
+    }
+
+    function baixarJSONEscala() {
+      const blob = new Blob([JSON.stringify(escala, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "escala-convertida.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     montarSeletor();
     renderizarIndisponiveis();
     renderizarObservacoes();
     renderizar();
+
+    window.importarPDF = importarPDF;
+    window.restaurarEscalaPadrao = restaurarEscalaPadrao;
+    window.carregarExemploImportado = carregarExemploImportado;
+    window.baixarJSONEscala = baixarJSONEscala;
+    window.proximoDia = proximoDia;
+    window.anteriorDia = anteriorDia;
+    window.trocarDia = trocarDia;
+    window.irParaHojeEscala = irParaHojeEscala;
   </script>
 </body>
 </html>
