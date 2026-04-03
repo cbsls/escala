@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escala de Serviço PRO • CBMRS</title>
-  <style>
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color:transparent;
-    }
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     :root{
       --bg:#eef3f8;
       --card:#ffffff;
@@ -89,13 +89,9 @@
       gap:10px;
     }
 
-    .nav-right{
-      justify-content:flex-end;
-    }
+    .nav-right{justify-content:flex-end}
 
-    .center-head{
-      text-align:center;
-    }
+    .center-head{text-align:center}
 
     .center-head .week{
       font-size:14px;
@@ -129,10 +125,7 @@
       box-shadow:0 6px 16px rgba(0,0,0,.07);
     }
 
-    button:hover{
-      transform:translateY(-1px);
-      opacity:.98;
-    }
+    button:hover{transform:translateY(-1px);opacity:.98}
 
     .btn-prev,.btn-next{
       background:#dbe8f8;
@@ -159,7 +152,7 @@
       color:#475569;
     }
 
-    input[type="text"], select, textarea{
+    input[type="text"], select, textarea, input[type="file"]{
       width:100%;
       border:1px solid var(--line);
       border-radius:14px;
@@ -171,11 +164,11 @@
     }
 
     textarea{
-      min-height:90px;
+      min-height:100px;
       resize:vertical;
     }
 
-    input[type="text"]:focus, select:focus, textarea:focus{
+    input[type="text"]:focus, select:focus, textarea:focus, input[type="file"]:focus{
       border-color:#8eb1dd;
       box-shadow:0 0 0 4px rgba(29,79,145,.08);
     }
@@ -305,9 +298,7 @@
       flex:1;
     }
 
-    .militar.small{
-      font-size:19px;
-    }
+    .militar.small{font-size:19px}
 
     .empty{
       color:#94a3b8;
@@ -361,9 +352,7 @@
       color:#334155;
     }
 
-    .box-content{
-      padding:16px;
-    }
+    .box-content{padding:16px}
 
     .note-text{
       margin:0;
@@ -400,12 +389,26 @@
       white-space:pre-wrap;
     }
 
+    .footer-actions{
+      margin-top:18px;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .btn-footer{
+      background:#e8f1fb;
+      color:#1d4f91;
+    }
+
     .footer{
       text-align:center;
       color:#64748b;
       font-size:13px;
       font-weight:700;
       margin-top:12px;
+      line-height:1.5;
     }
 
     .modal{
@@ -419,17 +422,17 @@
       z-index:9999;
     }
 
-    .modal.show{
-      display:flex;
-    }
+    .modal.show{display:flex}
 
     .modal-box{
-      width:min(620px, 100%);
+      width:min(700px, 100%);
       background:#fff;
       border-radius:22px;
       box-shadow:0 18px 40px rgba(0,0,0,.18);
       overflow:hidden;
       border:1px solid #e5eaf1;
+      max-height:92vh;
+      overflow-y:auto;
     }
 
     .modal-head{
@@ -477,6 +480,7 @@
       gap:10px;
       justify-content:flex-end;
       padding:0 18px 18px;
+      flex-wrap:wrap;
     }
 
     .btn-cancel{
@@ -491,38 +495,32 @@
       box-shadow:none;
     }
 
+    .hint{
+      font-size:13px;
+      color:#64748b;
+      font-weight:700;
+      line-height:1.5;
+    }
+
+    .status-box{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      padding:12px;
+      font-size:14px;
+      font-weight:800;
+      color:#475569;
+      white-space:pre-wrap;
+    }
+
     @media (max-width:920px){
-      .nav-top{
-        grid-template-columns:1fr;
-      }
-
-      .nav-left,.nav-right{
-        justify-content:center;
-      }
-
-      .toolbar,
-      .summary,
-      .grid-funcoes,
-      .box-row{
-        grid-template-columns:1fr;
-      }
-
-      .center-head .day-title{
-        font-size:24px;
-      }
-
-      .militar{
-        font-size:20px;
-      }
-
-      .militar-row{
-        flex-direction:column;
-        align-items:stretch;
-      }
-
-      .modal-actions{
-        flex-direction:column;
-      }
+      .nav-top{grid-template-columns:1fr}
+      .nav-left,.nav-right{justify-content:center}
+      .toolbar,.summary,.grid-funcoes,.box-row{grid-template-columns:1fr}
+      .center-head .day-title{font-size:24px}
+      .militar{font-size:20px}
+      .militar-row{flex-direction:column;align-items:stretch}
+      .modal-actions{flex-direction:column}
     }
   </style>
 </head>
@@ -531,7 +529,7 @@
     <section class="hero">
       <h1>ESCALA DE SERVIÇO PRO</h1>
       <div class="sub">CBMRS • 6º BBM • São Lourenço do Sul</div>
-      <div class="sub">Visualização dinâmica por dia • botão de troca ao lado do nome • lista pré-definida de militares</div>
+      <div class="sub">Contagem sem duplicar 12h dia + 12h noite • carga horária real por militar • troca com lista alfabética</div>
     </section>
 
     <section class="panel">
@@ -566,16 +564,16 @@
 
       <div class="summary">
         <div class="stat">
-          <div class="n" id="totalFuncoes">8</div>
+          <div class="n" id="totalFuncoes">7</div>
           <div class="t">Funções exibidas</div>
         </div>
         <div class="stat">
           <div class="n" id="totalMilitares">0</div>
-          <div class="t">Militares no dia</div>
+          <div class="t">Militares únicos no dia</div>
         </div>
         <div class="stat">
-          <div class="n" id="cmDia">0h</div>
-          <div class="t">Carga horária complementar</div>
+          <div class="n" id="cmDia">-</div>
+          <div class="t">Carga horária do quadro</div>
         </div>
       </div>
 
@@ -596,12 +594,19 @@
           </div>
         </div>
       </div>
+
+      <div class="footer-actions">
+        <button class="btn-footer" id="btnAbrirImportacao">Importar escala em qualquer formato</button>
+      </div>
+
+      <div class="footer">
+        Aceita JSON, TXT, CSV, PDF, imagem e texto colado. A importação automática tenta montar a semana da melhor forma possível.
+      </div>
     </section>
 
     <section class="panel">
       <div class="box-title" style="margin:-16px -16px 16px -16px; border-radius:20px 20px 0 0;">Histórico de trocas do dia</div>
       <div class="troca-list" id="trocaList"></div>
-      <div class="footer">Sistema com botão de troca ao lado de cada militar escalado.</div>
     </section>
   </div>
 
@@ -633,40 +638,82 @@
     </div>
   </div>
 
+  <div class="modal" id="modalImportacao">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Importar escala</h3>
+        <button class="modal-close" id="btnFecharImportacao">Fechar</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mini-info">
+          Você pode importar por arquivo ou colar o texto da escala.  
+          O sistema tenta ler PDF, imagem, TXT, CSV e JSON.
+        </div>
+
+        <div>
+          <label>Selecionar arquivo</label>
+          <input type="file" id="arquivoImportacao" accept=".json,.txt,.csv,.pdf,image/*" />
+        </div>
+
+        <div>
+          <label>Ou colar texto manualmente</label>
+          <textarea id="textoImportacao" placeholder="Cole aqui o texto da escala..."></textarea>
+        </div>
+
+        <div class="hint">
+          Para JSON, o sistema espera a mesma estrutura interna da escala.  
+          Para TXT, CSV, PDF ou imagem, a leitura é automática por texto/OCR.
+        </div>
+
+        <div class="status-box" id="statusImportacao">Aguardando importação.</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btnCancelarImportacao">Cancelar</button>
+        <button class="btn-confirm" id="btnExecutarImportacao">Importar agora</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const STORAGE_KEY = "escala_pro_trocas_modal_v3";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js";
+
+    const STORAGE_KEY = "escala_pro_import_v4";
 
     const militaresPreDefinidos = [
-      { pg: "1 SGT", qpm: "QPBM", nome: "ALESSANDRO BASTOS VICENTE", idFunc: "2614960" },
-      { pg: "2 SGT", qpm: "QPBM", nome: "ANDERSON SILVA DA SILVA", idFunc: "2882930" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "CAIQUE MOTTA", idFunc: "4626338" },
-      { pg: "1 SGT", qpm: "QPBM", nome: "EDI DIEFERSON RIBEIRO DE VARGAS", idFunc: "2972719" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "GABRIEL VELEDA CAMACHO", idFunc: "3698696" },
-      { pg: "1 SGT", qpm: "QPBM", nome: "JASSON SOUZA DA ROSA", idFunc: "2693836" },
-      { pg: "1 SGT", qpm: "QPBM", nome: "JULIANO INSAURRIAGA BATISTA", idFunc: "2692449" },
-      { pg: "SD", qpm: "TEMP", nome: "LARSSON FROMMING FREDES", idFunc: "4490380" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "MAGNO NORNBERG TOMASCHEWSKI", idFunc: "3218627" },
-      { pg: "1 TEN", qpm: "QTBM", nome: "MARCELO BANDEIRA TAVARES", idFunc: "2423286" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "MARLON ISQUIERDO AZEVEDO", idFunc: "3697665" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "MAX STEVENS OLIVEIRA NUNES", idFunc: "3084620" },
-      { pg: "2 SGT", qpm: "QPBM", nome: "RAFAEL LISCANO", idFunc: "3698530" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "SAYMON CARLOS ARAUJO BORGES", idFunc: "3698440" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "THIAGO CHAGAS SOARES", idFunc: "4625595" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "VANDERLEI JESKE PEGLOW", idFunc: "4783069" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "VINICIUS INSAURRIAGA BATISTA", idFunc: "3702847" },
-      { pg: "2 SGT", qpm: "QPBM", nome: "VINICIUS MACHADO DE MORAES", idFunc: "2910233" },
-      { pg: "SD", qpm: "QPBM - 1ª Classe", nome: "WILLIAM RIBEIRO MEDEIROS", idFunc: "4355504" }
-    ];
+      { pg: "2 SGT", nome: "ANDERSON" },
+      { pg: "1 SGT", nome: "BATISTA" },
+      { pg: "SD", nome: "BATISTA" },
+      { pg: "SD", nome: "BORGES" },
+      { pg: "SD", nome: "CAMACHO" },
+      { pg: "1 SGT", nome: "DIEFERSON" },
+      { pg: "SD", nome: "ISQUIERDO" },
+      { pg: "SD", nome: "LARSSON" },
+      { pg: "2 SGT", nome: "LISCANO" },
+      { pg: "1 TEN", nome: "MARCELO" },
+      { pg: "SD", nome: "MAX" },
+      { pg: "SD", nome: "MOTTA" },
+      { pg: "SD", nome: "PEGLOW" },
+      { pg: "SD", nome: "SOARES" },
+      { pg: "SD", nome: "TOMASCHEWSKI" },
+      { pg: "1 SGT", nome: "VICENTE" },
+      { pg: "2 SGT", nome: "VINICIUS" },
+      { pg: "SD", nome: "WILLIAM" }
+    ].sort((a, b) => {
+      const na = `${a.nome} ${a.pg}`.toUpperCase();
+      const nb = `${b.nome} ${b.pg}`.toUpperCase();
+      return na.localeCompare(nb, "pt-BR");
+    });
 
     const escala = {
       tituloSemana: "1ª Semana abril, 2026",
       observacoes: "Expediente Administrativo - 6 hs, incluir carga horária complementar CM",
       indisponiveis: [
         { motivo: "LAA", nome: "2º SGT BM ANDRE", idFunc: "2519976", dataInicial: "18/01/2026", dataFinal: "", obs: "" },
-        { motivo: "FÉRIAS", nome: "SD BM TOMASCHEWSKI", idFunc: "3218627", dataInicial: "03/04/2026", dataFinal: "17/04/2026", obs: "" },
-        { motivo: "OP VERAO", nome: "1º SGT BM VICENTE", idFunc: "2614960", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
-        { motivo: "OP VERAO", nome: "1º SGT BM JASSON", idFunc: "2693836", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
-        { motivo: "LFC", nome: "1º TEN BM MARCELO", idFunc: "2423286", dataInicial: "04/03/2026", dataFinal: "03/03/2026", obs: "" }
+        { motivo: "FÉRIAS", nome: "SD TOMASCHEWSKI", idFunc: "3218627", dataInicial: "03/04/2026", dataFinal: "17/04/2026", obs: "" },
+        { motivo: "OP VERAO", nome: "1º SGT VICENTE", idFunc: "2614960", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
+        { motivo: "LFC", nome: "1 TEN MARCELO", idFunc: "2423286", dataInicial: "04/03/2026", dataFinal: "03/03/2026", obs: "" }
       ],
       dias: [
         {
@@ -674,14 +721,13 @@
           diaSemana: "SEGUNDA-FEIRA",
           cm: "",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM CAMACHO" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM CAMACHO" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "2º SGT BM LISCANO" }, { codigo: "41", rotulo: "12h Noite", militar: "2º SGT BM LISCANO" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM ISQUIERDO" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM WILLIAM" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM WILLIAM" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD TEMP LARSSON" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM MOTTA" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "1º SGT DIEFERSON" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "1º SGT DIEFERSON" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", militar: "" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT LISCANO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT LISCANO" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD WILLIAM" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD WILLIAM" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MOTTA" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 12, militar: "1 SGT DIEFERSON" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
           ],
           trocas: []
         },
@@ -690,14 +736,13 @@
           diaSemana: "TERÇA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "2º SGT BM ANDERSON" }, { codigo: "41", rotulo: "12h Noite", militar: "2º SGT BM ANDERSON" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD TEMP LARSSON" }, { codigo: "41", rotulo: "12h Noite", militar: "SD TEMP LARSSON" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM TOMASCHEWSKI" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM TOMASCHEWSKI" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM SOARES" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM SOARES" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM BORGES" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM CAMACHO" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", militar: "1º SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT ANDERSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT ANDERSON" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD TOMASCHEWSKI" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD TOMASCHEWSKI" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD SOARES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD SOARES" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BORGES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
           ],
           trocas: []
         },
@@ -706,14 +751,13 @@
           diaSemana: "QUARTA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM ISQUIERDO" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM PEGLOW" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM PEGLOW" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM MOTTA" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM MOTTA" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "" }, { codigo: "41", rotulo: "12h Noite", militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM MAX" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM MAX" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", militar: "1º SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD PEGLOW" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD PEGLOW" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MOTTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MOTTA" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MAX" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MAX" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
           ],
           trocas: []
         },
@@ -722,14 +766,13 @@
           diaSemana: "QUINTA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM CAMACHO" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM CAMACHO" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD TEMP LARSSON" }, { codigo: "41", rotulo: "12h Noite", militar: "SD TEMP LARSSON" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM WILLIAM" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM WILLIAM" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "" }, { codigo: "41", rotulo: "12h Noite", militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM BATISTA" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM BATISTA" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", militar: "1º SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD WILLIAM" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD WILLIAM" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BATISTA" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
           ],
           trocas: []
         },
@@ -738,14 +781,13 @@
           diaSemana: "SEXTA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "2º SGT BM ANDERSON" }, { codigo: "41", rotulo: "12h Noite", militar: "2º SGT BM ANDERSON" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "2º SGT BM LISCANO" }, { codigo: "41", rotulo: "12h Noite", militar: "2º SGT BM LISCANO" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM BORGES" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM BORGES" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "" }, { codigo: "41", rotulo: "12h Noite", militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM SOARES" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM SOARES" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", militar: "1º SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT ANDERSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT ANDERSON" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT LISCANO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT LISCANO" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BORGES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BORGES" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD SOARES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD SOARES" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
           ],
           trocas: []
         },
@@ -754,14 +796,13 @@
           diaSemana: "SÁBADO",
           cm: "",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "2º SGT BM VINICIUS" }, { codigo: "41", rotulo: "12h Noite", militar: "2º SGT BM VINICIUS" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM PEGLOW" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM PEGLOW" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM ISQUIERDO" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "" }, { codigo: "41", rotulo: "12h Noite", militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM CAMACHO" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM CAMACHO" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", militar: "" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT VINICIUS" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT VINICIUS" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD PEGLOW" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD PEGLOW" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
           ],
           trocas: []
         },
@@ -770,14 +811,13 @@
           diaSemana: "DOMINGO",
           cm: "",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "1º SGT BM BATISTA" }, { codigo: "41", rotulo: "12h Noite", militar: "1º SGT BM BATISTA" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD TEMP LARSSON" }, { codigo: "41", rotulo: "12h Noite", militar: "SD TEMP LARSSON" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM MAX" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM MAX" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "" }, { codigo: "41", rotulo: "12h Noite", militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", militar: "SD BM BATISTA" }, { codigo: "41", rotulo: "12h Noite", militar: "SD BM BATISTA" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", militar: "" } ] },
-            { nome: "SOBREAVISO", turnos: [ { codigo: "UNICO", rotulo: "Sobreaviso", militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", militar: "" } ] }
+            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "1 SGT BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "1 SGT BATISTA" } ] },
+            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" } ] },
+            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MAX" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MAX" } ] },
+            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BATISTA" } ] },
+            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
+            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
           ],
           trocas: []
         }
@@ -790,7 +830,10 @@
     function salvarDados() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         indiceAtual,
-        dias: escala.dias
+        dias: escala.dias,
+        tituloSemana: escala.tituloSemana,
+        observacoes: escala.observacoes,
+        indisponiveis: escala.indisponiveis
       }));
     }
 
@@ -801,6 +844,9 @@
         const data = JSON.parse(raw);
         if (typeof data.indiceAtual === "number") indiceAtual = data.indiceAtual;
         if (Array.isArray(data.dias)) escala.dias = data.dias;
+        if (typeof data.tituloSemana === "string") escala.tituloSemana = data.tituloSemana;
+        if (typeof data.observacoes === "string") escala.observacoes = data.observacoes;
+        if (Array.isArray(data.indisponiveis)) escala.indisponiveis = data.indisponiveis;
       } catch(e) {}
     }
 
@@ -828,28 +874,67 @@
       select.innerHTML = `<option value="">Selecione o militar</option>`;
 
       militaresPreDefinidos.forEach(m => {
-        const nomeExibicao = `${m.pg} • ${m.nome} • ID ${m.idFunc}`;
+        const nomeExibicao = `${m.nome} • ${m.pg}`;
+        const valor = `${m.pg} ${m.nome}`;
         const opt = document.createElement("option");
-        opt.value = `${m.pg} ${m.nome}`;
+        opt.value = valor;
         opt.textContent = nomeExibicao;
-        if ((`${m.pg} ${m.nome}`).toUpperCase() === (nomeAtual || "").toUpperCase()) {
+        if (valor.toUpperCase() === (nomeAtual || "").toUpperCase()) {
           opt.selected = true;
         }
         select.appendChild(opt);
       });
     }
 
-    function contarMilitaresDia(dia, filtro = "") {
-      let total = 0;
+    function contarMilitaresUnicosDia(dia, filtro = "") {
+      const set = new Set();
+
       dia.funcoes.forEach(func => {
         func.turnos.forEach(turno => {
           const nome = (turno.militar || "").trim();
           if (!nome) return;
           if (filtro && !nome.toUpperCase().includes(filtro)) return;
-          total++;
+          set.add(nome.toUpperCase());
         });
       });
-      return total;
+
+      return set.size;
+    }
+
+    function calcularResumoHorasDia(dia, filtro = "") {
+      const mapa = {};
+
+      dia.funcoes.forEach(func => {
+        func.turnos.forEach(turno => {
+          const nome = (turno.militar || "").trim();
+          const horas = Number(turno.horas || 0);
+
+          if (!nome || !horas) return;
+          if (filtro && !nome.toUpperCase().includes(filtro)) return;
+
+          const chave = nome.toUpperCase();
+          if (!mapa[chave]) mapa[chave] = { nome, horas: 0 };
+          mapa[chave].horas += horas;
+        });
+      });
+
+      const grupos = {};
+      Object.values(mapa).forEach(item => {
+        const h = item.horas;
+        if (!grupos[h]) grupos[h] = 0;
+        grupos[h] += 1;
+      });
+
+      const horasOrdenadas = Object.keys(grupos)
+        .map(Number)
+        .sort((a, b) => b - a);
+
+      if (!horasOrdenadas.length) return "-";
+
+      return horasOrdenadas.map(h => {
+        const qtd = grupos[h];
+        return `${qtd} militar${qtd > 1 ? "es" : ""} de ${h}h`;
+      }).join(", ");
     }
 
     function renderIndisponiveis(filtro) {
@@ -1069,8 +1154,8 @@ Registro: ${t.dataRegistro || "-"}
       });
 
       document.getElementById("totalFuncoes").textContent = funcoesExibidas;
-      document.getElementById("totalMilitares").textContent = contarMilitaresDia(dia, filtro);
-      document.getElementById("cmDia").textContent = dia.cm || "0h";
+      document.getElementById("totalMilitares").textContent = contarMilitaresUnicosDia(dia, filtro);
+      document.getElementById("cmDia").textContent = calcularResumoHorasDia(dia, filtro);
 
       renderIndisponiveis(filtro);
       renderTrocasDia();
@@ -1112,6 +1197,196 @@ Registro: ${t.dataRegistro || "-"}
       render();
     }
 
+    function abrirImportacao() {
+      document.getElementById("modalImportacao").classList.add("show");
+      document.getElementById("statusImportacao").textContent = "Aguardando importação.";
+    }
+
+    function fecharImportacao() {
+      document.getElementById("modalImportacao").classList.remove("show");
+    }
+
+    function setStatusImportacao(txt) {
+      document.getElementById("statusImportacao").textContent = txt;
+    }
+
+    async function extrairTextoPDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let texto = "";
+      const canvases = [];
+
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const textContent = await page.getTextContent();
+        texto += "\n" + textContent.items.map(i => i.str).join(" ");
+
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d");
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        canvases.push(canvas);
+      }
+
+      return { texto, canvases };
+    }
+
+    async function executarOCRCanvas(canvas) {
+      const result = await Tesseract.recognize(canvas, "por", {
+        logger: m => {
+          if (m.status === "recognizing text") {
+            const pct = Math.round((m.progress || 0) * 100);
+            setStatusImportacao(`Lendo OCR... ${pct}%`);
+          }
+        }
+      });
+      return result.data.text || "";
+    }
+
+    async function lerImagemOCR(file) {
+      const imgUrl = URL.createObjectURL(file);
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imgUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+
+      const texto = await executarOCRCanvas(canvas);
+      URL.revokeObjectURL(imgUrl);
+      return texto;
+    }
+
+    function normalizarTexto(txt) {
+      return (txt || "")
+        .replace(/\r/g, "\n")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{2,}/g, "\n")
+        .trim();
+    }
+
+    function extrairDatasBR(texto) {
+      return [...new Set((texto.match(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/g) || []))];
+    }
+
+    function brToIso(br) {
+      const [d, m, y] = br.split("/");
+      return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    }
+
+    function criarDiaVazio(dataISO, diaSemana) {
+      return {
+        data: dataISO,
+        diaSemana,
+        cm: "",
+        funcoes: [
+          { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+          { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+          { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+          { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+          { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
+          { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 12, militar: "" } ] },
+          { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
+        ],
+        trocas: []
+      };
+    }
+
+    function importarTextoGenerico(texto) {
+      const txt = normalizarTexto(texto);
+
+      if (!txt) throw new Error("Texto vazio.");
+
+      const diasSemana = ["SEGUNDA-FEIRA","TERÇA-FEIRA","QUARTA-FEIRA","QUINTA-FEIRA","SEXTA-FEIRA","SÁBADO","DOMINGO"];
+      const datas = extrairDatasBR(txt);
+
+      if (datas.length >= 7) {
+        const novosDias = [];
+        for (let i = 0; i < 7; i++) {
+          novosDias.push(criarDiaVazio(brToIso(datas[i]), diasSemana[i]));
+        }
+        escala.dias = novosDias;
+      }
+
+      if (/ESCALA DE SERVIÇO/i.test(txt)) {
+        escala.tituloSemana = "Semana importada";
+      }
+
+      if (/EXPEDIENTE ADMINISTRATIVO/i.test(txt)) {
+        const linha = txt.split("\n").find(l => /EXPEDIENTE ADMINISTRATIVO/i.test(l));
+        if (linha) escala.observacoes = linha.trim();
+      }
+
+      setStatusImportacao("Importação textual concluída.\nRevise os dados importados e ajuste, se necessário.");
+    }
+
+    async function executarImportacao() {
+      const arquivo = document.getElementById("arquivoImportacao").files[0];
+      const textoManual = document.getElementById("textoImportacao").value.trim();
+
+      try {
+        let textoFinal = textoManual || "";
+
+        if (arquivo) {
+          const nome = arquivo.name.toLowerCase();
+          const tipo = arquivo.type || "";
+
+          if (nome.endsWith(".json")) {
+            const txt = await arquivo.text();
+            const obj = JSON.parse(txt);
+
+            if (obj && Array.isArray(obj.dias)) {
+              if (obj.tituloSemana) escala.tituloSemana = obj.tituloSemana;
+              if (obj.observacoes) escala.observacoes = obj.observacoes;
+              if (Array.isArray(obj.indisponiveis)) escala.indisponiveis = obj.indisponiveis;
+              escala.dias = obj.dias;
+              fecharImportacao();
+              preencherSelectDias();
+              render();
+              setStatusImportacao("JSON importado com sucesso.");
+              return;
+            } else {
+              throw new Error("JSON inválido para a estrutura da escala.");
+            }
+          }
+
+          if (nome.endsWith(".txt") || nome.endsWith(".csv")) {
+            textoFinal += "\n" + await arquivo.text();
+          } else if (nome.endsWith(".pdf") || tipo === "application/pdf") {
+            setStatusImportacao("Lendo PDF...");
+            const { texto, canvases } = await extrairTextoPDF(arquivo);
+            textoFinal += "\n" + texto;
+
+            if (texto.replace(/\s/g, "").length < 100) {
+              setStatusImportacao("PDF com pouco texto. Executando OCR...");
+              for (const c of canvases) {
+                textoFinal += "\n" + await executarOCRCanvas(c);
+              }
+            }
+          } else if (tipo.startsWith("image/")) {
+            setStatusImportacao("Executando OCR da imagem...");
+            textoFinal += "\n" + await lerImagemOCR(arquivo);
+          } else {
+            throw new Error("Formato não suportado.");
+          }
+        }
+
+        importarTextoGenerico(textoFinal);
+        fecharImportacao();
+        preencherSelectDias();
+        render();
+      } catch (e) {
+        setStatusImportacao("Erro na importação: " + e.message);
+      }
+    }
+
     document.getElementById("btnAnterior").addEventListener("click", irDiaAnterior);
     document.getElementById("btnAmanha").addEventListener("click", irAmanha);
     document.getElementById("btnHoje").addEventListener("click", irHoje);
@@ -1131,9 +1406,122 @@ Registro: ${t.dataRegistro || "-"}
       if (e.target.id === "modalTroca") fecharModalTroca();
     });
 
+    document.getElementById("btnAbrirImportacao").addEventListener("click", abrirImportacao);
+    document.getElementById("btnFecharImportacao").addEventListener("click", fecharImportacao);
+    document.getElementById("btnCancelarImportacao").addEventListener("click", fecharImportacao);
+    document.getElementById("btnExecutarImportacao").addEventListener("click", executarImportacao);
+
+    document.getElementById("modalImportacao").addEventListener("click", (e) => {
+      if (e.target.id === "modalImportacao") fecharImportacao();
+    });
+
     carregarDados();
     preencherSelectDias();
     render();
+
+    function render() {
+      const dia = escala.dias[indiceAtual];
+      const filtro = document.getElementById("buscaInput").value.trim().toUpperCase();
+
+      document.getElementById("weekLabel").textContent = escala.tituloSemana;
+      document.getElementById("diaSemanaTitulo").textContent = dia.diaSemana;
+      document.getElementById("dataTitulo").textContent = formatarDataBR(dia.data);
+      document.getElementById("diaSelect").value = indiceAtual;
+      document.getElementById("obsTexto").textContent = escala.observacoes;
+
+      const grid = document.getElementById("gridFuncoes");
+      grid.innerHTML = "";
+
+      let funcoesExibidas = 0;
+      dia.funcoes.forEach((func, funcIndex) => {
+        const card = criarCardFuncao(func, filtro, funcIndex);
+        if (card.style.display !== "none") {
+          funcoesExibidas++;
+          grid.appendChild(card);
+        }
+      });
+
+      document.getElementById("totalFuncoes").textContent = funcoesExibidas;
+      document.getElementById("totalMilitares").textContent = contarMilitaresUnicosDia(dia, filtro);
+      document.getElementById("cmDia").textContent = calcularResumoHorasDia(dia, filtro);
+
+      renderIndisponiveis(filtro);
+      renderTrocasDia();
+      salvarDados();
+
+      document.querySelectorAll(".btn-troca-card").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const diaIndex = Number(btn.dataset.dia);
+          const funcIndex = Number(btn.dataset.func);
+          const turnoIndex = Number(btn.dataset.turno);
+          abrirModalTroca(diaIndex, funcIndex, turnoIndex);
+        });
+      });
+    }
+
+    function criarCardFuncao(func, filtro, funcIndex) {
+      const card = document.createElement("div");
+      card.className = "func-card";
+
+      const head = document.createElement("div");
+      head.className = "func-head";
+      head.innerHTML = `
+        <div class="nome">${func.nome}</div>
+        <div class="tag">${func.turnos.length} turno(s)</div>
+      `;
+      card.appendChild(head);
+
+      const turnos = document.createElement("div");
+      turnos.className = "turnos";
+
+      let exibiu = false;
+
+      func.turnos.forEach((turno, turnoIndex) => {
+        const nomeMilitar = (turno.militar || "").trim();
+        const match = !filtro || nomeMilitar.toUpperCase().includes(filtro);
+
+        if (filtro && nomeMilitar && !match) return;
+        if (filtro && !nomeMilitar) return;
+
+        exibiu = true;
+
+        const bloco = document.createElement("div");
+        bloco.className = "turno";
+
+        const vazio = !nomeMilitar;
+
+        let trocaHtml = "";
+        const diaAtual = escala.dias[indiceAtual];
+        const trocaRelacionada = (diaAtual.trocas || []).find(t => t.funcao === func.nome && t.turnoCodigo === turno.codigo);
+        if (trocaRelacionada) {
+          trocaHtml = `<div class="troca-tag">Troca registrada</div>`;
+        }
+
+        bloco.innerHTML = `
+          <div class="turno-top">
+            <div class="turno-label">TURNO</div>
+            <div class="turno-badge">${turno.rotulo}</div>
+          </div>
+          <div class="militar-row">
+            <div class="militar ${nomeMilitar.length > 20 ? "small" : ""} ${vazio ? "empty" : ""}">
+              ${vazio ? "Sem militar escalado" : nomeMilitar}
+            </div>
+            <button class="btn-troca-card" data-dia="${indiceAtual}" data-func="${funcIndex}" data-turno="${turnoIndex}">
+              Trocar
+            </button>
+          </div>
+          ${trocaHtml}
+        `;
+        turnos.appendChild(bloco);
+      });
+
+      if (!exibiu) {
+        card.style.display = "none";
+      }
+
+      card.appendChild(turnos);
+      return card;
+    }
   </script>
 </body>
 </html>
