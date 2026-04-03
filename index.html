@@ -9,518 +9,539 @@
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    :root{
-      --bg:#eef3f8;
-      --card:#ffffff;
-      --card2:#f8fbff;
-      --line:#d9e2ec;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --primary:#1d4f91;
-      --primary-soft:#e9f1fb;
-      --success:#198754;
-      --success-soft:#eaf8f0;
-      --warning:#b58105;
-      --warning-soft:#fff6df;
-      --danger:#c53b3b;
-      --danger-soft:#fdecec;
-      --shadow:0 10px 28px rgba(15,23,42,.08);
-      --radius:20px;
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(180deg,#ebf1f7 0%,#f7f9fc 100%);
-      color:var(--text);
+    :root {
+      --bg: #eef3f8;
+      --card: #ffffff;
+      --card2: #f8fbff;
+      --line: #d9e2ec;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #1d4f91;
+      --primary-soft: #e9f1fb;
+      --success: #198754;
+      --success-soft: #eaf8f0;
+      --warning: #b58105;
+      --warning-soft: #fff6df;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      --radius: 20px;
     }
 
-    .app{
-      max-width:1180px;
-      margin:20px auto;
-      padding:0 14px 28px;
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #ebf1f7 0%, #f7f9fc 100%);
+      color: var(--text);
     }
 
-    .hero{
-      background:linear-gradient(135deg,#1d4f91 0%,#163b69 100%);
-      color:#fff;
-      border-radius:28px;
-      padding:24px 18px;
-      box-shadow:var(--shadow);
-      margin-bottom:16px;
+    .app {
+      max-width: 1180px;
+      margin: 20px auto;
+      padding: 0 14px 28px;
     }
 
-    .hero h1{
-      margin:0 0 8px;
-      text-align:center;
-      font-size:30px;
-      font-weight:900;
-      letter-spacing:.5px;
+    .hero {
+      background: linear-gradient(135deg, #1d4f91 0%, #163b69 100%);
+      color: #fff;
+      border-radius: 28px;
+      padding: 24px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
     }
 
-    .hero .sub{
-      text-align:center;
-      font-size:15px;
-      font-weight:700;
-      line-height:1.5;
-      opacity:.97;
+    .hero h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
     }
 
-    .panel{
-      background:var(--card);
-      border:1px solid #e6edf5;
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
-      margin-bottom:16px;
+    .hero .sub {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.5;
+      opacity: 0.97;
     }
 
-    .nav-top{
-      display:grid;
-      grid-template-columns:1fr auto 1fr;
-      gap:12px;
-      align-items:center;
-      margin-bottom:14px;
+    .panel {
+      background: var(--card);
+      border: 1px solid #e6edf5;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 16px;
     }
 
-    .nav-left,.nav-right{
-      display:flex;
-      gap:10px;
+    .nav-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
     }
 
-    .nav-right{justify-content:flex-end}
-
-    .center-head{text-align:center}
-
-    .center-head .week{
-      font-size:14px;
-      color:var(--muted);
-      font-weight:800;
-      margin-bottom:4px;
+    .nav-left, .nav-right {
+      display: flex;
+      gap: 10px;
     }
 
-    .center-head .day-title{
-      font-size:30px;
-      color:var(--primary);
-      font-weight:900;
-      margin:0;
+    .nav-right {
+      justify-content: flex-end;
     }
 
-    .center-head .day-date{
-      margin-top:5px;
-      color:#334155;
-      font-size:18px;
-      font-weight:900;
+    .center-head {
+      text-align: center;
     }
 
-    button{
-      border:none;
-      border-radius:14px;
-      padding:13px 18px;
-      cursor:pointer;
-      font-size:15px;
-      font-weight:900;
-      transition:.15s ease;
-      box-shadow:0 6px 16px rgba(0,0,0,.07);
+    .center-head .week {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 4px;
     }
 
-    button:hover{transform:translateY(-1px);opacity:.98}
-
-    .btn-prev,.btn-next{
-      background:#dbe8f8;
-      color:#1d4f91;
+    .center-head .day-title {
+      font-size: 30px;
+      color: var(--primary);
+      font-weight: 900;
+      margin: 0;
     }
 
-    .btn-today{
-      background:#f7e9bc;
-      color:#8a5b00;
+    .center-head .day-date {
+      margin-top: 5px;
+      color: #334155;
+      font-size: 18px;
+      font-weight: 900;
     }
 
-    .toolbar{
-      display:grid;
-      grid-template-columns:1fr 260px;
-      gap:12px;
-      align-items:end;
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 900;
+      transition: 0.15s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
     }
 
-    label{
-      display:block;
-      margin-bottom:6px;
-      font-size:14px;
-      font-weight:900;
-      color:#475569;
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.98;
     }
 
-    input[type="text"], select, textarea, input[type="file"]{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:13px 14px;
-      font-size:15px;
-      background:#fff;
-      color:var(--text);
-      outline:none;
+    .btn-prev, .btn-next {
+      background: #dbe8f8;
+      color: #1d4f91;
     }
 
-    textarea{
-      min-height:100px;
-      resize:vertical;
+    .btn-today {
+      background: #f7e9bc;
+      color: #8a5b00;
     }
 
-    input[type="text"]:focus, select:focus, textarea:focus, input[type="file"]:focus{
-      border-color:#8eb1dd;
-      box-shadow:0 0 0 4px rgba(29,79,145,.08);
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 12px;
+      align-items: end;
     }
 
-    .summary{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:12px;
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #475569;
     }
 
-    .stat{
-      background:var(--card2);
-      border:1px solid #e3eaf2;
-      border-radius:18px;
-      padding:16px;
-      text-align:center;
+    input[type="text"],
+    select,
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 15px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
     }
 
-    .stat .n{
-      font-size:34px;
-      font-weight:900;
-      color:var(--primary);
-      line-height:1;
-      margin-bottom:8px;
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
-    .stat .t{
-      color:var(--muted);
-      font-size:14px;
-      font-weight:800;
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus,
+    input[type="file"]:focus {
+      border-color: #8eb1dd;
+      box-shadow: 0 0 0 4px rgba(29, 79, 145, 0.08);
     }
 
-    .grid-funcoes{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:14px;
+    .summary {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
     }
 
-    .func-card{
-      background:#fff;
-      border:1px solid #dfe7f0;
-      border-radius:22px;
-      overflow:hidden;
-      box-shadow:0 8px 22px rgba(15,23,42,.06);
+    .stat {
+      background: var(--card2);
+      border: 1px solid #e3eaf2;
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
     }
 
-    .func-head{
-      padding:14px 16px;
-      background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
-      border-bottom:1px solid #dfe7f0;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
+    .stat .n {
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 8px;
     }
 
-    .func-head .nome{
-      font-size:22px;
-      font-weight:900;
-      color:#1d3557;
+    .stat .t {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
     }
 
-    .func-head .tag{
-      background:#e8f1fb;
-      color:#1d4f91;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
+    .grid-funcoes {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
     }
 
-    .turnos{
-      padding:14px;
-      display:grid;
-      gap:10px;
+    .func-card {
+      background: #fff;
+      border: 1px solid #dfe7f0;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
     }
 
-    .turno{
-      border:1px solid #e5ebf2;
-      border-radius:16px;
-      padding:14px;
-      background:#fbfdff;
+    .func-head {
+      padding: 14px 16px;
+      background: linear-gradient(180deg, #f8fbff 0%, #eef4fa 100%);
+      border-bottom: 1px solid #dfe7f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
 
-    .turno-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:8px;
-      gap:8px;
-      flex-wrap:wrap;
+    .func-head .nome {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1d3557;
     }
 
-    .turno-label{
-      font-size:12px;
-      font-weight:900;
-      color:#5b6570;
-      letter-spacing:.5px;
+    .func-head .tag {
+      background: #e8f1fb;
+      color: #1d4f91;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
-    .turno-badge{
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      background:var(--primary-soft);
-      color:var(--primary);
+    .turnos {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
     }
 
-    .militar-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
+    .turno {
+      border: 1px solid #e5ebf2;
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfdff;
     }
 
-    .militar{
-      font-size:23px;
-      font-weight:900;
-      color:#17212f;
-      line-height:1.15;
-      min-height:30px;
-      flex:1;
+    .turno-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .militar.small{font-size:19px}
-
-    .empty{
-      color:#94a3b8;
-      font-style:italic;
-      font-weight:700;
+    .turno-label {
+      font-size: 12px;
+      font-weight: 900;
+      color: #5b6570;
+      letter-spacing: 0.5px;
     }
 
-    .btn-troca-card{
-      background:var(--warning-soft);
-      color:var(--warning);
-      padding:10px 12px;
-      font-size:13px;
-      border-radius:12px;
-      white-space:nowrap;
-      box-shadow:none;
-      border:1px solid #f0dfab;
+    .turno-badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: var(--primary-soft);
+      color: var(--primary);
     }
 
-    .troca-tag{
-      margin-top:8px;
-      display:inline-block;
-      background:var(--warning-soft);
-      color:var(--warning);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:900;
+    .militar-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
     }
 
-    .box-row{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns:1.2fr 1fr;
-      gap:14px;
+    .militar {
+      font-size: 23px;
+      font-weight: 900;
+      color: #17212f;
+      line-height: 1.15;
+      min-height: 30px;
+      flex: 1;
     }
 
-    .box{
-      background:#fff;
-      border-radius:20px;
-      border:1px solid #dfe7f0;
-      box-shadow:0 8px 22px rgba(15,23,42,.05);
-      overflow:hidden;
+    .militar.small {
+      font-size: 19px;
     }
 
-    .box-title{
-      padding:14px 16px;
-      background:#f5f8fb;
-      border-bottom:1px solid #e1e8ef;
-      font-size:16px;
-      font-weight:900;
-      color:#334155;
+    .empty {
+      color: #94a3b8;
+      font-style: italic;
+      font-weight: 700;
     }
 
-    .box-content{padding:16px}
-
-    .note-text{
-      margin:0;
-      color:#475569;
-      font-weight:700;
-      line-height:1.6;
-      white-space:pre-wrap;
+    .btn-troca-card {
+      background: var(--warning-soft);
+      color: var(--warning);
+      padding: 10px 12px;
+      font-size: 13px;
+      border-radius: 12px;
+      white-space: nowrap;
+      box-shadow: none;
+      border: 1px solid #f0dfab;
     }
 
-    .indisp-list,.troca-list{
-      display:grid;
-      gap:10px;
+    .troca-tag {
+      margin-top: 8px;
+      display: inline-block;
+      background: var(--warning-soft);
+      color: var(--warning);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
     }
 
-    .item-card{
-      border:1px solid #e5eaf1;
-      border-radius:14px;
-      padding:12px;
-      background:#fbfcfe;
+    .box-row {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
     }
 
-    .item-card .m1{
-      font-size:14px;
-      font-weight:900;
-      color:#334155;
-      margin-bottom:5px;
+    .box {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #dfe7f0;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
     }
 
-    .item-card .m2{
-      font-size:13px;
-      color:#64748b;
-      font-weight:700;
-      line-height:1.5;
-      white-space:pre-wrap;
+    .box-title {
+      padding: 14px 16px;
+      background: #f5f8fb;
+      border-bottom: 1px solid #e1e8ef;
+      font-size: 16px;
+      font-weight: 900;
+      color: #334155;
     }
 
-    .footer-actions{
-      margin-top:18px;
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
+    .box-content {
+      padding: 16px;
     }
 
-    .btn-footer{
-      background:#e8f1fb;
-      color:#1d4f91;
+    .note-text {
+      margin: 0;
+      color: #475569;
+      font-weight: 700;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
-    .footer{
-      text-align:center;
-      color:#64748b;
-      font-size:13px;
-      font-weight:700;
-      margin-top:12px;
-      line-height:1.5;
+    .indisp-list, .troca-list {
+      display: grid;
+      gap: 10px;
     }
 
-    .modal{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.45);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-      z-index:9999;
+    .item-card {
+      border: 1px solid #e5eaf1;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fbfcfe;
     }
 
-    .modal.show{display:flex}
-
-    .modal-box{
-      width:min(700px, 100%);
-      background:#fff;
-      border-radius:22px;
-      box-shadow:0 18px 40px rgba(0,0,0,.18);
-      overflow:hidden;
-      border:1px solid #e5eaf1;
-      max-height:92vh;
-      overflow-y:auto;
+    .item-card .m1 {
+      font-size: 14px;
+      font-weight: 900;
+      color: #334155;
+      margin-bottom: 5px;
     }
 
-    .modal-head{
-      padding:16px 18px;
-      background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
-      border-bottom:1px solid #dfe7f0;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
+    .item-card .m2 {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 700;
+      line-height: 1.5;
+      white-space: pre-wrap;
     }
 
-    .modal-head h3{
-      margin:0;
-      font-size:20px;
-      color:#1d3557;
+    .footer-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .modal-close{
-      background:#eef2f7;
-      color:#475569;
-      box-shadow:none;
-      padding:10px 12px;
+    .btn-footer {
+      background: #e8f1fb;
+      color: #1d4f91;
     }
 
-    .modal-body{
-      padding:18px;
-      display:grid;
-      gap:12px;
+    .footer {
+      text-align: center;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 12px;
+      line-height: 1.5;
     }
 
-    .mini-info{
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      border-radius:14px;
-      padding:12px;
-      font-size:14px;
-      color:#475569;
-      font-weight:700;
-      line-height:1.5;
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
     }
 
-    .modal-actions{
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      padding:0 18px 18px;
-      flex-wrap:wrap;
+    .modal.show {
+      display: flex;
     }
 
-    .btn-cancel{
-      background:#eef2f7;
-      color:#475569;
-      box-shadow:none;
+    .modal-box {
+      width: min(700px, 100%);
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+      border: 1px solid #e5eaf1;
+      max-height: 92vh;
+      overflow-y: auto;
     }
 
-    .btn-confirm{
-      background:var(--success-soft);
-      color:var(--success);
-      box-shadow:none;
+    .modal-head {
+      padding: 16px 18px;
+      background: linear-gradient(180deg, #f8fbff 0%, #eef4fa 100%);
+      border-bottom: 1px solid #dfe7f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
 
-    .hint{
-      font-size:13px;
-      color:#64748b;
-      font-weight:700;
-      line-height:1.5;
+    .modal-head h3 {
+      margin: 0;
+      font-size: 20px;
+      color: #1d3557;
     }
 
-    .status-box{
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      border-radius:14px;
-      padding:12px;
-      font-size:14px;
-      font-weight:800;
-      color:#475569;
-      white-space:pre-wrap;
+    .modal-close {
+      background: #eef2f7;
+      color: #475569;
+      box-shadow: none;
+      padding: 10px 12px;
     }
 
-    @media (max-width:920px){
-      .nav-top{grid-template-columns:1fr}
-      .nav-left,.nav-right{justify-content:center}
-      .toolbar,.summary,.grid-funcoes,.box-row{grid-template-columns:1fr}
-      .center-head .day-title{font-size:24px}
-      .militar{font-size:20px}
-      .militar-row{flex-direction:column;align-items:stretch}
-      .modal-actions{flex-direction:column}
+    .modal-body {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-info {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      color: #475569;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 0 18px 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn-cancel {
+      background: #eef2f7;
+      color: #475569;
+      box-shadow: none;
+    }
+
+    .btn-confirm {
+      background: var(--success-soft);
+      color: var(--success);
+      box-shadow: none;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .status-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #475569;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 920px) {
+      .nav-top { grid-template-columns: 1fr; }
+      .nav-left, .nav-right { justify-content: center; }
+      .toolbar, .summary, .grid-funcoes, .box-row { grid-template-columns: 1fr; }
+      .center-head .day-title { font-size: 24px; }
+      .militar { font-size: 20px; }
+      .militar-row { flex-direction: column; align-items: stretch; }
+      .modal-actions { flex-direction: column; }
     }
   </style>
 </head>
@@ -529,7 +550,7 @@
     <section class="hero">
       <h1>ESCALA DE SERVIÇO PRO</h1>
       <div class="sub">CBMRS • 6º BBM • São Lourenço do Sul</div>
-      <div class="sub">Contagem sem duplicar 12h dia + 12h noite • carga horária real por militar • troca com lista alfabética</div>
+      <div class="sub">Última escala lançada • contagem sem duplicar 12h dia + 12h noite • troca com lista alfabética</div>
     </section>
 
     <section class="panel">
@@ -600,7 +621,7 @@
       </div>
 
       <div class="footer">
-        Aceita JSON, TXT, CSV, PDF, imagem e texto colado. A importação automática tenta montar a semana da melhor forma possível.
+        Aceita JSON, TXT, CSV, PDF, imagem e texto colado. Base inicial desta versão: escala semanal de 30/03/2026 a 05/04/2026. :contentReference[oaicite:1]{index=1}
       </div>
     </section>
 
@@ -647,7 +668,7 @@
 
       <div class="modal-body">
         <div class="mini-info">
-          Você pode importar por arquivo ou colar o texto da escala.  
+          Você pode importar por arquivo ou colar o texto da escala.
           O sistema tenta ler PDF, imagem, TXT, CSV e JSON.
         </div>
 
@@ -662,7 +683,7 @@
         </div>
 
         <div class="hint">
-          Para JSON, o sistema espera a mesma estrutura interna da escala.  
+          Para JSON, o sistema espera a mesma estrutura da escala.
           Para TXT, CSV, PDF ou imagem, a leitura é automática por texto/OCR.
         </div>
 
@@ -679,7 +700,7 @@
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js";
 
-    const STORAGE_KEY = "escala_pro_import_v4";
+    const STORAGE_KEY = "escala_pro_import_v5";
 
     const militaresPreDefinidos = [
       { pg: "2 SGT", nome: "ANDERSON" },
@@ -701,9 +722,9 @@
       { pg: "2 SGT", nome: "VINICIUS" },
       { pg: "SD", nome: "WILLIAM" }
     ].sort((a, b) => {
-      const na = `${a.nome} ${a.pg}`.toUpperCase();
-      const nb = `${b.nome} ${b.pg}`.toUpperCase();
-      return na.localeCompare(nb, "pt-BR");
+      const aa = `${a.nome} ${a.pg}`.toUpperCase();
+      const bb = `${b.nome} ${b.pg}`.toUpperCase();
+      return aa.localeCompare(bb, "pt-BR");
     });
 
     const escala = {
@@ -712,7 +733,8 @@
       indisponiveis: [
         { motivo: "LAA", nome: "2º SGT BM ANDRE", idFunc: "2519976", dataInicial: "18/01/2026", dataFinal: "", obs: "" },
         { motivo: "FÉRIAS", nome: "SD TOMASCHEWSKI", idFunc: "3218627", dataInicial: "03/04/2026", dataFinal: "17/04/2026", obs: "" },
-        { motivo: "OP VERAO", nome: "1º SGT VICENTE", idFunc: "2614960", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
+        { motivo: "OP VERAO", nome: "1 SGT VICENTE", idFunc: "2614960", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
+        { motivo: "OP VERAO", nome: "1 SGT JASSON", idFunc: "2693836", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
         { motivo: "LFC", nome: "1 TEN MARCELO", idFunc: "2423286", dataInicial: "04/03/2026", dataFinal: "03/03/2026", obs: "" }
       ],
       dias: [
@@ -721,13 +743,13 @@
           diaSemana: "SEGUNDA-FEIRA",
           cm: "",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT LISCANO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT LISCANO" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD WILLIAM" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD WILLIAM" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MOTTA" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 12, militar: "1 SGT DIEFERSON" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT LISCANO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT LISCANO" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD WILLIAM" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD WILLIAM" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MOTTA" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 12, militar: "1 SGT DIEFERSON" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" }] }
           ],
           trocas: []
         },
@@ -736,13 +758,13 @@
           diaSemana: "TERÇA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT ANDERSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT ANDERSON" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD TOMASCHEWSKI" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD TOMASCHEWSKI" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD SOARES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD SOARES" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BORGES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT ANDERSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT ANDERSON" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD TOMASCHEWSKI" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD TOMASCHEWSKI" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD SOARES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD SOARES" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BORGES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" }] }
           ],
           trocas: []
         },
@@ -751,13 +773,13 @@
           diaSemana: "QUARTA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD PEGLOW" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD PEGLOW" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MOTTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MOTTA" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MAX" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MAX" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD PEGLOW" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD PEGLOW" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MOTTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MOTTA" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MAX" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MAX" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" }] }
           ],
           trocas: []
         },
@@ -766,13 +788,13 @@
           diaSemana: "QUINTA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD WILLIAM" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD WILLIAM" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BATISTA" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD WILLIAM" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD WILLIAM" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BATISTA" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" }] }
           ],
           trocas: []
         },
@@ -781,13 +803,13 @@
           diaSemana: "SEXTA-FEIRA",
           cm: "6h",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT ANDERSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT ANDERSON" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT LISCANO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT LISCANO" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BORGES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BORGES" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD SOARES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD SOARES" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT ANDERSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT ANDERSON" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT LISCANO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT LISCANO" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BORGES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BORGES" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD SOARES" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD SOARES" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária 6h", horas: 6, militar: "1 SGT DIEFERSON" }] }
           ],
           trocas: []
         },
@@ -796,13 +818,13 @@
           diaSemana: "SÁBADO",
           cm: "",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT VINICIUS" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT VINICIUS" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD PEGLOW" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD PEGLOW" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "2 SGT VINICIUS" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "2 SGT VINICIUS" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD PEGLOW" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD PEGLOW" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD ISQUIERDO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD ISQUIERDO" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD CAMACHO" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD CAMACHO" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" }] }
           ],
           trocas: []
         },
@@ -811,13 +833,13 @@
           diaSemana: "DOMINGO",
           cm: "",
           funcoes: [
-            { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "1 SGT BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "1 SGT BATISTA" } ] },
-            { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" } ] },
-            { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MAX" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MAX" } ] },
-            { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-            { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BATISTA" } ] },
-            { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" } ] },
-            { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
+            { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "1 SGT BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "1 SGT BATISTA" }] },
+            { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD LARSSON" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD LARSSON" }] },
+            { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD MAX" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD MAX" }] },
+            { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+            { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "SD BATISTA" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "SD BATISTA" }] },
+            { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 0, militar: "" }] },
+            { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" }] }
           ],
           trocas: []
         }
@@ -847,7 +869,7 @@
         if (typeof data.tituloSemana === "string") escala.tituloSemana = data.tituloSemana;
         if (typeof data.observacoes === "string") escala.observacoes = data.observacoes;
         if (Array.isArray(data.indisponiveis)) escala.indisponiveis = data.indisponiveis;
-      } catch(e) {}
+      } catch (e) {}
     }
 
     function formatarDataBR(iso) {
@@ -858,27 +880,23 @@
     function preencherSelectDias() {
       const select = document.getElementById("diaSelect");
       select.innerHTML = "";
-
       escala.dias.forEach((dia, idx) => {
         const opt = document.createElement("option");
         opt.value = idx;
         opt.textContent = `${formatarDataBR(dia.data)} • ${dia.diaSemana}`;
         select.appendChild(opt);
       });
-
       select.value = indiceAtual;
     }
 
     function preencherMilitaresModal(nomeAtual = "") {
       const select = document.getElementById("modalMilitarSelect");
       select.innerHTML = `<option value="">Selecione o militar</option>`;
-
       militaresPreDefinidos.forEach(m => {
-        const nomeExibicao = `${m.nome} • ${m.pg}`;
         const valor = `${m.pg} ${m.nome}`;
         const opt = document.createElement("option");
         opt.value = valor;
-        opt.textContent = nomeExibicao;
+        opt.textContent = `${m.nome} • ${m.pg}`;
         if (valor.toUpperCase() === (nomeAtual || "").toUpperCase()) {
           opt.selected = true;
         }
@@ -888,7 +906,6 @@
 
     function contarMilitaresUnicosDia(dia, filtro = "") {
       const set = new Set();
-
       dia.funcoes.forEach(func => {
         func.turnos.forEach(turno => {
           const nome = (turno.militar || "").trim();
@@ -897,18 +914,15 @@
           set.add(nome.toUpperCase());
         });
       });
-
       return set.size;
     }
 
     function calcularResumoHorasDia(dia, filtro = "") {
       const mapa = {};
-
       dia.funcoes.forEach(func => {
         func.turnos.forEach(turno => {
           const nome = (turno.militar || "").trim();
           const horas = Number(turno.horas || 0);
-
           if (!nome || !horas) return;
           if (filtro && !nome.toUpperCase().includes(filtro)) return;
 
@@ -920,15 +934,10 @@
 
       const grupos = {};
       Object.values(mapa).forEach(item => {
-        const h = item.horas;
-        if (!grupos[h]) grupos[h] = 0;
-        grupos[h] += 1;
+        grupos[item.horas] = (grupos[item.horas] || 0) + 1;
       });
 
-      const horasOrdenadas = Object.keys(grupos)
-        .map(Number)
-        .sort((a, b) => b - a);
-
+      const horasOrdenadas = Object.keys(grupos).map(Number).sort((a, b) => b - a);
       if (!horasOrdenadas.length) return "-";
 
       return horasOrdenadas.map(h => {
@@ -961,11 +970,9 @@
         div.className = "item-card";
         div.innerHTML = `
           <div class="m1">${item.motivo} • ${item.nome}</div>
-          <div class="m2">
-ID FUNC: ${item.idFunc || "-"}
+          <div class="m2">ID FUNC: ${item.idFunc || "-"}
 INÍCIO: ${item.dataInicial || "-"}
-FINAL: ${item.dataFinal || "-"}${item.obs ? `\nOBS: ${item.obs}` : ""}
-          </div>
+FINAL: ${item.dataFinal || "-"}${item.obs ? `\nOBS: ${item.obs}` : ""}</div>
         `;
         list.appendChild(div);
       });
@@ -974,7 +981,6 @@ FINAL: ${item.dataFinal || "-"}${item.obs ? `\nOBS: ${item.obs}` : ""}
     function renderTrocasDia() {
       const list = document.getElementById("trocaList");
       list.innerHTML = "";
-
       const dia = escala.dias[indiceAtual];
       const trocas = Array.isArray(dia.trocas) ? dia.trocas : [];
 
@@ -993,12 +999,10 @@ FINAL: ${item.dataFinal || "-"}${item.obs ? `\nOBS: ${item.obs}` : ""}
         div.className = "item-card";
         div.innerHTML = `
           <div class="m1">${t.funcao} • ${t.turnoRotulo}</div>
-          <div class="m2">
-Sai: ${t.sai || "-"}
+          <div class="m2">Sai: ${t.sai || "-"}
 Entra: ${t.entra || "-"}
 Observação: ${t.obs || "-"}
-Registro: ${t.dataRegistro || "-"}
-          </div>
+Registro: ${t.dataRegistro || "-"}</div>
         `;
         list.appendChild(div);
       });
@@ -1096,8 +1100,6 @@ Registro: ${t.dataRegistro || "-"}
         const bloco = document.createElement("div");
         bloco.className = "turno";
 
-        const vazio = !nomeMilitar;
-
         let trocaHtml = "";
         const diaAtual = escala.dias[indiceAtual];
         const trocaRelacionada = (diaAtual.trocas || []).find(t => t.funcao === func.nome && t.turnoCodigo === turno.codigo);
@@ -1105,6 +1107,7 @@ Registro: ${t.dataRegistro || "-"}
           trocaHtml = `<div class="troca-tag">Troca registrada</div>`;
         }
 
+        const vazio = !nomeMilitar;
         bloco.innerHTML = `
           <div class="turno-top">
             <div class="turno-label">TURNO</div>
@@ -1123,10 +1126,7 @@ Registro: ${t.dataRegistro || "-"}
         turnos.appendChild(bloco);
       });
 
-      if (!exibiu) {
-        card.style.display = "none";
-      }
-
+      if (!exibiu) card.style.display = "none";
       card.appendChild(turnos);
       return card;
     }
@@ -1163,10 +1163,11 @@ Registro: ${t.dataRegistro || "-"}
 
       document.querySelectorAll(".btn-troca-card").forEach(btn => {
         btn.addEventListener("click", () => {
-          const diaIndex = Number(btn.dataset.dia);
-          const funcIndex = Number(btn.dataset.func);
-          const turnoIndex = Number(btn.dataset.turno);
-          abrirModalTroca(diaIndex, funcIndex, turnoIndex);
+          abrirModalTroca(
+            Number(btn.dataset.dia),
+            Number(btn.dataset.func),
+            Number(btn.dataset.turno)
+          );
         });
       });
     }
@@ -1191,7 +1192,6 @@ Registro: ${t.dataRegistro || "-"}
       const m = String(hoje.getMonth() + 1).padStart(2, "0");
       const d = String(hoje.getDate()).padStart(2, "0");
       const isoHoje = `${y}-${m}-${d}`;
-
       const idx = escala.dias.findIndex(item => item.data === isoHoje);
       indiceAtual = idx >= 0 ? idx : 0;
       render();
@@ -1199,7 +1199,7 @@ Registro: ${t.dataRegistro || "-"}
 
     function abrirImportacao() {
       document.getElementById("modalImportacao").classList.add("show");
-      document.getElementById("statusImportacao").textContent = "Aguardando importação.";
+      setStatusImportacao("Aguardando importação.");
     }
 
     function fecharImportacao() {
@@ -1281,19 +1281,23 @@ Registro: ${t.dataRegistro || "-"}
       return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     }
 
+    function nomeDiaPorIndice(i) {
+      return ["SEGUNDA-FEIRA","TERÇA-FEIRA","QUARTA-FEIRA","QUINTA-FEIRA","SEXTA-FEIRA","SÁBADO","DOMINGO"][i] || "";
+    }
+
     function criarDiaVazio(dataISO, diaSemana) {
       return {
         data: dataISO,
         diaSemana,
         cm: "",
         funcoes: [
-          { nome: "CG", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-          { nome: "COV", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-          { nome: "CLD", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-          { nome: "CLE", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-          { nome: "COBOM", turnos: [ { codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" } ] },
-          { nome: "CS", turnos: [ { codigo: "UNICO", rotulo: "Serviço único", horas: 12, militar: "" } ] },
-          { nome: "EXP ADM", turnos: [ { codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" } ] }
+          { nome: "CG", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+          { nome: "COV", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+          { nome: "CLD", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+          { nome: "CLE", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+          { nome: "COBOM", turnos: [{ codigo: "23", rotulo: "12h Dia", horas: 12, militar: "" }, { codigo: "41", rotulo: "12h Noite", horas: 12, militar: "" }] },
+          { nome: "CS", turnos: [{ codigo: "UNICO", rotulo: "Serviço único", horas: 12, militar: "" }] },
+          { nome: "EXP ADM", turnos: [{ codigo: "CM", rotulo: "Carga horária", horas: 0, militar: "" }] }
         ],
         trocas: []
       };
@@ -1301,27 +1305,20 @@ Registro: ${t.dataRegistro || "-"}
 
     function importarTextoGenerico(texto) {
       const txt = normalizarTexto(texto);
-
       if (!txt) throw new Error("Texto vazio.");
 
-      const diasSemana = ["SEGUNDA-FEIRA","TERÇA-FEIRA","QUARTA-FEIRA","QUINTA-FEIRA","SEXTA-FEIRA","SÁBADO","DOMINGO"];
       const datas = extrairDatasBR(txt);
-
       if (datas.length >= 7) {
-        const novosDias = [];
-        for (let i = 0; i < 7; i++) {
-          novosDias.push(criarDiaVazio(brToIso(datas[i]), diasSemana[i]));
-        }
-        escala.dias = novosDias;
+        escala.dias = datas.slice(0, 7).map((d, i) => criarDiaVazio(brToIso(d), nomeDiaPorIndice(i)));
       }
 
       if (/ESCALA DE SERVIÇO/i.test(txt)) {
         escala.tituloSemana = "Semana importada";
       }
 
-      if (/EXPEDIENTE ADMINISTRATIVO/i.test(txt)) {
-        const linha = txt.split("\n").find(l => /EXPEDIENTE ADMINISTRATIVO/i.test(l));
-        if (linha) escala.observacoes = linha.trim();
+      const linhaExp = txt.split("\n").find(l => /EXPEDIENTE ADMINISTRATIVO/i.test(l));
+      if (linhaExp) {
+        escala.observacoes = linhaExp.trim();
       }
 
       setStatusImportacao("Importação textual concluída.\nRevise os dados importados e ajuste, se necessário.");
@@ -1341,20 +1338,19 @@ Registro: ${t.dataRegistro || "-"}
           if (nome.endsWith(".json")) {
             const txt = await arquivo.text();
             const obj = JSON.parse(txt);
-
-            if (obj && Array.isArray(obj.dias)) {
-              if (obj.tituloSemana) escala.tituloSemana = obj.tituloSemana;
-              if (obj.observacoes) escala.observacoes = obj.observacoes;
-              if (Array.isArray(obj.indisponiveis)) escala.indisponiveis = obj.indisponiveis;
-              escala.dias = obj.dias;
-              fecharImportacao();
-              preencherSelectDias();
-              render();
-              setStatusImportacao("JSON importado com sucesso.");
-              return;
-            } else {
+            if (!obj || !Array.isArray(obj.dias)) {
               throw new Error("JSON inválido para a estrutura da escala.");
             }
+
+            escala.dias = obj.dias;
+            if (obj.tituloSemana) escala.tituloSemana = obj.tituloSemana;
+            if (obj.observacoes) escala.observacoes = obj.observacoes;
+            if (Array.isArray(obj.indisponiveis)) escala.indisponiveis = obj.indisponiveis;
+
+            fecharImportacao();
+            preencherSelectDias();
+            render();
+            return;
           }
 
           if (nome.endsWith(".txt") || nome.endsWith(".csv")) {
@@ -1366,8 +1362,8 @@ Registro: ${t.dataRegistro || "-"}
 
             if (texto.replace(/\s/g, "").length < 100) {
               setStatusImportacao("PDF com pouco texto. Executando OCR...");
-              for (const c of canvases) {
-                textoFinal += "\n" + await executarOCRCanvas(c);
+              for (const canvas of canvases) {
+                textoFinal += "\n" + await executarOCRCanvas(canvas);
               }
             }
           } else if (tipo.startsWith("image/")) {
@@ -1418,110 +1414,6 @@ Registro: ${t.dataRegistro || "-"}
     carregarDados();
     preencherSelectDias();
     render();
-
-    function render() {
-      const dia = escala.dias[indiceAtual];
-      const filtro = document.getElementById("buscaInput").value.trim().toUpperCase();
-
-      document.getElementById("weekLabel").textContent = escala.tituloSemana;
-      document.getElementById("diaSemanaTitulo").textContent = dia.diaSemana;
-      document.getElementById("dataTitulo").textContent = formatarDataBR(dia.data);
-      document.getElementById("diaSelect").value = indiceAtual;
-      document.getElementById("obsTexto").textContent = escala.observacoes;
-
-      const grid = document.getElementById("gridFuncoes");
-      grid.innerHTML = "";
-
-      let funcoesExibidas = 0;
-      dia.funcoes.forEach((func, funcIndex) => {
-        const card = criarCardFuncao(func, filtro, funcIndex);
-        if (card.style.display !== "none") {
-          funcoesExibidas++;
-          grid.appendChild(card);
-        }
-      });
-
-      document.getElementById("totalFuncoes").textContent = funcoesExibidas;
-      document.getElementById("totalMilitares").textContent = contarMilitaresUnicosDia(dia, filtro);
-      document.getElementById("cmDia").textContent = calcularResumoHorasDia(dia, filtro);
-
-      renderIndisponiveis(filtro);
-      renderTrocasDia();
-      salvarDados();
-
-      document.querySelectorAll(".btn-troca-card").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const diaIndex = Number(btn.dataset.dia);
-          const funcIndex = Number(btn.dataset.func);
-          const turnoIndex = Number(btn.dataset.turno);
-          abrirModalTroca(diaIndex, funcIndex, turnoIndex);
-        });
-      });
-    }
-
-    function criarCardFuncao(func, filtro, funcIndex) {
-      const card = document.createElement("div");
-      card.className = "func-card";
-
-      const head = document.createElement("div");
-      head.className = "func-head";
-      head.innerHTML = `
-        <div class="nome">${func.nome}</div>
-        <div class="tag">${func.turnos.length} turno(s)</div>
-      `;
-      card.appendChild(head);
-
-      const turnos = document.createElement("div");
-      turnos.className = "turnos";
-
-      let exibiu = false;
-
-      func.turnos.forEach((turno, turnoIndex) => {
-        const nomeMilitar = (turno.militar || "").trim();
-        const match = !filtro || nomeMilitar.toUpperCase().includes(filtro);
-
-        if (filtro && nomeMilitar && !match) return;
-        if (filtro && !nomeMilitar) return;
-
-        exibiu = true;
-
-        const bloco = document.createElement("div");
-        bloco.className = "turno";
-
-        const vazio = !nomeMilitar;
-
-        let trocaHtml = "";
-        const diaAtual = escala.dias[indiceAtual];
-        const trocaRelacionada = (diaAtual.trocas || []).find(t => t.funcao === func.nome && t.turnoCodigo === turno.codigo);
-        if (trocaRelacionada) {
-          trocaHtml = `<div class="troca-tag">Troca registrada</div>`;
-        }
-
-        bloco.innerHTML = `
-          <div class="turno-top">
-            <div class="turno-label">TURNO</div>
-            <div class="turno-badge">${turno.rotulo}</div>
-          </div>
-          <div class="militar-row">
-            <div class="militar ${nomeMilitar.length > 20 ? "small" : ""} ${vazio ? "empty" : ""}">
-              ${vazio ? "Sem militar escalado" : nomeMilitar}
-            </div>
-            <button class="btn-troca-card" data-dia="${indiceAtual}" data-func="${funcIndex}" data-turno="${turnoIndex}">
-              Trocar
-            </button>
-          </div>
-          ${trocaHtml}
-        `;
-        turnos.appendChild(bloco);
-      });
-
-      if (!exibiu) {
-        card.style.display = "none";
-      }
-
-      card.appendChild(turnos);
-      return card;
-    }
   </script>
 </body>
 </html>
