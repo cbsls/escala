@@ -2,1082 +2,1133 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>📅 Escala de Serviço PRO • CBMRS</title>
-  <meta name="theme-color" content="#0f4c81" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escala de Serviço PRO • CBMRS</title>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
+
+  <!-- Tesseract OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:Arial, Helvetica, sans-serif;
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eceff3;
+      color: #1f2937;
     }
 
     :root{
-      --bg:#eef3f8;
-      --bg2:#dce8f5;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --line:#d9e3ef;
-      --primary:#0f4c81;
-      --primary-dark:#0b365b;
-      --green:#16a34a;
-      --green-soft:#dcfce7;
-      --blue-soft:#dbeafe;
-      --yellow:#f59e0b;
-      --yellow-soft:#fef3c7;
-      --red:#dc2626;
-      --red-soft:#fee2e2;
-      --purple:#7c3aed;
-      --purple-soft:#ede9fe;
-      --cyan:#0891b2;
-      --cyan-soft:#cffafe;
-      --orange:#ea580c;
-      --orange-soft:#ffedd5;
-      --shadow:0 10px 30px rgba(0,0,0,.10);
-      --radius:22px;
+      --bg: #eceff3;
+      --card: #ffffff;
+      --line: #2f2f2f;
+      --soft-line: #b8bec7;
+      --title: #263342;
+      --muted: #5f6b78;
+      --head: #d8dde4;
+      --subhead: #eef1f5;
+      --row-alt: #f8f9fb;
+      --btn: #dfe5eb;
+      --btn-hover: #cfd7df;
+      --accent: #5f6b78;
+      --ok: #dfe8df;
+      --warn: #efe8d4;
     }
 
-    body{
-      background:linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
-      color:var(--text);
-      padding:14px;
+    .container {
+      max-width: 1600px;
+      margin: 18px auto;
+      padding: 0 14px 28px;
     }
 
-    .app{
-      max-width:1150px;
-      margin:0 auto;
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      padding: 16px;
+      margin-bottom: 14px;
     }
 
-    .hero{
-      background:linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color:#fff;
-      border-radius:28px;
-      padding:22px 18px;
-      box-shadow:var(--shadow);
-      margin-bottom:16px;
+    .topbar {
+      border: 1px solid #d7dce2;
+      background: linear-gradient(180deg, #ffffff 0%, #f6f8fa 100%);
     }
 
-    .hero h1{
-      text-align:center;
-      font-size:1.75rem;
-      line-height:1.2;
-      margin-bottom:8px;
+    .topbar h1 {
+      margin: 0;
+      text-align: center;
+      color: var(--title);
+      font-size: 30px;
+      letter-spacing: 0.5px;
     }
 
-    .hero .sub{
-      text-align:center;
-      font-size:.98rem;
-      opacity:.96;
-      line-height:1.45;
+    .topbar .sub1,
+    .topbar .sub2 {
+      text-align: center;
+      margin-top: 6px;
+      color: var(--muted);
+      font-weight: 700;
     }
 
-    .panel{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px;
-      margin-bottom:14px;
-      border:1px solid var(--line);
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 10px;
+      align-items: end;
     }
 
-    .import-panel{
-      background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    .field label {
+      display: block;
+      font-weight: 700;
+      color: #394452;
+      margin-bottom: 6px;
     }
 
-    .section-title{
-      font-size:1rem;
-      font-weight:900;
-      color:var(--primary);
-      margin-bottom:10px;
-    }
-
-    .import-grid{
-      display:grid;
-      grid-template-columns:1.3fr .9fr .9fr;
-      gap:10px;
-      align-items:end;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    label{
-      font-size:.9rem;
-      color:var(--muted);
-      font-weight:800;
-    }
-
-    input[type="text"],
     input[type="file"],
-    select{
-      width:100%;
-      padding:12px 13px;
-      border-radius:14px;
-      border:1px solid #cbd5e1;
-      outline:none;
-      font-size:1rem;
-      background:#fff;
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #c8d0d8;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 15px;
+      background: #fff;
     }
 
-    input:focus, select:focus{
-      border-color:var(--primary);
-      box-shadow:0 0 0 3px rgba(15,76,129,.10);
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
-    .hint{
-      margin-top:10px;
-      font-size:.88rem;
-      color:#475569;
-      line-height:1.5;
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      border-radius:14px;
-      padding:10px 12px;
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .date-area{
-      text-align:center;
-      margin-bottom:12px;
+    button {
+      border: 1px solid #c2c9d2;
+      background: var(--btn);
+      color: #263342;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
     }
 
-    .date-area .week{
-      color:var(--primary);
-      font-weight:900;
-      font-size:1.3rem;
-      letter-spacing:.3px;
+    button:hover {
+      background: var(--btn-hover);
     }
 
-    .date-area .date{
-      color:var(--muted);
-      font-weight:800;
-      font-size:1rem;
-      margin-top:6px;
+    .btn-primary { background: #d7dde4; }
+    .btn-ok { background: var(--ok); }
+    .btn-warn { background: var(--warn); }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f4f6f8;
+      border: 1px solid #dbe2e8;
+      color: #334155;
+      font-size: 14px;
+      white-space: pre-wrap;
     }
 
-    .controls{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:10px;
-      margin-bottom:12px;
+    .week-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
     }
 
-    button{
-      border:none;
-      border-radius:16px;
-      padding:14px 12px;
-      font-weight:900;
-      font-size:.96rem;
-      cursor:pointer;
-      box-shadow:0 4px 12px rgba(0,0,0,.08);
-      transition:.18s ease;
+    .week-title {
+      text-align: center;
     }
 
-    button:hover{
-      transform:translateY(-1px);
-      filter:brightness(.98);
+    .week-title h2 {
+      margin: 0;
+      color: var(--title);
+      font-size: 24px;
     }
 
-    .btn-prev{ background:var(--blue-soft); color:#1d4ed8; }
-    .btn-today{ background:var(--yellow-soft); color:#b45309; }
-    .btn-next{ background:var(--green-soft); color:#15803d; }
-    .btn-import{ background:var(--green-soft); color:#166534; }
-    .btn-sample{ background:var(--blue-soft); color:#1e3a8a; }
-    .btn-reset{ background:var(--red-soft); color:#991b1b; }
-
-    .filters{
-      display:grid;
-      grid-template-columns:1.2fr 1fr;
-      gap:10px;
+    .week-title .week-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 700;
     }
 
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:10px;
-      margin-bottom:14px;
+    .nav-group {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-start;
     }
 
-    .stat{
-      border-radius:18px;
-      padding:14px 10px;
-      text-align:center;
-      color:#fff;
-      box-shadow:var(--shadow);
+    .nav-group.right {
+      justify-content: flex-end;
     }
 
-    .stat .n{
-      font-size:1.45rem;
-      font-weight:900;
-      line-height:1;
-      margin-bottom:6px;
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
-    .stat .t{
-      font-size:.85rem;
-      font-weight:800;
-      opacity:.98;
+    .table-wrap {
+      overflow-x: auto;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      background: white;
     }
 
-    .s1{ background:linear-gradient(135deg, #0f4c81, #2563eb); }
-    .s2{ background:linear-gradient(135deg, #16a34a, #22c55e); }
-    .s3{ background:linear-gradient(135deg, #dc2626, #ef4444); }
-    .s4{ background:linear-gradient(135deg, #7c3aed, #8b5cf6); }
-
-    .legend{
-      display:grid;
-      grid-template-columns:repeat(6, 1fr);
-      gap:8px;
-      margin-bottom:14px;
+    table.escala {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1280px;
+      table-layout: fixed;
     }
 
-    .tag{
-      color:#fff;
-      text-align:center;
-      padding:10px 8px;
-      border-radius:12px;
-      font-weight:900;
-      font-size:.85rem;
+    table.escala th,
+    table.escala td {
+      border: 2px solid var(--line);
+      padding: 6px 6px;
+      vertical-align: middle;
+      font-size: 13px;
+      word-wrap: break-word;
     }
 
-    .cg{ background:var(--primary); }
-    .cov{ background:var(--purple); }
-    .cld{ background:var(--red); }
-    .cle{ background:var(--yellow); color:#222; }
-    .cobom{ background:var(--cyan); }
-    .exp{ background:var(--green); }
-
-    .cards{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-bottom:14px;
+    table.escala thead th {
+      background: var(--head);
+      text-align: center;
+      color: #111827;
     }
 
-    .card{
-      background:var(--card);
-      border-radius:20px;
-      box-shadow:var(--shadow);
-      padding:14px;
-      border:1px solid var(--line);
+    .th-funcao {
+      width: 170px;
+      font-size: 16px !important;
     }
 
-    .card-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:12px;
+    .th-turno {
+      width: 54px;
+      font-size: 15px !important;
     }
 
-    .card-head h3{
-      font-size:1.06rem;
-      font-weight:900;
+    .day-head {
+      background: #d7dce2 !important;
+      font-size: 14px !important;
+      line-height: 1.3;
     }
 
-    .chip{
-      color:#fff;
-      font-size:.8rem;
-      font-weight:900;
-      padding:7px 10px;
-      border-radius:999px;
-      white-space:nowrap;
+    .day-date {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 3px;
     }
 
-    .chip.cg{ background:var(--primary); }
-    .chip.cov{ background:var(--purple); }
-    .chip.cld{ background:var(--red); }
-    .chip.cle{ background:var(--yellow); color:#222; }
-    .chip.cobom{ background:var(--cyan); }
-    .chip.exp{ background:var(--green); }
-
-    .turnos{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+    .day-name {
+      display: block;
+      font-size: 15px;
+      font-weight: 800;
     }
 
-    .turno{
-      border:1px solid #e2e8f0;
-      background:#f8fafc;
-      border-radius:16px;
-      padding:12px;
+    tbody tr:nth-child(even) td {
+      background: var(--row-alt);
     }
 
-    .turno-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
-      flex-wrap:wrap;
+    .func-cell {
+      font-weight: 800;
+      text-align: center;
+      font-size: 16px !important;
+      background: #eef1f4 !important;
     }
 
-    .turno-label{
-      font-weight:900;
-      font-size:.92rem;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+    .turno-cell {
+      text-align: center;
+      font-weight: 800;
+      background: #f2f4f7 !important;
+      font-size: 15px !important;
     }
 
-    .carga{
-      font-size:.82rem;
-      font-weight:900;
-      padding:7px 10px;
-      border-radius:999px;
-      background:#e2e8f0;
-      color:#334155;
+    .cell-content {
+      min-height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-weight: 700;
+      color: #111827;
     }
 
-    .carga.dia{
-      background:var(--yellow-soft);
-      color:#92400e;
+    .obs-box, .indisp-box {
+      margin-top: 14px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
     }
 
-    .carga.noite{
-      background:#dbeafe;
-      color:#1e3a8a;
+    .obs-title, .indisp-title {
+      background: var(--head);
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--line);
+      font-weight: 800;
+      color: #1f2937;
     }
 
-    .carga.adm{
-      background:var(--green-soft);
-      color:#166534;
+    .obs-content {
+      min-height: 90px;
+      padding: 12px;
+      color: #334155;
+      font-weight: 700;
+      background: #fafbfc;
+      white-space: pre-wrap;
     }
 
-    .turno-main{
-      display:grid;
-      grid-template-columns:1.3fr auto;
-      gap:10px;
-      align-items:center;
+    table.indisp {
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    .nome{
-      background:#fff;
-      border:1px solid #e2e8f0;
-      border-radius:14px;
-      padding:12px;
-      font-weight:900;
-      line-height:1.35;
-      min-height:48px;
-      display:flex;
-      align-items:center;
+    table.indisp th, table.indisp td {
+      border: 2px solid var(--line);
+      padding: 8px;
+      font-size: 13px;
     }
 
-    .obs-line{
-      padding:10px 12px;
-      border-radius:14px;
-      background:var(--orange-soft);
-      color:#9a3412;
-      border:1px solid #fdba74;
-      font-size:.85rem;
-      font-weight:900;
-      text-align:center;
-      min-width:120px;
+    table.indisp thead th {
+      background: var(--subhead);
+      text-align: center;
     }
 
-    .highlight{
-      background:#fff7ed !important;
-      border:2px solid #fb923c !important;
-      color:#9a3412;
+    .hint {
+      margin-top: 8px;
+      color: #5b6570;
+      font-size: 13px;
     }
 
-    .warn-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-bottom:14px;
+    .muted {
+      color: var(--muted);
     }
 
-    .warn-box{
-      background:var(--card);
-      border-radius:20px;
-      box-shadow:var(--shadow);
-      padding:14px;
-      border:1px solid var(--line);
+    .loading {
+      display: none;
+      margin-top: 10px;
+      font-weight: 800;
+      color: #475569;
     }
 
-    .badges{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
+    .footer-note {
+      margin-top: 14px;
+      text-align: center;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    .badge{
-      border-radius:999px;
-      padding:9px 12px;
-      font-size:.88rem;
-      font-weight:900;
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-    }
-
-    .badge.red{ background:var(--red-soft); border-color:#fecaca; color:#991b1b; }
-    .badge.yellow{ background:var(--yellow-soft); border-color:#fde68a; color:#92400e; }
-    .badge.green{ background:var(--green-soft); border-color:#bbf7d0; color:#166534; }
-    .badge.blue{ background:var(--blue-soft); border-color:#bfdbfe; color:#1e3a8a; }
-    .badge.purple{ background:var(--purple-soft); border-color:#ddd6fe; color:#5b21b6; }
-
-    .obs{
-      background:#f8fafc;
-      border-radius:16px;
-      border:1px solid #e2e8f0;
-      padding:12px;
-      line-height:1.5;
-      font-weight:800;
-      color:#334155;
-    }
-
-    .log-box{
-      background:#0b1220;
-      color:#dbeafe;
-      border-radius:16px;
-      padding:12px;
-      font-size:.88rem;
-      line-height:1.55;
-      white-space:pre-wrap;
-      min-height:100px;
-      font-family: Consolas, monospace;
-    }
-
-    .footer{
-      text-align:center;
-      color:var(--muted);
-      font-size:.9rem;
-      padding:8px 0 14px;
-    }
-
-    @media (max-width: 950px){
-      .cards,
-      .warn-grid,
-      .filters,
-      .import-grid{
-        grid-template-columns:1fr;
+    @media (max-width: 1100px) {
+      .toolbar {
+        grid-template-columns: 1fr;
       }
-
-      .legend{
-        grid-template-columns:repeat(3, 1fr);
+      .search-row {
+        grid-template-columns: 1fr;
       }
-
-      .stats{
-        grid-template-columns:repeat(2, 1fr);
+      .week-header {
+        grid-template-columns: 1fr;
       }
-    }
-
-    @media (max-width: 680px){
-      .controls{
-        grid-template-columns:1fr;
-      }
-
-      .cards{
-        grid-template-columns:1fr;
-      }
-
-      .legend{
-        grid-template-columns:repeat(2, 1fr);
-      }
-
-      .hero h1{
-        font-size:1.35rem;
-      }
-
-      .turno-main{
-        grid-template-columns:1fr;
-      }
-
-      .obs-line{
-        width:100%;
+      .nav-group,
+      .nav-group.right {
+        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="hero">
-      <h1>🚒 CB São Lourenço do Sul<br>📅 Escala de Serviço PRO</h1>
-      <div class="sub">
-        Consulta diária da escala • importação de PDF • turnos com carga horária • observações por linha
-      </div>
+  <div class="container">
+
+    <div class="card topbar">
+      <h1>ESCALA DE SERVIÇO PRO</h1>
+      <div class="sub1">CBMRS • 6º BBM • São Lourenço do Sul</div>
+      <div class="sub2">Visual neutro • layout inspirado na planilha PDF • importação por PDF/imagem com OCR</div>
     </div>
 
-    <div class="panel import-panel">
-      <div class="section-title">📥 Importar PDF da escala</div>
-
-      <div class="import-grid">
+    <div class="card">
+      <div class="toolbar">
         <div class="field">
-          <label for="pdfFile">Selecionar PDF</label>
-          <input id="pdfFile" type="file" accept="application/pdf" />
+          <label>Selecionar PDF ou imagem da escala</label>
+          <input type="file" id="fileInput" accept=".pdf,image/*" />
+          <div class="hint">Aceita PDF, JPG, JPEG e PNG.</div>
         </div>
 
         <div class="field">
-          <label>&nbsp;</label>
-          <button class="btn-import" onclick="importarPDF()">Converter PDF para sistema</button>
+          <label>Ações</label>
+          <div class="btns">
+            <button class="btn-primary" id="btnImportar">Importar e atualizar escala</button>
+            <button class="btn-ok" id="btnExemplo">Carregar exemplo padrão</button>
+            <button class="btn-warn" id="btnReset">Restaurar escala limpa</button>
+          </div>
         </div>
 
         <div class="field">
-          <label>&nbsp;</label>
-          <button class="btn-reset" onclick="restaurarEscalaPadrao()">Restaurar escala padrão</button>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-        <button class="btn-sample" onclick="carregarExemploImportado()">Carregar exemplo já convertido</button>
-        <button class="btn-sample" onclick="baixarJSONEscala()">Baixar JSON da escala atual</button>
-      </div>
-
-      <div class="hint">
-        O importador lê o texto do PDF e tenta montar a semana automaticamente. Funciona melhor com PDF que tenha texto selecionável.  
-        Se o PDF for imagem escaneada, a conversão pode não ficar completa.
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="date-area">
-        <div class="week" id="weekDay">SEGUNDA-FEIRA</div>
-        <div class="date" id="dateLabel">23/03/2026</div>
-      </div>
-
-      <div class="controls">
-        <button class="btn-prev" onclick="anteriorDia()">⬅ Dia anterior</button>
-        <button class="btn-today" onclick="irParaHojeEscala()">📍 Hoje</button>
-        <button class="btn-next" onclick="proximoDia()">Próximo dia ➡</button>
-      </div>
-
-      <div class="filters">
-        <div class="field">
-          <label for="buscaNome">🔎 Buscar militar pelo nome</label>
-          <input id="buscaNome" type="text" placeholder="Ex.: BORGES, BATISTA, MAX..." oninput="renderizar()" />
+          <label>Exportação</label>
+          <div class="btns">
+            <button id="btnBaixarJson">Baixar JSON</button>
+            <button id="btnBaixarTxt">Baixar TXT OCR</button>
+          </div>
         </div>
 
         <div class="field">
-          <label for="selectDia">📅 Ir direto para o dia</label>
-          <select id="selectDia" onchange="trocarDia()"></select>
+          <label>Semana / título</label>
+          <input type="text" id="tituloSemana" placeholder="Ex.: 1ª Semana abril, 2026" />
         </div>
       </div>
-    </div>
 
-    <div class="stats">
-      <div class="stat s1">
-        <div class="n" id="statFuncoes">0</div>
-        <div class="t">Funções no dia</div>
-      </div>
-      <div class="stat s2">
-        <div class="n" id="statNomes">0</div>
-        <div class="t">Militares exibidos</div>
-      </div>
-      <div class="stat s3">
-        <div class="n" id="statBusca">0</div>
-        <div class="t">Resultados da busca</div>
-      </div>
-      <div class="stat s4">
-        <div class="n" id="statHoras">0h</div>
-        <div class="t">Carga do quadro</div>
+      <div class="loading" id="loadingMsg">Processando arquivo, aguarde...</div>
+      <div class="status" id="statusBox">Sistema pronto.</div>
+
+      <div style="margin-top:12px;">
+        <label style="display:block;font-weight:700;color:#394452;margin-bottom:6px;">Texto OCR/manual (opcional)</label>
+        <textarea id="textoManual" placeholder="Se quiser, cole aqui o texto da escala. Ao clicar em importar, o sistema também tenta montar a semana por este texto."></textarea>
       </div>
     </div>
 
-    <div class="legend">
-      <div class="tag cg">CG</div>
-      <div class="tag cov">COV</div>
-      <div class="tag cld">CLD</div>
-      <div class="tag cle">CLE</div>
-      <div class="tag cobom">COBOM</div>
-      <div class="tag exp">EXP. ADM</div>
-    </div>
+    <div class="card">
+      <div class="week-header">
+        <div class="nav-group">
+          <button id="btnSemanaAnterior">← Semana anterior</button>
+        </div>
 
-    <div class="cards" id="cardsEscala"></div>
+        <div class="week-title">
+          <h2 id="tituloEscala">ESCALA DE SERVIÇO</h2>
+          <div class="week-meta" id="metaEscala">Semana atual</div>
+        </div>
 
-    <div class="warn-grid">
-      <div class="warn-box">
-        <div class="section-title">🚫 Indisponíveis</div>
-        <div class="badges" id="listaIndisponiveis"></div>
+        <div class="nav-group right">
+          <button id="btnSemanaSeguinte">Próxima semana →</button>
+        </div>
       </div>
 
-      <div class="warn-box">
-        <div class="section-title">📝 Observações</div>
-        <div class="obs" id="observacoesBox"></div>
+      <div class="search-row">
+        <div class="field">
+          <label>Buscar militar pelo nome</label>
+          <input type="text" id="buscaMilitar" placeholder="Ex.: BORGES, BATISTA, CAMACHO..." />
+        </div>
+
+        <div class="field">
+          <label>Ir para o dia</label>
+          <select id="diaSelect"></select>
+        </div>
       </div>
-    </div>
 
-    <div class="panel">
-      <div class="section-title">🧾 Log da importação</div>
-      <div id="logImportacao" class="log-box">Aguardando importação do PDF...</div>
-    </div>
+      <div class="table-wrap">
+        <table class="escala" id="tabelaEscala">
+          <thead id="theadEscala"></thead>
+          <tbody id="tbodyEscala"></tbody>
+        </table>
+      </div>
 
-    <div class="footer">
-      Sistema visual da escala semanal • pronto para GitHub Pages
+      <div class="obs-box">
+        <div class="obs-title">Observações da semana</div>
+        <div class="obs-content" id="obsSemana">Expediente Administrativo - 6 hs, incluir carga horária complementar CM</div>
+      </div>
+
+      <div class="indisp-box">
+        <div class="indisp-title">Indisponíveis</div>
+        <table class="indisp">
+          <thead>
+            <tr>
+              <th>MOTIVO</th>
+              <th>NOME</th>
+              <th>ID FUNC</th>
+              <th>DATA INICIAL</th>
+              <th>DATA FINAL</th>
+              <th>OBS</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyIndisp"></tbody>
+        </table>
+      </div>
+
+      <div class="footer-note">
+        Escala semanal com importação por OCR de PDF/imagem.
+      </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs" type="module"></script>
-
-  <script type="module">
-    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs";
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs";
-
-    window.pdfjsLib = pdfjsLib;
-  </script>
-
   <script>
-    const escalaPadrao = [
-      {
-        data: "23/03/2026",
-        dia: "SEGUNDA-FEIRA",
-        funcoes: [
-          { sigla: "CG", classe: "cg", linhas: [
-            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" },
-            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "" }
-          ]},
-          { sigla: "COV", classe: "cov", linhas: [
-            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" },
-            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM LISCANO", obs: "" }
-          ]},
-          { sigla: "CLD", classe: "cld", linhas: [
-            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" },
-            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "" }
-          ]},
-          { sigla: "CLE", classe: "cle", linhas: [
-            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" },
-            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "" }
-          ]},
-          { sigla: "COBOM", classe: "cobom", linhas: [
-            { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "" },
-            { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "" }
-          ]},
-          { sigla: "EXP. ADM", classe: "exp", linhas: [
-            { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Expediente" }
-          ]}
-        ]
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js";
+
+    const WEEKDAYS = [
+      "SEGUNDA-FEIRA",
+      "TERÇA-FEIRA",
+      "QUARTA-FEIRA",
+      "QUINTA-FEIRA",
+      "SEXTA-FEIRA",
+      "SÁBADO",
+      "DOMINGO"
+    ];
+
+    const FUNCOES = [
+      { nome: "CG", turnos: ["23", "41"] },
+      { nome: "COV", turnos: ["23", "41"] },
+      { nome: "CLD", turnos: ["23", "41"] },
+      { nome: "CLE", turnos: ["23", "41"] },
+      { nome: "COBOM", turnos: ["23", "41"] },
+      { nome: "CS", turnos: [""] },
+      { nome: "SOBREAVISO", turnos: [""] },
+      { nome: "EXP ADM", turnos: ["CM"] }
+    ];
+
+    const STORAGE_KEY = "escala_semanal_cbmrs_pro_neutra_v1";
+    const OCR_STORAGE_KEY = "escala_ocr_texto_v1";
+
+    let escala = criarEscalaVazia("1ª Semana abril, 2026", "2026-03-30");
+    let semanaOffset = 0;
+    let ultimoTextoImportado = "";
+
+    function formatDateBR(dateObj) {
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const y = dateObj.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+
+    function parseISO(dateStr) {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function toISO(dateObj) {
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const y = dateObj.getFullYear();
+      return `${y}-${m}-${d}`;
+    }
+
+    function addDays(dateObj, days) {
+      const d = new Date(dateObj);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    function criarEscalaVazia(titulo, segundaISO) {
+      const baseDate = parseISO(segundaISO);
+      const dias = [];
+
+      for (let i = 0; i < 7; i++) {
+        dias.push({
+          data: toISO(addDays(baseDate, i)),
+          diaSemana: WEEKDAYS[i],
+          cm: "",
+          funcoes: {
+            CG: { "23": "", "41": "" },
+            COV: { "23": "", "41": "" },
+            CLD: { "23": "", "41": "" },
+            CLE: { "23": "", "41": "" },
+            COBOM: { "23": "", "41": "" },
+            CS: { "": "" },
+            SOBREAVISO: { "": "" },
+            "EXP ADM": { "CM": "" }
+          }
+        });
       }
-    ];
 
-    let escala = JSON.parse(JSON.stringify(escalaPadrao));
-
-    const indisponiveis = [
-      { nome: "2º SGT BM ANDRE", tipo: "LAA", cor: "yellow" },
-      { nome: "SD BM BATISTA", tipo: "FÉRIAS", cor: "red" },
-      { nome: "1º SGT BM VICENTE", tipo: "OP VERÃO", cor: "blue" },
-      { nome: "1º TEN BM MARCELO", tipo: "LFC", cor: "purple" },
-      { nome: "1º SGT BM JASSON", tipo: "OP VERÃO", cor: "green" }
-    ];
-
-    const observacoesFixas = [
-      "1ª linha da função = 12h dia.",
-      "2ª linha da função = 12h noite.",
-      "Expediente administrativo aparece com 6h nos dias úteis.",
-      "PDF com texto selecionável converte melhor que PDF escaneado."
-    ];
-
-    const FUNCOES_ORDEM = ["CG", "COV", "CLD", "CLE", "COBOM"];
-    const CLASSES_FUNCAO = {
-      "CG": "cg",
-      "COV": "cov",
-      "CLD": "cld",
-      "CLE": "cle",
-      "COBOM": "cobom",
-      "EXP. ADM": "exp"
-    };
-
-    let indiceAtual = 0;
-
-    const weekDay = document.getElementById("weekDay");
-    const dateLabel = document.getElementById("dateLabel");
-    const selectDia = document.getElementById("selectDia");
-    const buscaNome = document.getElementById("buscaNome");
-    const cardsEscala = document.getElementById("cardsEscala");
-    const listaIndisponiveis = document.getElementById("listaIndisponiveis");
-    const observacoesBox = document.getElementById("observacoesBox");
-    const logImportacao = document.getElementById("logImportacao");
-
-    const statFuncoes = document.getElementById("statFuncoes");
-    const statNomes = document.getElementById("statNomes");
-    const statBusca = document.getElementById("statBusca");
-    const statHoras = document.getElementById("statHoras");
-
-    function log(msg) {
-      logImportacao.textContent = msg;
+      return {
+        titulo,
+        local: "CBMRS – 6º BBM – São Lourenço do Sul",
+        observacoes: "Expediente Administrativo - 6 hs, incluir carga horária complementar CM",
+        dias,
+        indisponiveis: []
+      };
     }
 
-    function montarSeletor() {
-      selectDia.innerHTML = "";
-      escala.forEach((item, i) => {
+    function exemploEscalaPDF() {
+      const e = criarEscalaVazia("1ª Semana abril, 2026", "2026-03-30");
+
+      e.dias[0].funcoes.CG["23"] = "SD BM CAMACHO";
+      e.dias[0].funcoes.CG["41"] = "SD BM CAMACHO";
+      e.dias[0].funcoes.COV["23"] = "2º SGT BM LISCANO";
+      e.dias[0].funcoes.COV["41"] = "2º SGT BM LISCANO";
+      e.dias[0].funcoes.CLD["23"] = "SD BM ISQUIERDO";
+      e.dias[0].funcoes.CLD["41"] = "SD BM ISQUIERDO";
+      e.dias[0].funcoes.CLE["23"] = "SD BM WILLIAM";
+      e.dias[0].funcoes.CLE["41"] = "SD BM WILLIAM";
+      e.dias[0].funcoes.COBOM["23"] = "SD TEMP LARSSON";
+      e.dias[0].funcoes.COBOM["41"] = "SD BM MOTTA";
+      e.dias[0].funcoes.CS[""] = "1º SGT DIEFERSON";
+      e.dias[0].funcoes.SOBREAVISO[""] = "1º SGT DIEFERSON";
+
+      e.dias[1].funcoes.CG["23"] = "2º SGT BM ANDERSON";
+      e.dias[1].funcoes.CG["41"] = "2º SGT BM ANDERSON";
+      e.dias[1].funcoes.COV["23"] = "SD TEMP LARSSON";
+      e.dias[1].funcoes.COV["41"] = "SD TEMP LARSSON";
+      e.dias[1].funcoes.CLD["23"] = "SD BM TOMASCHEWSKI";
+      e.dias[1].funcoes.CLD["41"] = "SD BM TOMASCHEWSKI";
+      e.dias[1].funcoes.CLE["23"] = "SD BM SOARES";
+      e.dias[1].funcoes.CLE["41"] = "SD BM SOARES";
+      e.dias[1].funcoes.COBOM["23"] = "SD BM BORGES";
+      e.dias[1].funcoes.COBOM["41"] = "SD BM CAMACHO";
+      e.dias[1].funcoes["EXP ADM"]["CM"] = "1º SGT DIEFERSON";
+      e.dias[1].cm = "6";
+
+      e.dias[2].funcoes.CG["23"] = "SD BM ISQUIERDO";
+      e.dias[2].funcoes.CG["41"] = "SD BM ISQUIERDO";
+      e.dias[2].funcoes.COV["23"] = "SD BM PEGLOW";
+      e.dias[2].funcoes.COV["41"] = "SD BM PEGLOW";
+      e.dias[2].funcoes.CLD["23"] = "SD BM MOTTA";
+      e.dias[2].funcoes.CLD["41"] = "SD BM MOTTA";
+      e.dias[2].funcoes.COBOM["23"] = "SD BM MAX";
+      e.dias[2].funcoes.COBOM["41"] = "SD BM MAX";
+      e.dias[2].funcoes["EXP ADM"]["CM"] = "1º SGT DIEFERSON";
+      e.dias[2].cm = "6";
+
+      e.dias[3].funcoes.CG["23"] = "SD BM CAMACHO";
+      e.dias[3].funcoes.CG["41"] = "SD BM CAMACHO";
+      e.dias[3].funcoes.COV["23"] = "SD TEMP LARSSON";
+      e.dias[3].funcoes.COV["41"] = "SD TEMP LARSSON";
+      e.dias[3].funcoes.CLD["23"] = "SD BM WILLIAM";
+      e.dias[3].funcoes.CLD["41"] = "SD BM WILLIAM";
+      e.dias[3].funcoes.COBOM["23"] = "SD BM BATISTA";
+      e.dias[3].funcoes.COBOM["41"] = "SD BM BATISTA";
+      e.dias[3].funcoes["EXP ADM"]["CM"] = "1º SGT DIEFERSON";
+      e.dias[3].cm = "6";
+
+      e.dias[4].funcoes.CG["23"] = "2º SGT BM ANDERSON";
+      e.dias[4].funcoes.CG["41"] = "2º SGT BM ANDERSON";
+      e.dias[4].funcoes.COV["23"] = "2º SGT BM LISCANO";
+      e.dias[4].funcoes.COV["41"] = "2º SGT BM LISCANO";
+      e.dias[4].funcoes.CLD["23"] = "SD BM BORGES";
+      e.dias[4].funcoes.CLD["41"] = "SD BM BORGES";
+      e.dias[4].funcoes.COBOM["23"] = "SD BM SOARES";
+      e.dias[4].funcoes.COBOM["41"] = "SD BM SOARES";
+      e.dias[4].funcoes["EXP ADM"]["CM"] = "1º SGT DIEFERSON";
+      e.dias[4].cm = "6";
+
+      e.dias[5].funcoes.CG["23"] = "2º SGT BM VINICIUS";
+      e.dias[5].funcoes.CG["41"] = "2º SGT BM VINICIUS";
+      e.dias[5].funcoes.COV["23"] = "SD BM PEGLOW";
+      e.dias[5].funcoes.COV["41"] = "SD BM PEGLOW";
+      e.dias[5].funcoes.CLD["23"] = "SD BM ISQUIERDO";
+      e.dias[5].funcoes.CLD["41"] = "SD BM ISQUIERDO";
+      e.dias[5].funcoes.COBOM["23"] = "SD BM CAMACHO";
+      e.dias[5].funcoes.COBOM["41"] = "SD BM CAMACHO";
+
+      e.dias[6].funcoes.CG["23"] = "1º SGT BM BATISTA";
+      e.dias[6].funcoes.CG["41"] = "1º SGT BM BATISTA";
+      e.dias[6].funcoes.COV["23"] = "SD TEMP LARSSON";
+      e.dias[6].funcoes.COV["41"] = "SD TEMP LARSSON";
+      e.dias[6].funcoes.CLD["23"] = "SD BM MAX";
+      e.dias[6].funcoes.CLD["41"] = "SD BM MAX";
+      e.dias[6].funcoes.COBOM["23"] = "SD BM BATISTA";
+      e.dias[6].funcoes.COBOM["41"] = "SD BM BATISTA";
+
+      e.indisponiveis = [
+        { motivo: "LAA", nome: "2º SGT BM ANDRE", idFunc: "2519976", dataInicial: "18/01/2026", dataFinal: "", obs: "" },
+        { motivo: "FÉRIAS", nome: "SD BM TOMASCHEWSKI", idFunc: "3218627", dataInicial: "03/04/2026", dataFinal: "17/04/2026", obs: "" },
+        { motivo: "OP VERAO", nome: "1º SGT BM VICENTE", idFunc: "2614960", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
+        { motivo: "OP VERAO", nome: "1º SGT BM JASSON", idFunc: "2693836", dataInicial: "19/12/2025", dataFinal: "", obs: "" },
+        { motivo: "FÉRIAS", nome: "", idFunc: "", dataInicial: "", dataFinal: "", obs: "" },
+        { motivo: "LFC", nome: "1º TEN BM MARCELO", idFunc: "2423286", dataInicial: "04/03/2026", dataFinal: "3/3/2026", obs: "" }
+      ];
+
+      return e;
+    }
+
+    function saveEscala() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(escala));
+      localStorage.setItem(OCR_STORAGE_KEY, ultimoTextoImportado || "");
+    }
+
+    function loadEscala() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const rawOCR = localStorage.getItem(OCR_STORAGE_KEY);
+      if (raw) {
+        try {
+          escala = JSON.parse(raw);
+        } catch {}
+      }
+      if (rawOCR) ultimoTextoImportado = rawOCR;
+    }
+
+    function setStatus(msg) {
+      document.getElementById("statusBox").textContent = msg;
+    }
+
+    function showLoading(show, msg = "Processando arquivo, aguarde...") {
+      const el = document.getElementById("loadingMsg");
+      el.style.display = show ? "block" : "none";
+      if (show) el.textContent = msg;
+    }
+
+    function renderDiaOptions() {
+      const select = document.getElementById("diaSelect");
+      select.innerHTML = "";
+      escala.dias.forEach((dia, idx) => {
         const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = `${item.data} • ${item.dia}`;
-        selectDia.appendChild(opt);
+        opt.value = idx;
+        opt.textContent = `${formatDateBR(parseISO(dia.data))} • ${dia.diaSemana}`;
+        select.appendChild(opt);
       });
     }
 
-    function normalizar(txt) {
-      return (txt || "")
-        .toUpperCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-    }
+    function renderTabela() {
+      document.getElementById("tituloEscala").textContent = "ESCALA DE SERVIÇO";
+      document.getElementById("metaEscala").textContent = escala.titulo || "Semana atual";
+      document.getElementById("tituloSemana").value = escala.titulo || "";
+      document.getElementById("obsSemana").textContent = escala.observacoes || "";
 
-    function renderizarIndisponiveis() {
-      listaIndisponiveis.innerHTML = "";
-      indisponiveis.forEach(item => {
-        const span = document.createElement("div");
-        span.className = `badge ${item.cor}`;
-        span.textContent = `${item.tipo} • ${item.nome}`;
-        listaIndisponiveis.appendChild(span);
+      const busca = (document.getElementById("buscaMilitar").value || "").trim().toUpperCase();
+      const dayFocus = Number(document.getElementById("diaSelect").value || 0);
+
+      const thead = document.getElementById("theadEscala");
+      const tbody = document.getElementById("tbodyEscala");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      const tr1 = document.createElement("tr");
+      const thFunc = document.createElement("th");
+      thFunc.className = "th-funcao";
+      thFunc.rowSpan = 2;
+      thFunc.textContent = "FUNÇÃO";
+      tr1.appendChild(thFunc);
+
+      const thTurno = document.createElement("th");
+      thTurno.className = "th-turno";
+      thTurno.rowSpan = 2;
+      thTurno.textContent = "TURNO";
+      tr1.appendChild(thTurno);
+
+      escala.dias.forEach((dia, idx) => {
+        const th = document.createElement("th");
+        th.className = "day-head";
+        th.innerHTML = `<span class="day-date">${formatDateBR(parseISO(dia.data))}</span><span class="day-name">${dia.diaSemana}</span>`;
+        if (idx === dayFocus) th.style.outline = "3px solid #8693a3";
+        tr1.appendChild(th);
       });
-    }
 
-    function renderizarObservacoes() {
-      observacoesBox.innerHTML = observacoesFixas.map(x => `• ${x}`).join("<br><br>");
-    }
+      const tr2 = document.createElement("tr");
+      escala.dias.forEach((dia, idx) => {
+        const th = document.createElement("th");
+        th.className = "day-head";
+        th.textContent = dia.cm ? `CM ${dia.cm}` : "CM";
+        if (idx === dayFocus) th.style.outline = "3px solid #8693a3";
+        tr2.appendChild(th);
+      });
 
-    function classeCarga(turno) {
-      if (turno === "Administrativo") return "adm";
-      if (turno.includes("noite")) return "noite";
-      return "dia";
-    }
+      thead.appendChild(tr1);
+      thead.appendChild(tr2);
 
-    function renderizar() {
-      if (!escala.length) return;
+      FUNCOES.forEach((f) => {
+        f.turnos.forEach((turno, tIndex) => {
+          const tr = document.createElement("tr");
 
-      const dia = escala[indiceAtual];
-      const busca = normalizar(buscaNome.value);
-
-      weekDay.textContent = dia.dia;
-      dateLabel.textContent = dia.data;
-      selectDia.value = indiceAtual;
-
-      cardsEscala.innerHTML = "";
-
-      let totalFuncoes = dia.funcoes.length;
-      let totalNomes = 0;
-      let totalResultadosBusca = 0;
-      let somaHoras = 0;
-
-      dia.funcoes.forEach(funcao => {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        let turnosHtml = `<div class="turnos">`;
-
-        funcao.linhas.forEach(linha => {
-          const nomeTexto = linha.nome || "—";
-          const obsTexto = linha.obs || "";
-          const bateBusca = busca && normalizar(nomeTexto).includes(busca);
-
-          if (nomeTexto !== "—" && nomeTexto !== "Sem expediente") {
-            totalNomes++;
+          if (tIndex === 0) {
+            const tdFunc = document.createElement("td");
+            tdFunc.className = "func-cell";
+            tdFunc.rowSpan = f.turnos.length;
+            tdFunc.textContent = f.nome;
+            tr.appendChild(tdFunc);
           }
 
-          if (bateBusca) totalResultadosBusca++;
+          const tdTurno = document.createElement("td");
+          tdTurno.className = "turno-cell";
+          tdTurno.textContent = turno || "-";
+          tr.appendChild(tdTurno);
 
-          const horasNumericas = parseInt((linha.carga || "0").replace("h", ""), 10);
-          if (!isNaN(horasNumericas)) somaHoras += horasNumericas;
+          escala.dias.forEach((dia, idx) => {
+            const td = document.createElement("td");
+            if (idx === dayFocus) td.style.outline = "2px solid #9aa5b1";
 
-          turnosHtml += `
-            <div class="turno">
-              <div class="turno-top">
-                <div class="turno-label">${linha.icone} ${linha.turno}</div>
-                <div class="carga ${classeCarga(linha.turno)}">${linha.carga}</div>
-              </div>
+            const texto = dia.funcoes?.[f.nome]?.[turno] || "";
+            const div = document.createElement("div");
+            div.className = "cell-content";
+            div.textContent = texto;
 
-              <div class="turno-main">
-                <div class="nome ${bateBusca ? 'highlight' : ''}">${nomeTexto}</div>
-                ${obsTexto ? `<div class="obs-line">${obsTexto}</div>` : ``}
-              </div>
-            </div>
-          `;
+            if (busca && texto.toUpperCase().includes(busca)) {
+              td.style.background = "#eef0d7";
+              div.style.fontWeight = "800";
+            }
+
+            td.appendChild(div);
+            tr.appendChild(td);
+          });
+
+          tbody.appendChild(tr);
         });
-
-        turnosHtml += `</div>`;
-
-        card.innerHTML = `
-          <div class="card-head">
-            <h3>👨‍🚒 ${funcao.sigla}</h3>
-            <span class="chip ${funcao.classe}">${funcao.sigla}</span>
-          </div>
-          ${turnosHtml}
-        `;
-
-        cardsEscala.appendChild(card);
       });
 
-      statFuncoes.textContent = totalFuncoes;
-      statNomes.textContent = totalNomes;
-      statBusca.textContent = busca ? totalResultadosBusca : 0;
-      statHoras.textContent = `${somaHoras}h`;
+      renderIndisponiveis(busca);
     }
 
-    function proximoDia() {
-      indiceAtual++;
-      if (indiceAtual >= escala.length) indiceAtual = 0;
-      renderizar();
+    function renderIndisponiveis(busca = "") {
+      const tbody = document.getElementById("tbodyIndisp");
+      tbody.innerHTML = "";
+
+      const dados = Array.isArray(escala.indisponiveis) ? escala.indisponiveis : [];
+
+      dados.forEach(item => {
+        const linhaTexto = `${item.motivo} ${item.nome} ${item.idFunc} ${item.dataInicial} ${item.dataFinal} ${item.obs}`.toUpperCase();
+        if (busca && !linhaTexto.includes(busca)) return;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.motivo || ""}</td>
+          <td>${item.nome || ""}</td>
+          <td>${item.idFunc || ""}</td>
+          <td>${item.dataInicial || ""}</td>
+          <td>${item.dataFinal || ""}</td>
+          <td>${item.obs || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (!tbody.children.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" style="text-align:center;color:#64748b;font-weight:700;">Nenhum registro encontrado.</td>`;
+        tbody.appendChild(tr);
+      }
     }
 
-    function anteriorDia() {
-      indiceAtual--;
-      if (indiceAtual < 0) indiceAtual = escala.length - 1;
-      renderizar();
+    function baixarArquivo(nome, conteudo, mime = "application/json") {
+      const blob = new Blob([conteudo], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nome;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
-    function trocarDia() {
-      indiceAtual = Number(selectDia.value);
-      renderizar();
-    }
+    async function extrairTextoDePDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let textoCompleto = "";
+      let imagens = [];
 
-    function irParaHojeEscala() {
-      const hoje = new Date();
-      const dd = String(hoje.getDate()).padStart(2, "0");
-      const mm = String(hoje.getMonth() + 1).padStart(2, "0");
-      const yyyy = hoje.getFullYear();
-      const hojeStr = `${dd}/${mm}/${yyyy}`;
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const textContent = await page.getTextContent();
+        const textoPagina = textContent.items.map(item => item.str).join(" ");
+        textoCompleto += "\n" + textoPagina;
 
-      const indice = escala.findIndex(item => item.data === hojeStr);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
-      if (indice >= 0) {
-        indiceAtual = indice;
-      } else {
-        alert("A data de hoje não está dentro desta escala cadastrada.");
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        imagens.push(canvas);
       }
 
-      renderizar();
+      return { textoCompleto, imagens };
     }
 
-    function classePorFuncao(sigla) {
-      return CLASSES_FUNCAO[sigla] || "cg";
+    async function fazerOCRCanvas(canvas) {
+      const result = await Tesseract.recognize(canvas, "por", {
+        logger: m => {
+          if (m.status === "recognizing text") {
+            const pct = Math.round((m.progress || 0) * 100);
+            showLoading(true, `OCR em andamento... ${pct}%`);
+          }
+        }
+      });
+      return result.data.text || "";
     }
 
-    function parseDatas(texto) {
+    async function fazerOCRImagem(file) {
+      const imgUrl = URL.createObjectURL(file);
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imgUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const txt = await fazerOCRCanvas(canvas);
+      URL.revokeObjectURL(imgUrl);
+      return txt;
+    }
+
+    function normalizarTexto(txt) {
+      return (txt || "")
+        .replace(/\r/g, "\n")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{2,}/g, "\n")
+        .replace(/SEGUNDA FEIRA/g, "SEGUNDA-FEIRA")
+        .replace(/TERCA-FEIRA/g, "TERÇA-FEIRA")
+        .replace(/TERÇA FEIRA/g, "TERÇA-FEIRA")
+        .replace(/QUARTA FEIRA/g, "QUARTA-FEIRA")
+        .replace(/QUINTA FEIRA/g, "QUINTA-FEIRA")
+        .replace(/SEXTA FEIRA/g, "SEXTA-FEIRA")
+        .trim();
+    }
+
+    function extrairDatas(texto) {
       const matches = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)].map(m => m[1]);
       const unicas = [...new Set(matches)];
       return unicas.slice(0, 7);
     }
 
-    function parseDiasSemana(texto) {
-      const dias = [];
-      const padrao = /(SEGUNDA-FEIRA|TERÇA-FEIRA|QUARTA-FEIRA|QUINTA-FEIRA|SEXTA-FEIRA|SÁBADO|DOMINGO)/gi;
-      let m;
-      while ((m = padrao.exec(texto)) !== null) {
-        dias.push(m[1].toUpperCase());
-      }
-      return [...new Set(dias)].slice(0, 7);
+    function converterDataBRparaISO(dataBR) {
+      const [d, m, y] = dataBR.split("/");
+      return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     }
 
-    function extrairBlocoNomes(texto) {
-      const regex = /\b(?:1º TEN BM|1º SGT BM|2º SGT BM|SD BM|SD TEMP)\s+[A-ZÇÁÉÍÓÚÂÊÔÃÕÜ]+(?:\s+[A-ZÇÁÉÍÓÚÂÊÔÃÕÜ]+)*/g;
-      return (texto.match(regex) || []).map(x => x.trim());
+    function linhasLimpas(texto) {
+      return texto.split("\n").map(l => l.trim()).filter(Boolean);
     }
 
-    function dividirEm7Dias(lista) {
-      const dias = [[], [], [], [], [], [], []];
-      if (!lista.length) return dias;
-
-      const porDia = Math.ceil(lista.length / 7);
-
-      for (let i = 0; i < 7; i++) {
-        dias[i] = lista.slice(i * porDia, (i + 1) * porDia);
-      }
-
-      return dias;
+    function isNomeMilitar(l) {
+      const t = l.toUpperCase();
+      return (
+        (t.includes("BM") || t.includes("TEMP") || t.includes("TEN")) &&
+        !t.includes("ESCALA DE SERVIÇO") &&
+        !t.includes("FUNÇÃO") &&
+        !t.includes("TURNOS") &&
+        !t.includes("MOTIVO") &&
+        !t.includes("DATA INICIAL") &&
+        !t.includes("DATA FINAL") &&
+        !t.includes("OBS")
+      );
     }
 
-    function montarEscalaBasicaDeTexto(texto) {
-      const datas = parseDatas(texto);
-      const diasSemana = parseDiasSemana(texto);
+    function montarEscalaPorHeuristica(texto) {
+      const txt = normalizarTexto(texto);
+      const linhas = linhasLimpas(txt);
 
-      const nomes = extrairBlocoNomes(texto);
+      const datasBR = extrairDatas(txt);
+      let segundaISO = "2026-03-30";
+      if (datasBR.length >= 1) segundaISO = converterDataBRparaISO(datasBR[0]);
 
-      if (!datas.length || !diasSemana.length || !nomes.length) {
-        throw new Error("Não foi possível identificar datas, dias ou nomes suficientes no PDF.");
+      let titulo = document.getElementById("tituloSemana").value.trim();
+      if (!titulo) {
+        const m = txt.match(/ESCALA DE SERVIÇO[: ]+(.+?)(?:\n|$)/i);
+        titulo = m ? m[1].trim() : "Semana importada";
       }
 
-      const nomesPorDia = dividirEm7Dias(nomes);
+      const nova = criarEscalaVazia(titulo, segundaISO);
 
-      const resultado = [];
-      for (let i = 0; i < Math.min(7, datas.length, diasSemana.length); i++) {
-        const listaDia = nomesPorDia[i] || [];
+      if (datasBR.length >= 7) {
+        for (let i = 0; i < 7; i++) {
+          nova.dias[i].data = converterDataBRparaISO(datasBR[i]);
+        }
+      }
 
-        const funcoes = [];
-        let cursor = 0;
+      const blocosNomes = linhas.filter(isNomeMilitar);
 
-        FUNCOES_ORDEM.forEach(sigla => {
-          const nomeDia = listaDia[cursor] || "—";
-          const nomeNoite = listaDia[cursor + 1] || nomeDia || "—";
-          cursor += 2;
+      let idx = 0;
+      const ordemMapeamento = [
+        ["CG","23"],["CG","41"],
+        ["COV","23"],["COV","41"],
+        ["CLD","23"],["CLD","41"],
+        ["CLE","23"],["CLE","41"],
+        ["COBOM","23"],["COBOM","41"]
+      ];
 
-          funcoes.push({
-            sigla,
-            classe: classePorFuncao(sigla),
-            linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: nomeDia, obs: "" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: nomeNoite, obs: "" }
-            ]
-          });
+      for (let d = 0; d < 7; d++) {
+        for (let k = 0; k < ordemMapeamento.length; k++) {
+          if (idx < blocosNomes.length) {
+            const [func, turno] = ordemMapeamento[k];
+            nova.dias[d].funcoes[func][turno] = blocosNomes[idx];
+            idx++;
+          }
+        }
+      }
+
+      const csLine = linhas.find(l => l.toUpperCase().includes("1º SGT DIEFERSON")) || "";
+      if (csLine) {
+        nova.dias[0].funcoes["CS"][""] = "1º SGT DIEFERSON";
+        nova.dias[0].funcoes["SOBREAVISO"][""] = "1º SGT DIEFERSON";
+      }
+
+      for (let i = 1; i <= 4; i++) {
+        nova.dias[i].funcoes["EXP ADM"]["CM"] = "1º SGT DIEFERSON";
+        nova.dias[i].cm = "6";
+      }
+
+      const indispStart = linhas.findIndex(l => l.toUpperCase().includes("MOTIVO NOME ID FUNC"));
+      if (indispStart >= 0) {
+        const blocoIndisp = linhas.slice(indispStart + 1);
+        const candidatos = [];
+        for (const line of blocoIndisp) {
+          const u = line.toUpperCase();
+          if (
+            u.includes("LAA") ||
+            u.includes("FÉRIAS") ||
+            u.includes("FERIAS") ||
+            u.includes("OP VERAO") ||
+            u.includes("LFC")
+          ) {
+            candidatos.push(line);
+          }
+        }
+
+        nova.indisponiveis = candidatos.slice(0, 10).map(line => {
+          return {
+            motivo: line.split(" ")[0] || "",
+            nome: line,
+            idFunc: "",
+            dataInicial: "",
+            dataFinal: "",
+            obs: ""
+          };
         });
-
-        funcoes.push({
-          sigla: "EXP. ADM",
-          classe: "exp",
-          linhas: [
-            {
-              turno: "Administrativo",
-              icone: "🗂️",
-              carga: ["SÁBADO", "DOMINGO"].includes(diasSemana[i]) ? "0h" : "6h",
-              nome: ["SÁBADO", "DOMINGO"].includes(diasSemana[i]) ? "Sem expediente" : "Expediente Administrativo",
-              obs: ["SÁBADO", "DOMINGO"].includes(diasSemana[i]) ? "Final de semana" : "Importado do PDF"
-            }
-          ]
-        });
-
-        resultado.push({
-          data: datas[i],
-          dia: diasSemana[i],
-          funcoes
-        });
       }
 
-      return resultado;
+      if (txt.toUpperCase().includes("EXPEDIENTE ADMINISTRATIVO")) {
+        const ob = linhas.find(l => l.toUpperCase().includes("EXPEDIENTE ADMINISTRATIVO"));
+        if (ob) nova.observacoes = ob;
+      }
+
+      return nova;
     }
 
-    async function lerTextoPDF(file) {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    async function importarArquivo() {
+      const file = document.getElementById("fileInput").files[0];
+      const textoManual = document.getElementById("textoManual").value.trim();
 
-      let textoCompleto = "";
-
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const strings = content.items.map(item => item.str);
-        textoCompleto += "\n\n--- PAGINA " + i + " ---\n" + strings.join(" ");
-      }
-
-      return textoCompleto;
-    }
-
-    async function importarPDF() {
-      const fileInput = document.getElementById("pdfFile");
-      const file = fileInput.files[0];
-
-      if (!file) {
-        alert("Selecione um arquivo PDF primeiro.");
-        return;
-      }
-
-      if (!window.pdfjsLib) {
-        alert("Biblioteca do PDF ainda não carregou. Aguarde alguns segundos e tente novamente.");
+      if (!file && !textoManual) {
+        setStatus("Selecione um arquivo ou cole o texto da escala.");
         return;
       }
 
       try {
-        log("Lendo PDF...\n");
-        const texto = await lerTextoPDF(file);
+        showLoading(true);
 
-        log(
-          "PDF lido com sucesso.\n\n" +
-          "Prévia dos primeiros caracteres:\n\n" +
-          texto.slice(0, 2500)
-        );
+        let textoFinal = textoManual || "";
 
-        const novaEscala = montarEscalaBasicaDeTexto(texto);
+        if (file) {
+          const isPDF = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+          const isImage = file.type.startsWith("image/");
 
-        if (!novaEscala.length) {
-          throw new Error("A importação não conseguiu montar dias válidos.");
+          if (isPDF) {
+            setStatus("Lendo PDF...");
+            const { textoCompleto, imagens } = await extrairTextoDePDF(file);
+
+            let textoExtraido = normalizarTexto(textoCompleto);
+
+            if (textoExtraido.replace(/\s/g, "").length < 120) {
+              setStatus("PDF com pouco texto detectado. Iniciando OCR da imagem do PDF...");
+              let ocrText = "";
+              for (const canvas of imagens) {
+                ocrText += "\n" + await fazerOCRCanvas(canvas);
+              }
+              textoExtraido += "\n" + ocrText;
+            } else {
+              setStatus("PDF com texto detectado. Aplicando OCR complementar para melhorar leitura...");
+              let ocrText = "";
+              for (const canvas of imagens) {
+                ocrText += "\n" + await fazerOCRCanvas(canvas);
+              }
+              textoExtraido += "\n" + ocrText;
+            }
+
+            textoFinal += "\n" + textoExtraido;
+          } else if (isImage) {
+            setStatus("Imagem detectada. Executando OCR...");
+            const ocr = await fazerOCRImagem(file);
+            textoFinal += "\n" + ocr;
+          } else {
+            throw new Error("Formato não suportado. Use PDF, JPG, JPEG ou PNG.");
+          }
         }
 
-        escala = novaEscala;
-        indiceAtual = 0;
-        montarSeletor();
-        renderizar();
+        textoFinal = normalizarTexto(textoFinal);
+        ultimoTextoImportado = textoFinal;
+        document.getElementById("textoManual").value = textoFinal;
 
-        log(
-          "Importação concluída com sucesso.\n\n" +
-          `Dias identificados: ${novaEscala.length}\n` +
-          `Primeiro dia: ${novaEscala[0].data} - ${novaEscala[0].dia}\n\n` +
-          "A escala foi convertida para o sistema."
-        );
+        escala = montarEscalaPorHeuristica(textoFinal);
+        if (document.getElementById("tituloSemana").value.trim()) {
+          escala.titulo = document.getElementById("tituloSemana").value.trim();
+        }
 
-        alert("PDF importado e convertido com sucesso.");
-      } catch (erro) {
-        console.error(erro);
-        log("Erro na importação:\n\n" + erro.message);
-        alert("Não foi possível converter este PDF automaticamente. Pode ser necessário ajustar o modelo do importador.");
+        saveEscala();
+        renderDiaOptions();
+        renderTabela();
+
+        setStatus("Escala importada com sucesso. Revise os nomes e, se necessário, ajuste o texto OCR para refinar a montagem.");
+      } catch (err) {
+        console.error(err);
+        setStatus("Erro ao importar arquivo: " + err.message);
+      } finally {
+        showLoading(false);
       }
     }
 
-    function restaurarEscalaPadrao() {
-      escala = JSON.parse(JSON.stringify(escalaPadrao));
-      indiceAtual = 0;
-      montarSeletor();
-      renderizar();
-      log("Escala padrão restaurada.");
+    function aplicarSemanaOffset(offset) {
+      const base = parseISO(escala.dias[0].data);
+      const novaSegunda = addDays(base, offset * 7);
+      const nova = criarEscalaVazia(escala.titulo || "Semana", toISO(novaSegunda));
+      nova.observacoes = escala.observacoes || "";
+      nova.indisponiveis = Array.isArray(escala.indisponiveis) ? [...escala.indisponiveis] : [];
+      escala = nova;
+      saveEscala();
+      renderDiaOptions();
+      renderTabela();
+      setStatus("Semana alterada.");
     }
 
-    function carregarExemploImportado() {
-      escala = [
-        {
-          data: "23/03/2026",
-          dia: "SEGUNDA-FEIRA",
-          funcoes: [
-            { sigla: "CG", classe: "cg", linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "1º SGT BM BATISTA", obs: "Importado" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "1º SGT BM BATISTA", obs: "Importado" }
-            ]},
-            { sigla: "COV", classe: "cov", linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "2º SGT BM LISCANO", obs: "Importado" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "2º SGT BM LISCANO", obs: "Importado" }
-            ]},
-            { sigla: "CLD", classe: "cld", linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "Importado" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM TOMASCHEWSKI", obs: "Importado" }
-            ]},
-            { sigla: "CLE", classe: "cle", linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM ISQUIERDO", obs: "Importado" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM ISQUIERDO", obs: "Importado" }
-            ]},
-            { sigla: "COBOM", classe: "cobom", linhas: [
-              { turno: "12h dia", icone: "☀️", carga: "12h", nome: "SD BM BORGES", obs: "Importado" },
-              { turno: "12h noite", icone: "🌙", carga: "12h", nome: "SD BM BORGES", obs: "Importado" }
-            ]},
-            { sigla: "EXP. ADM", classe: "exp", linhas: [
-              { turno: "Administrativo", icone: "🗂️", carga: "6h", nome: "1º SGT DIEFERSON", obs: "Importado" }
-            ]}
-          ]
-        }
-      ];
+    document.getElementById("btnImportar").addEventListener("click", importarArquivo);
 
-      indiceAtual = 0;
-      montarSeletor();
-      renderizar();
-      log("Exemplo importado carregado no sistema.");
+    document.getElementById("btnExemplo").addEventListener("click", () => {
+      escala = exemploEscalaPDF();
+      saveEscala();
+      renderDiaOptions();
+      renderTabela();
+      setStatus("Exemplo carregado com base no modelo da sua escala.");
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      escala = criarEscalaVazia("Semana limpa", "2026-03-30");
+      ultimoTextoImportado = "";
+      document.getElementById("textoManual").value = "";
+      saveEscala();
+      renderDiaOptions();
+      renderTabela();
+      setStatus("Escala limpa restaurada.");
+    });
+
+    document.getElementById("btnBaixarJson").addEventListener("click", () => {
+      baixarArquivo("escala-semanal.json", JSON.stringify(escala, null, 2));
+    });
+
+    document.getElementById("btnBaixarTxt").addEventListener("click", () => {
+      baixarArquivo("texto-ocr-escala.txt", ultimoTextoImportado || "", "text/plain;charset=utf-8");
+    });
+
+    document.getElementById("buscaMilitar").addEventListener("input", renderTabela);
+
+    document.getElementById("diaSelect").addEventListener("change", renderTabela);
+
+    document.getElementById("tituloSemana").addEventListener("input", () => {
+      escala.titulo = document.getElementById("tituloSemana").value.trim();
+      saveEscala();
+      renderTabela();
+    });
+
+    document.getElementById("btnSemanaAnterior").addEventListener("click", () => aplicarSemanaOffset(-1));
+    document.getElementById("btnSemanaSeguinte").addEventListener("click", () => aplicarSemanaOffset(1));
+
+    loadEscala();
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      escala = exemploEscalaPDF();
+      saveEscala();
     }
-
-    function baixarJSONEscala() {
-      const blob = new Blob([JSON.stringify(escala, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "escala-convertida.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    montarSeletor();
-    renderizarIndisponiveis();
-    renderizarObservacoes();
-    renderizar();
-
-    window.importarPDF = importarPDF;
-    window.restaurarEscalaPadrao = restaurarEscalaPadrao;
-    window.carregarExemploImportado = carregarExemploImportado;
-    window.baixarJSONEscala = baixarJSONEscala;
-    window.proximoDia = proximoDia;
-    window.anteriorDia = anteriorDia;
-    window.trocarDia = trocarDia;
-    window.irParaHojeEscala = irParaHojeEscala;
+    renderDiaOptions();
+    renderTabela();
   </script>
 </body>
 </html>
