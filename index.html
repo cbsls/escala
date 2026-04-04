@@ -24,6 +24,8 @@
       --success-soft:#eaf8f0;
       --warning:#b58105;
       --warning-soft:#fff6df;
+      --danger:#b42318;
+      --danger-soft:#fef3f2;
       --shadow:0 10px 28px rgba(15,23,42,.08);
       --radius:20px;
     }
@@ -86,7 +88,6 @@
     .nav-left,.nav-right{
       display:flex;
       gap:10px;
-      
     }
 
     .nav-right{ justify-content:flex-end; }
@@ -423,7 +424,7 @@
     .modal.show{ display:flex; }
 
     .modal-box{
-      width:min(700px, 100%);
+      width:min(760px, 100%);
       background:#fff;
       border-radius:22px;
       box-shadow:0 18px 40px rgba(0,0,0,.18);
@@ -493,6 +494,13 @@
       box-shadow:none;
     }
 
+    .btn-restore{
+      background:var(--danger-soft);
+      color:var(--danger);
+      box-shadow:none;
+      border:1px solid #fecdca;
+    }
+
     .hint{
       font-size:13px;
       color:#64748b;
@@ -509,6 +517,18 @@
       font-weight:800;
       color:#475569;
       white-space:pre-wrap;
+    }
+
+    .status-success{
+      background:#ecfdf3;
+      border-color:#abefc6;
+      color:#067647;
+    }
+
+    .status-error{
+      background:#fef3f2;
+      border-color:#fecdca;
+      color:#b42318;
     }
 
     @media (max-width: 920px){
@@ -647,6 +667,7 @@
         <div class="mini-info">
           Você pode importar por arquivo ou colar o texto da escala.
           O sistema tenta ler PDF, imagem, TXT, CSV e JSON.
+          Agora também faz backup automático antes da importação.
         </div>
 
         <div>
@@ -660,8 +681,8 @@
         </div>
 
         <div class="hint">
-          Para JSON, use a estrutura do próprio sistema.
-          Para TXT, CSV, PDF ou imagem, a leitura é automática por texto/OCR.
+          CSV aceito com colunas como:
+          Data;DiaSemana;Funcao;Turno;Militar;Horas;Codigo;CM;Observacoes
         </div>
 
         <div class="status-box" id="statusImportacao">Aguardando importação.</div>
@@ -669,6 +690,7 @@
 
       <div class="modal-actions">
         <button class="btn-cancel" id="btnCancelarImportacao">Cancelar</button>
+        <button class="btn-restore" id="btnRestaurarBackup">Restaurar último backup</button>
         <button class="btn-confirm" id="btnExecutarImportacao">Importar agora</button>
       </div>
     </div>
@@ -679,7 +701,8 @@
       pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js";
     }
 
-    const STORAGE_KEY = "escala_app_v6";
+    const STORAGE_KEY = "escala_app_v7";
+    const BACKUP_KEY = "escala_app_v7_backup";
 
     const militaresPreDefinidos = [
       { pg: "2 SGT", nome: "ANDERSON" },
@@ -707,8 +730,8 @@
         data,
         diaSemana,
         cm: cfg.cm || "",
-        funcoes: cfg.funcoes,
-        trocas: []
+        funcoes: cfg.funcoes || [],
+        trocas: Array.isArray(cfg.trocas) ? cfg.trocas : []
       };
     }
 
@@ -810,19 +833,33 @@
     let indiceAtual = 0;
     let trocaContexto = null;
 
-    function salvarDados() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    function cloneEstadoAtual() {
+      return JSON.parse(JSON.stringify({
         indiceAtual,
         escala
       }));
     }
 
+    function salvarBackup() {
+      localStorage.setItem(BACKUP_KEY, JSON.stringify(cloneEstadoAtual()));
+    }
+
+    function existeBackup() {
+      return !!localStorage.getItem(BACKUP_KEY);
+    }
+
+    function salvarDados() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cloneEstadoAtual()));
+    }
+
     function carregarDados() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
+
       try {
         const data = JSON.parse(raw);
         if (typeof data.indiceAtual === "number") indiceAtual = data.indiceAtual;
+
         if (data.escala && Array.isArray(data.escala.dias)) {
           escala.tituloSemana = data.escala.tituloSemana || escala.tituloSemana;
           escala.observacoes = data.escala.observacoes || escala.observacoes;
@@ -834,6 +871,33 @@
       }
     }
 
+    function restaurarBackup() {
+      const raw = localStorage.getItem(BACKUP_KEY);
+      if (!raw) {
+        setStatusImportacao("Nenhum backup encontrado para restauração.", "error");
+        return;
+      }
+
+      try {
+        const data = JSON.parse(raw);
+
+        if (typeof data.indiceAtual === "number") indiceAtual = data.indiceAtual;
+
+        if (data.escala && Array.isArray(data.escala.dias)) {
+          escala.tituloSemana = data.escala.tituloSemana || escala.tituloSemana;
+          escala.observacoes = data.escala.observacoes || escala.observacoes;
+          escala.indisponiveis = Array.isArray(data.escala.indisponiveis) ? data.escala.indisponiveis : escala.indisponiveis;
+          escala.dias = data.escala.dias;
+        }
+
+        preencherSelectDias();
+        render();
+        setStatusImportacao("Backup restaurado com sucesso.", "success");
+      } catch (e) {
+        setStatusImportacao("Erro ao restaurar backup: " + e.message, "error");
+      }
+    }
+
     function formatarDataBR(iso) {
       const [y, m, d] = iso.split("-");
       return `${d}/${m}/${y}`;
@@ -842,18 +906,21 @@
     function preencherSelectDias() {
       const select = document.getElementById("diaSelect");
       select.innerHTML = "";
+
       escala.dias.forEach((dia, idx) => {
         const opt = document.createElement("option");
         opt.value = idx;
         opt.textContent = `${formatarDataBR(dia.data)} • ${dia.diaSemana}`;
         select.appendChild(opt);
       });
+
       select.value = String(indiceAtual);
     }
 
     function preencherMilitaresModal(nomeAtual = "") {
       const select = document.getElementById("modalMilitarSelect");
       select.innerHTML = `<option value="">Selecione o militar</option>`;
+
       militaresPreDefinidos.forEach(m => {
         const valor = `${m.pg} ${m.nome}`;
         const opt = document.createElement("option");
@@ -866,6 +933,7 @@
 
     function contarMilitaresUnicosDia(dia, filtro = "") {
       const unicos = new Set();
+
       dia.funcoes.forEach(func => {
         func.turnos.forEach(turno => {
           const nome = (turno.militar || "").trim();
@@ -874,11 +942,13 @@
           unicos.add(nome.toUpperCase());
         });
       });
+
       return unicos.size;
     }
 
     function calcularResumoHorasDia(dia, filtro = "") {
       const mapa = {};
+
       dia.funcoes.forEach(func => {
         func.turnos.forEach(turno => {
           const nome = (turno.militar || "").trim();
@@ -995,6 +1065,7 @@ Registro: ${t.dataRegistro || "-"}</div>
 
       const novoMilitar = document.getElementById("modalMilitarSelect").value.trim();
       const obs = document.getElementById("modalObsTroca").value.trim();
+
       if (!novoMilitar) {
         alert("Selecione um militar para a troca.");
         return;
@@ -1090,6 +1161,7 @@ Registro: ${t.dataRegistro || "-"}</div>
       grid.innerHTML = "";
 
       let funcoesExibidas = 0;
+
       dia.funcoes.forEach((func, funcIndex) => {
         const card = criarCardFuncao(func, filtro, funcIndex);
         if (card.style.display !== "none") {
@@ -1139,13 +1211,19 @@ Registro: ${t.dataRegistro || "-"}</div>
       render();
     }
 
-    function setStatusImportacao(txt) {
-      document.getElementById("statusImportacao").textContent = txt;
+    function setStatusImportacao(txt, tipo = "") {
+      const el = document.getElementById("statusImportacao");
+      el.textContent = txt;
+      el.className = "status-box";
+      if (tipo === "success") el.classList.add("status-success");
+      if (tipo === "error") el.classList.add("status-error");
     }
 
     function abrirImportacao() {
       document.getElementById("modalImportacao").classList.add("show");
-      setStatusImportacao("Aguardando importação.");
+      setStatusImportacao(existeBackup()
+        ? "Aguardando importação. Há um backup disponível para restauração."
+        : "Aguardando importação.");
     }
 
     function fecharImportacao() {
@@ -1163,6 +1241,22 @@ Registro: ${t.dataRegistro || "-"}</div>
 
     function nomeDiaPorIndice(i) {
       return ["SEGUNDA-FEIRA","TERÇA-FEIRA","QUARTA-FEIRA","QUINTA-FEIRA","SEXTA-FEIRA","SÁBADO","DOMINGO"][i] || "";
+    }
+
+    function detectarDiaSemanaPorDataISO(dataISO) {
+      const [y, m, d] = dataISO.split("-").map(Number);
+      const data = new Date(y, m - 1, d);
+      const idx = data.getDay();
+      const mapa = {
+        0: "DOMINGO",
+        1: "SEGUNDA-FEIRA",
+        2: "TERÇA-FEIRA",
+        3: "QUARTA-FEIRA",
+        4: "QUINTA-FEIRA",
+        5: "SEXTA-FEIRA",
+        6: "SÁBADO"
+      };
+      return mapa[idx] || "";
     }
 
     function criarDiaVazio(dataISO, diaSemana) {
@@ -1191,13 +1285,116 @@ Registro: ${t.dataRegistro || "-"}</div>
         .trim();
     }
 
+    function obterOuCriarFuncao(dia, nomeFuncao) {
+      let func = dia.funcoes.find(f => f.nome.toUpperCase() === nomeFuncao.toUpperCase());
+      if (!func) {
+        func = { nome: nomeFuncao, turnos: [] };
+        dia.funcoes.push(func);
+      }
+      return func;
+    }
+
+    function obterRotuloTurno(codigo, horas) {
+      const c = String(codigo || "").toUpperCase().trim();
+      if (c === "23") return "12h Dia";
+      if (c === "41") return "12h Noite";
+      if (c === "CM") return horas && Number(horas) > 0 ? `Carga horária ${horas}h` : "Carga horária";
+      if (c === "UNICO") return "Serviço único";
+      return c || "Turno";
+    }
+
+    function importarCSVEstruturado(textoCSV) {
+      const txt = normalizarTexto(textoCSV);
+      if (!txt) throw new Error("CSV vazio.");
+
+      const linhas = txt.split("\n").filter(Boolean);
+      if (linhas.length < 2) throw new Error("CSV sem dados.");
+
+      const separador = (linhas[0].includes(";") ? ";" : ",");
+      const cabecalho = linhas[0].split(separador).map(c => c.trim().toLowerCase());
+
+      const idxData = cabecalho.findIndex(c => c === "data");
+      const idxDiaSemana = cabecalho.findIndex(c => c === "diasemana" || c === "dia_semana");
+      const idxFuncao = cabecalho.findIndex(c => c === "funcao" || c === "função");
+      const idxTurno = cabecalho.findIndex(c => c === "turno");
+      const idxMilitar = cabecalho.findIndex(c => c === "militar");
+      const idxHoras = cabecalho.findIndex(c => c === "horas");
+      const idxCodigo = cabecalho.findIndex(c => c === "codigo" || c === "código");
+      const idxCM = cabecalho.findIndex(c => c === "cm");
+      const idxObs = cabecalho.findIndex(c => c === "observacoes" || c === "observação" || c === "observacoes");
+
+      if (idxData < 0 || idxFuncao < 0 || idxTurno < 0 || idxMilitar < 0) {
+        throw new Error("CSV inválido. Use colunas mínimas: Data;Funcao;Turno;Militar.");
+      }
+
+      const mapaDias = new Map();
+      let obsImportadas = [];
+      let tituloImportado = "Semana importada por CSV";
+
+      for (let i = 1; i < linhas.length; i++) {
+        const linha = linhas[i].trim();
+        if (!linha) continue;
+
+        const col = linha.split(separador).map(v => v.trim());
+        const dataBR = col[idxData] || "";
+        if (!dataBR) continue;
+
+        const dataISO = /^\d{4}-\d{2}-\d{2}$/.test(dataBR) ? dataBR : brToIso(dataBR);
+        const diaSemana = (idxDiaSemana >= 0 ? (col[idxDiaSemana] || "") : "") || detectarDiaSemanaPorDataISO(dataISO);
+        const funcaoNome = (col[idxFuncao] || "").toUpperCase();
+        const turnoValor = (col[idxTurno] || "").toUpperCase();
+        const militar = col[idxMilitar] || "";
+        const horas = Number((idxHoras >= 0 ? col[idxHoras] : "") || 0);
+        const codigo = (idxCodigo >= 0 ? col[idxCodigo] : turnoValor).toUpperCase() || turnoValor;
+        const cm = idxCM >= 0 ? (col[idxCM] || "") : "";
+        const obs = idxObs >= 0 ? (col[idxObs] || "") : "";
+
+        if (!mapaDias.has(dataISO)) {
+          mapaDias.set(dataISO, {
+            data: dataISO,
+            diaSemana,
+            cm: cm || "",
+            funcoes: [],
+            trocas: []
+          });
+        }
+
+        const dia = mapaDias.get(dataISO);
+        if (cm && !dia.cm) dia.cm = cm;
+        if (obs) obsImportadas.push(obs);
+
+        const funcao = obterOuCriarFuncao(dia, funcaoNome);
+        funcao.turnos.push({
+          codigo: codigo || turnoValor || "UNICO",
+          rotulo: obterRotuloTurno(codigo || turnoValor, horas),
+          horas: horas || (String(codigo).toUpperCase() === "CM" ? 0 : 12),
+          militar
+        });
+      }
+
+      const diasOrdenados = [...mapaDias.values()].sort((a, b) => a.data.localeCompare(b.data));
+      if (!diasOrdenados.length) throw new Error("Nenhum dia válido encontrado no CSV.");
+
+      escala.dias = diasOrdenados;
+      escala.tituloSemana = tituloImportado;
+      if (obsImportadas.length) {
+        escala.observacoes = [...new Set(obsImportadas)].join(" • ");
+      }
+
+      indiceAtual = 0;
+      setStatusImportacao("Importado com sucesso por CSV estruturado.", "success");
+    }
+
     function importarTextoGenerico(texto) {
       const txt = normalizarTexto(texto);
       if (!txt) throw new Error("Texto vazio.");
 
       const datas = extrairDatasBR(txt);
-      if (datas.length >= 7) {
-        escala.dias = datas.slice(0, 7).map((d, i) => criarDiaVazio(brToIso(d), nomeDiaPorIndice(i)));
+      if (datas.length >= 1) {
+        escala.dias = datas.map((d) => {
+          const iso = brToIso(d);
+          return criarDiaVazio(iso, detectarDiaSemanaPorDataISO(iso));
+        });
       }
 
       if (/ESCALA DE SERVIÇO/i.test(txt)) {
@@ -1207,11 +1404,12 @@ Registro: ${t.dataRegistro || "-"}</div>
       const linhaExp = txt.split("\n").find(l => /EXPEDIENTE ADMINISTRATIVO/i.test(l));
       if (linhaExp) escala.observacoes = linhaExp;
 
-      setStatusImportacao("Importação textual concluída. Revise os dados.");
+      setStatusImportacao("Importação textual concluída. Revise os dados.", "success");
     }
 
     async function extrairTextoPDF(file) {
       if (!window.pdfjsLib) throw new Error("PDF.js não carregou.");
+
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let texto = "";
@@ -1236,6 +1434,7 @@ Registro: ${t.dataRegistro || "-"}</div>
 
     async function executarOCRCanvas(canvas) {
       if (!window.Tesseract) throw new Error("Tesseract não carregou.");
+
       const result = await Tesseract.recognize(canvas, "por", {
         logger: (m) => {
           if (m.status === "recognizing text") {
@@ -1243,12 +1442,14 @@ Registro: ${t.dataRegistro || "-"}</div>
           }
         }
       });
+
       return result.data.text || "";
     }
 
     async function lerImagemOCR(file) {
       const imgUrl = URL.createObjectURL(file);
       const img = new Image();
+
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
@@ -1265,12 +1466,29 @@ Registro: ${t.dataRegistro || "-"}</div>
       return texto;
     }
 
+    function tentarImportarTexto(texto, nomeArquivo = "") {
+      const cab = normalizarTexto(texto).split("\n")[0]?.toLowerCase() || "";
+      const ehCSV = nomeArquivo.endsWith(".csv") ||
+        (cab.includes("data") && cab.includes("funcao") && cab.includes("turno") && cab.includes("militar"));
+
+      if (ehCSV) {
+        importarCSVEstruturado(texto);
+      } else {
+        importarTextoGenerico(texto);
+      }
+    }
+
     async function executarImportacao() {
       const arquivo = document.getElementById("arquivoImportacao").files[0];
       const textoManual = document.getElementById("textoImportacao").value.trim();
 
       try {
+        salvarBackup();
         let textoFinal = textoManual || "";
+
+        if (!arquivo && !textoFinal) {
+          throw new Error("Selecione um arquivo ou cole um texto para importar.");
+        }
 
         if (arquivo) {
           const nome = arquivo.name.toLowerCase();
@@ -1288,14 +1506,17 @@ Registro: ${t.dataRegistro || "-"}</div>
             escala.observacoes = obj.observacoes || escala.observacoes;
             escala.indisponiveis = Array.isArray(obj.indisponiveis) ? obj.indisponiveis : escala.indisponiveis;
             escala.dias = obj.dias;
-            fecharImportacao();
+            indiceAtual = 0;
+
             preencherSelectDias();
             render();
+            setStatusImportacao("Importado com sucesso por JSON.", "success");
             return;
           }
 
           if (nome.endsWith(".txt") || nome.endsWith(".csv")) {
             textoFinal += "\n" + await arquivo.text();
+            tentarImportarTexto(textoFinal, nome);
           } else if (nome.endsWith(".pdf") || tipo === "application/pdf") {
             setStatusImportacao("Lendo PDF...");
             const { texto, canvases } = await extrairTextoPDF(arquivo);
@@ -1307,30 +1528,36 @@ Registro: ${t.dataRegistro || "-"}</div>
                 textoFinal += "\n" + await executarOCRCanvas(canvas);
               }
             }
+
+            tentarImportarTexto(textoFinal, nome);
           } else if (tipo.startsWith("image/")) {
             setStatusImportacao("Executando OCR da imagem...");
             textoFinal += "\n" + await lerImagemOCR(arquivo);
+            tentarImportarTexto(textoFinal, nome);
           } else {
             throw new Error("Formato não suportado.");
           }
+        } else {
+          tentarImportarTexto(textoFinal, "texto_colado.txt");
         }
 
-        importarTextoGenerico(textoFinal);
-        fecharImportacao();
         preencherSelectDias();
         render();
+        setStatusImportacao("Importado com sucesso.", "success");
       } catch (e) {
-        setStatusImportacao("Erro na importação: " + e.message);
+        setStatusImportacao("Erro na importação: " + e.message + "\nUse o botão 'Restaurar último backup' se necessário.", "error");
       }
     }
 
     document.getElementById("btnAnterior").addEventListener("click", irDiaAnterior);
     document.getElementById("btnAmanha").addEventListener("click", irAmanha);
     document.getElementById("btnHoje").addEventListener("click", irHoje);
+
     document.getElementById("diaSelect").addEventListener("change", (e) => {
       indiceAtual = Number(e.target.value);
       render();
     });
+
     document.getElementById("buscaInput").addEventListener("input", render);
 
     document.getElementById("btnFecharModal").addEventListener("click", fecharModalTroca);
@@ -1344,6 +1571,8 @@ Registro: ${t.dataRegistro || "-"}</div>
     document.getElementById("btnFecharImportacao").addEventListener("click", fecharImportacao);
     document.getElementById("btnCancelarImportacao").addEventListener("click", fecharImportacao);
     document.getElementById("btnExecutarImportacao").addEventListener("click", executarImportacao);
+    document.getElementById("btnRestaurarBackup").addEventListener("click", restaurarBackup);
+
     document.getElementById("modalImportacao").addEventListener("click", (e) => {
       if (e.target.id === "modalImportacao") fecharImportacao();
     });
