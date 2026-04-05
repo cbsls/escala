@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Escala CBMRS • SLS</title>
+  <title>Escala CB SLS • SLS</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
     :root {
@@ -330,7 +330,7 @@
 <body>
 
   <header class="app-header">
-    <h1>CBMRS • SLS • 6º BBM</h1>
+    <h1>CB SLS • SLS • 6º BBM</h1>
     <div class="app-subtitle">Escala semanal atualizada • 06/04/2026 a 12/04/2026</div>
   </header>
 
@@ -494,7 +494,7 @@
       }
     ];
 
-    let trocas = JSON.parse(localStorage.getItem('trocas_cbmrs_semana_atual')) || {};
+    let trocas = JSON.parse(localStorage.getItem('trocas_CBSLS_semana_atual')) || {};
     let diaIdx = 0;
 
     function render() {
@@ -609,7 +609,7 @@
       const key = `${escala[diaIdx].d}|${escala[diaIdx].f[fi].n}|${ti}`;
       trocas[key] = sub;
 
-      localStorage.setItem('trocas_cbmrs_semana_atual', JSON.stringify(trocas));
+      localStorage.setItem('trocas_CBSLS_semana_atual', JSON.stringify(trocas));
       fecharModal();
       render();
     }
@@ -628,7 +628,7 @@
       }
 
       if (confirm("Senha correta. Deseja limpar todas as trocas desta semana?")) {
-        localStorage.removeItem('trocas_cbmrs_semana_atual');
+        localStorage.removeItem('trocas_CBSLS_semana_atual');
         trocas = {};
         alert("Trocas resetadas com sucesso.");
         render();
