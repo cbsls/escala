@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#1d4f91">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1d4f91">
   <title>Escala PRO • CBMRS</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
@@ -13,13 +13,13 @@
 
   <style>
     :root {
-      --bg: #f0f2f5;
-      --card: #ffffff;
       --primary: #1d4f91;
       --accent: #ffc107;
+      --bg: #f0f4f8;
+      --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
-      --shadow: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
       --radius: 16px;
     }
 
@@ -33,11 +33,11 @@
       line-height: 1.5;
     }
 
-    /* Header Estilo App */
+    /* Layout App */
     .app-header {
       background: var(--primary);
       color: white;
-      padding: 20px 15px;
+      padding: 15px;
       text-align: center;
       position: sticky;
       top: 0;
@@ -45,105 +45,101 @@
       box-shadow: var(--shadow);
     }
 
-    .app-header h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
-    .app-header p { margin: 5px 0 0; font-size: 12px; opacity: 0.8; }
+    .app-header h1 { margin: 0; font-size: 18px; font-weight: 800; text-transform: uppercase; }
 
-    .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+    .container { max-width: 600px; margin: 0 auto; padding: 12px; }
 
-    /* Navegação de Datas */
-    .date-nav {
+    /* Navegação */
+    .nav-date {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--card);
       padding: 15px;
       border-radius: var(--radius);
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       box-shadow: var(--shadow);
     }
 
-    .date-info { text-align: center; flex: 1; }
-    .date-info h2 { margin: 0; font-size: 18px; color: var(--primary); }
-    .date-info span { font-size: 13px; color: var(--muted); font-weight: bold; }
+    .date-display { text-align: center; flex: 1; }
+    .date-display h2 { margin: 0; font-size: 22px; color: var(--primary); }
+    .date-display span { font-size: 12px; color: var(--muted); font-weight: bold; }
 
     button {
       border: none;
       border-radius: 12px;
       padding: 10px 15px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
       transition: 0.2s;
     }
 
-    .btn-nav { background: #e9f1fb; color: var(--primary); font-size: 18px; }
-    .btn-today { background: var(--accent); color: #000; font-size: 12px; margin-top: 5px; }
+    .btn-nav { background: #e2e8f0; color: var(--primary); font-size: 18px; }
+    .btn-today { background: var(--accent); color: #000; font-size: 11px; margin-top: 4px; padding: 4px 10px; }
 
-    /* Busca e Filtros */
-    .search-box {
+    /* Interface de Busca */
+    .search-input {
       width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ddd;
+      padding: 14px;
+      border: 1px solid #d1d5db;
       border-radius: 12px;
-      margin-bottom: 15px;
-      font-size: 16px; /* Evita zoom no iPhone */
+      margin-bottom: 12px;
+      font-size: 16px;
     }
 
     /* Cards de Função */
-    .func-card {
+    .card-func {
       background: var(--card);
       border-radius: var(--radius);
-      margin-bottom: 15px;
-      overflow: hidden;
+      margin-bottom: 12px;
       box-shadow: var(--shadow);
-      border-left: 5px solid var(--primary);
+      border-left: 4px solid var(--primary);
+      overflow: hidden;
     }
 
-    .func-header {
-      padding: 12px 15px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #eee;
+    .card-func-header {
+      padding: 10px 15px;
+      background: #f8fafc;
+      border-bottom: 1px solid #f1f5f9;
       display: flex;
       justify-content: space-between;
       font-weight: 800;
+      color: var(--primary);
     }
 
-    .turno-item {
-      padding: 15px;
-      border-bottom: 1px solid #f0f0f0;
+    .turno-row {
+      padding: 12px 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #f8fafc;
     }
 
-    .militar-nome { font-size: 17px; font-weight: 700; color: #333; }
-    .turno-label { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+    .militar-info { font-size: 18px; font-weight: 700; color: #334155; }
+    .turno-tag { font-size: 10px; color: var(--muted); text-transform: uppercase; display: block; }
 
-    .btn-swap {
-      background: #fff3cd;
-      color: #856404;
-      font-size: 12px;
-      border: 1px solid #ffeeba;
-    }
+    .btn-swap { background: #fff7ed; color: #c2410c; font-size: 12px; border: 1px solid #fed7aa; }
 
-    /* Resumo e Observações */
-    .info-section {
-      background: #eef2f7;
-      padding: 15px;
+    /* Seções de Texto */
+    .info-box {
+      background: #fff;
+      padding: 12px;
       border-radius: var(--radius);
-      margin-top: 20px;
+      margin-top: 15px;
+      border: 1px solid #e2e8f0;
     }
 
-    .info-title { font-weight: 800; font-size: 14px; margin-bottom: 8px; display: block; }
+    .info-box-title { font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 5px; display: block; }
 
     /* Modais */
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.5);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 15px;
       z-index: 1000;
     }
 
@@ -154,177 +150,159 @@
       padding: 20px;
       border-radius: var(--radius);
       width: 100%;
-      max-width: 450px;
-      max-height: 90vh;
-      overflow-y: auto;
+      max-width: 400px;
     }
 
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; }
-    select, textarea, input[type="file"] {
+    .modal-content h3 { margin-top: 0; color: var(--primary); }
+
+    .input-field {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
+      margin: 8px 0 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
     }
 
-    .btn-block { width: 100%; margin-top: 10px; padding: 15px; }
-    .btn-save { background: #198754; color: white; }
-    .btn-close { background: #6c757d; color: white; }
+    .btn-full { width: 100%; padding: 14px; margin-bottom: 8px; }
+    .btn-save { background: var(--primary); color: white; }
+    .btn-cancel { background: #94a3b8; color: white; }
 
     @media (max-width: 480px) {
-      .app-header h1 { font-size: 18px; }
+      .date-display h2 { font-size: 18px; }
+      .militar-info { font-size: 16px; }
     }
   </style>
 </head>
 <body>
 
   <header class="app-header">
-    <h1 id="appTitle">ESCALA PRO • SLS</h1>
-    <p id="weekLabel">Carregando semana...</p>
+    <h1 id="weekTitle">ESCALA CBMRS</h1>
   </header>
 
   <div class="container">
-    <div class="date-nav">
-      <button class="btn-nav" onclick="mudarDia(-1)">❮</button>
-      <div class="date-info">
+    <div class="nav-date">
+      <button class="btn-nav" onclick="navDia(-1)">❮</button>
+      <div class="date-display">
         <span id="txtDiaSemana">---</span>
         <h2 id="txtData">--/--/--</h2>
-        <button class="btn-today" onclick="irHoje()">HOJE</button>
+        <button class="btn-today" onclick="irParaHoje()">HOJE</button>
       </div>
-      <button class="btn-nav" onclick="mudarDia(1)">❯</button>
+      <button class="btn-nav" onclick="navDia(1)">❯</button>
     </div>
 
-    <input type="text" id="inputBusca" class="search-box" placeholder="🔍 Buscar militar..." oninput="renderizar()">
+    <input type="text" id="buscaMilitar" class="search-input" placeholder="🔍 Buscar nome do militar..." oninput="renderApp()">
 
     <div id="listaFuncoes"></div>
 
-    <div class="info-section">
-      <span class="info-title">OBSERVAÇÕES</span>
+    <div class="info-box">
+      <span class="info-box-title">NOTAS DA SEMANA</span>
       <div id="txtObs" style="font-size: 13px; white-space: pre-wrap;"></div>
     </div>
 
-    <div class="info-section">
-      <span class="info-title">INDISPONÍVEIS</span>
-      <div id="listaIndisp" style="font-size: 13px;"></div>
+    <div class="info-box">
+      <span class="info-box-title">MILITARES INDISPONÍVEIS</span>
+      <div id="txtIndisp" style="font-size: 12px;"></div>
     </div>
 
-    <div style="margin-top: 20px; text-align: center;">
-      <button class="btn-close" style="background: #1d4f91;" onclick="abrirImportacao()">Importar Nova Escala</button>
+    <div style="text-align: center; margin-top: 20px;">
+      <button class="btn-cancel" style="font-size: 12px;" onclick="document.getElementById('modalImport').classList.add('active')">Importar Novos Dados</button>
     </div>
   </div>
 
   <div id="modalTroca" class="modal">
     <div class="modal-content">
-      <h3 id="modalTitulo">Trocar Serviço</h3>
-      <div class="form-group">
-        <label>Substituto</label>
-        <select id="selectMilitar"></select>
-      </div>
-      <div class="form-group">
-        <label>Motivo/Obs</label>
-        <textarea id="obsTroca" rows="2"></textarea>
-      </div>
-      <button class="btn-block btn-save" onclick="salvarTroca()">Confirmar Troca</button>
-      <button class="btn-block btn-close" onclick="fecharModais()">Cancelar</button>
+      <h3>Trocar Militar</h3>
+      <p id="labelTroca" style="font-size: 14px; color: var(--muted);"></p>
+      <label style="font-size: 12px; font-weight: bold;">Novo Militar:</label>
+      <select id="selectSubstituto" class="input-field"></select>
+      <button class="btn-full btn-save" onclick="executarTroca()">Confirmar Alteração</button>
+      <button class="btn-full btn-cancel" onclick="fecharModais()">Sair</button>
     </div>
   </div>
 
   <div id="modalImport" class="modal">
     <div class="modal-content">
       <h3>Importar Escala</h3>
-      <div class="form-group">
-        <label>Arquivo (PDF, Imagem ou JSON)</label>
-        <input type="file" id="fileInput" accept=".pdf,image/*,.json,.txt">
-      </div>
-      <div class="form-group">
-        <label>Ou Cole o Texto</label>
-        <textarea id="textAreaImport" rows="5" placeholder="Cole os dados aqui..."></textarea>
-      </div>
-      <p id="statusImport" style="font-size: 11px; color: var(--primary);"></p>
-      <button class="btn-block btn-save" onclick="processarImportacao()">Importar Agora</button>
-      <button class="btn-block btn-close" onclick="fecharModais()">Voltar</button>
+      <textarea id="textoImport" class="input-field" rows="6" placeholder="Cole o texto da escala ou JSON aqui..."></textarea>
+      <button class="btn-full btn-save" onclick="importarDados()">Carregar Escala</button>
+      <button class="btn-full btn-cancel" onclick="fecharModais()">Cancelar</button>
     </div>
   </div>
 
   <script>
-    // --- CONFIGURAÇÃO E DADOS INICIAIS ---
-    const STORAGE_KEY = "cbmrs_escala_v1";
-    let db = {
-      indice: 0,
-      dados: null // Será carregado do localStorage ou do objeto inicial
-    };
-
-    const militares = [
+    const STORAGE_KEY = "cbmrs_app_data_v1";
+    
+    // Lista de militares baseada no seu código original
+    const listaMilitares = [
       "1 TEN MARCELO", "1 SGT DIEFERSON", "1 SGT BATISTA", "1 SGT VICENTE",
       "2 SGT ANDERSON", "2 SGT LISCANO", "2 SGT VINICIUS", "SD BORGES", 
       "SD CAMACHO", "SD ISQUIERDO", "SD LARSSON", "SD MAX", "SD MOTTA", 
       "SD PEGLOW", "SD SOARES", "SD TOMASCHEWSKI", "SD WILLIAM", "SD BATISTA"
     ].sort();
 
-    // Dados iniciais (Baseado no seu código)
-    const escalaInicial = {
-      tituloSemana: "1ª Semana abril, 2026",
-      observacoes: "Expediente Administrativo - 6 hs",
-      indisponiveis: [{nome: "SD TOMASCHEWSKI", motivo: "FÉRIAS (03/04 a 17/04)"}],
-      dias: [
-        { 
-          data: "2026-04-04", 
-          diaSemana: "SÁBADO", 
-          funcoes: [
-            { nome: "CG", turnos: [{ rotulo: "12h Dia", militar: "2 SGT VINICIUS" }, { rotulo: "12h Noite", militar: "2 SGT VINICIUS" }] },
-            { nome: "COV", turnos: [{ rotulo: "12h Dia", militar: "SD PEGLOW" }, { rotulo: "12h Noite", militar: "SD PEGLOW" }] },
-            { nome: "COBOM", turnos: [{ rotulo: "12h Dia", militar: "SD CAMACHO" }, { rotulo: "12h Noite", militar: "SD CAMACHO" }] }
-          ]
-        }
-        // Adicionar mais conforme necessário...
-      ]
+    let appState = {
+      indice: 0,
+      dados: null
     };
 
-    let trocaAtual = null;
-
-    // --- FUNÇÕES DE NÚCLEO ---
+    let trocaPendente = null;
 
     function init() {
       const salvo = localStorage.getItem(STORAGE_KEY);
-      db.dados = salvo ? JSON.parse(salvo) : escalaInicial;
-      
-      // Popular Select de Militares
-      const select = document.getElementById('selectMilitar');
-      militares.forEach(m => {
-        let opt = new Option(m, m);
-        select.add(opt);
-      });
+      if (salvo) {
+        appState = JSON.parse(salvo);
+      } else {
+        // Fallback: carrega os dados iniciais do seu arquivo
+        appState.dados = {
+          tituloSemana: "1ª Semana abril, 2026",
+          observacoes: "Expediente Administrativo - 6 hs",
+          indisponiveis: [{nome: "SD TOMASCHEWSKI", motivo: "FÉRIAS"}],
+          dias: [
+            {
+              data: "2026-03-30", diaSemana: "SEGUNDA-FEIRA",
+              funcoes: [
+                { nome: "CG", turnos: [{ rotulo: "12h Dia", militar: "SD CAMACHO" }, { rotulo: "12h Noite", militar: "SD CAMACHO" }] },
+                { nome: "COV", turnos: [{ rotulo: "12h Dia", militar: "2 SGT LISCANO" }, { rotulo: "12h Noite", militar: "2 SGT LISCANO" }] }
+              ]
+            }
+          ]
+        };
+      }
 
-      renderizar();
+      // Preenche select de militares
+      const select = document.getElementById('selectSubstituto');
+      listaMilitares.forEach(m => select.add(new Option(m, m)));
+
+      renderApp();
     }
 
-    function renderizar() {
-      const dia = db.dados.dias[db.indice];
-      const busca = document.getElementById('inputBusca').value.toUpperCase();
+    function renderApp() {
+      const dia = appState.dados.dias[appState.indice];
+      const busca = document.getElementById('buscaMilitar').value.toUpperCase();
 
-      // UI Básica
-      document.getElementById('weekLabel').textContent = db.dados.tituloSemana;
+      document.getElementById('weekTitle').textContent = appState.dados.tituloSemana;
       document.getElementById('txtDiaSemana').textContent = dia.diaSemana;
-      document.getElementById('txtData').textContent = formatarData(dia.data);
-      document.getElementById('txtObs').textContent = db.dados.observacoes;
+      document.getElementById('txtData').textContent = dia.data.split('-').reverse().join('/');
+      document.getElementById('txtObs').textContent = appState.dados.observacoes;
+      
+      document.getElementById('txtIndisp').innerHTML = appState.dados.indisponiveis
+        .map(i => `• <strong>${i.nome}</strong>: ${i.motivo}`).join('<br>');
 
-      // Lista de Funções
       const container = document.getElementById('listaFuncoes');
       container.innerHTML = "";
 
       dia.funcoes.forEach((func, fIdx) => {
-        let mostrarCard = false;
         let htmlTurnos = "";
+        let temResultado = false;
 
         func.turnos.forEach((turno, tIdx) => {
-          if (!busca || (turno.militar && turno.militar.includes(busca)) || func.nome.includes(busca)) {
-            mostrarCard = true;
+          if (!busca || turno.militar.includes(busca) || func.nome.includes(busca)) {
+            temResultado = true;
             htmlTurnos += `
-              <div class="turno-item">
+              <div class="turno-row">
                 <div>
-                  <div class="turno-label">${turno.rotulo}</div>
-                  <div class="militar-nome">${turno.militar || '---'}</div>
+                  <span class="turno-tag">${turno.rotulo}</span>
+                  <div class="militar-info">${turno.militar || '---'}</div>
                 </div>
                 <button class="btn-swap" onclick="abrirTroca(${fIdx}, ${tIdx})">TROCAR</button>
               </div>
@@ -332,104 +310,67 @@
           }
         });
 
-        if (mostrarCard) {
+        if (temResultado) {
           container.innerHTML += `
-            <div class="func-card">
-              <div class="func-header"><span>${func.nome}</span></div>
+            <div class="card-func">
+              <div class="card-func-header">${func.nome}</div>
               ${htmlTurnos}
             </div>
           `;
         }
       });
 
-      // Indisponíveis
-      document.getElementById('listaIndisp').innerHTML = db.dados.indisponiveis
-        .map(i => `• <strong>${i.nome}</strong>: ${i.motivo}`).join('<br>');
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db.dados));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
     }
 
-    // --- NAVEGAÇÃO ---
-
-    function mudarDia(dir) {
-      const novo = db.indice + dir;
-      if (novo >= 0 && novo < db.dados.dias.length) {
-        db.indice = novo;
-        renderizar();
+    function navDia(dir) {
+      const novo = appState.indice + dir;
+      if (novo >= 0 && novo < appState.dados.dias.length) {
+        appState.indice = novo;
+        renderApp();
       }
     }
 
-    function irHoje() {
+    function irParaHoje() {
       const hoje = new Date().toISOString().split('T')[0];
-      const idx = db.dados.dias.findIndex(d => d.data === hoje);
-      db.indice = idx !== -1 ? idx : 0;
-      renderizar();
+      const idx = appState.dados.dias.findIndex(d => d.data === hoje);
+      appState.indice = idx !== -1 ? idx : 0;
+      renderApp();
     }
 
-    // --- TROCAS ---
-
     function abrirTroca(fIdx, tIdx) {
-      trocaAtual = { fIdx, tIdx };
-      const turno = db.dados.dias[db.indice].funcoes[fIdx].turnos[tIdx];
-      document.getElementById('modalTitulo').textContent = `Trocar: ${turno.militar}`;
+      trocaPendente = { fIdx, tIdx };
+      const turno = appState.dados.dias[appState.indice].funcoes[fIdx].turnos[tIdx];
+      document.getElementById('labelTroca').textContent = `Substituindo: ${turno.militar} (${turno.rotulo})`;
       document.getElementById('modalTroca').classList.add('active');
     }
 
-    function salvarTroca() {
-      const novoMilitar = document.getElementById('selectMilitar').value;
-      const obs = document.getElementById('obsTroca').value;
-      
-      if (trocaAtual) {
-        db.dados.dias[db.indice].funcoes[trocaAtual.fIdx].turnos[trocaAtual.tIdx].militar = novoMilitar;
+    function executarTroca() {
+      const novo = document.getElementById('selectSubstituto').value;
+      if (trocaPendente) {
+        appState.dados.dias[appState.indice].funcoes[trocaPendente.fIdx].turnos[trocaPendente.tIdx].militar = novo;
         fecharModais();
-        renderizar();
+        renderApp();
       }
     }
 
-    // --- IMPORTAÇÃO ---
-
-    function abrirImportacao() {
-      document.getElementById('modalImport').classList.add('active');
+    function importarDados() {
+      try {
+        const txt = document.getElementById('textoImport').value;
+        const json = JSON.parse(txt);
+        if (json.dias) {
+          appState.dados = json;
+          appState.indice = 0;
+          fecharModais();
+          renderApp();
+        }
+      } catch (e) {
+        alert("Erro no formato. Certifique-se de colar o JSON completo.");
+      }
     }
 
     function fecharModais() {
       document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-    }
-
-    async function processarImportacao() {
-      const file = document.getElementById('fileInput').files[0];
-      const texto = document.getElementById('textAreaImport').value;
-      const status = document.getElementById('statusImport');
-
-      try {
-        if (file && file.name.endsWith('.json')) {
-          const content = await file.text();
-          db.dados = JSON.parse(content);
-          db.indice = 0;
-          status.textContent = "Sucesso!";
-          setTimeout(() => { fecharModais(); renderizar(); }, 1000);
-        } else if (texto.length > 10) {
-          // Lógica simplificada para texto colado
-          status.textContent = "Processando texto...";
-          // Aqui você pode manter sua função de extrair datas do código original
-          fecharModais();
-          renderizar();
-        } else {
-          alert("Selecione um arquivo válido ou cole o texto da escala.");
-        }
-      } catch (e) {
-        alert("Erro na importação: " + e.message);
-      }
-    }
-
-    function formatarData(iso) {
-      const [y, m, d] = iso.split("-");
-      return `${d}/${m}/${y}`;
-    }
-
-    function formatarData(iso) {
-      const parts = iso.split("-");
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
     window.onload = init;
