@@ -3,1080 +3,300 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#123a68" />
-  <title>Escala APP ULTRA PRO â€¢ CBMRS SLS</title>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
+  <title>Escala CBMRS • SLS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
-    :root{
-      --primary:#123a68;
-      --primary2:#1d4f91;
-      --accent:#ffc107;
-      --bg:#edf3f9;
-      --card:#ffffff;
-      --line:#dbe5ef;
-      --text:#1f2937;
-      --muted:#64748b;
-      --success:#0f7a45;
-      --success-soft:#eaf8f0;
-      --warn:#9a6700;
-      --warn-soft:#fff4d6;
-      --danger:#b42318;
-      --danger-soft:#fef3f2;
-      --shadow:0 10px 28px rgba(15,23,42,.08);
-      --radius:18px;
-    }
-    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body{ margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; background:linear-gradient(180deg,#eaf1f8 0%,#f8fbff 100%); color:var(--text); }
-    body{ min-height:100vh; }
-    .app{ max-width:1100px; margin:0 auto; padding:12px 12px 100px; }
-
-    .hero{
-      position:sticky; top:0; z-index:30;
-      padding-bottom:10px;
-      backdrop-filter:blur(10px);
-      background:rgba(237,243,249,.92);
-    }
-    .hero-card{
-      background:linear-gradient(135deg,var(--primary) 0%,var(--primary2) 100%);
-      color:#fff; border-radius:24px; box-shadow:var(--shadow); padding:18px 16px;
-    }
-    .hero-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; }
-    .hero h1{ margin:0; font-size:26px; font-weight:900; letter-spacing:.4px; }
-    .hero-sub{ margin-top:6px; font-size:13px; font-weight:700; opacity:.96; line-height:1.45; }
-    .hero-badges{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
-    .badge{
-      background:rgba(255,255,255,.16);
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900;
+    :root {
+      --bg: #f4f7f6; --card: #ffffff; --text: #2c3e50; --muted: #7f8c8d;
+      --fire-red: #c62828; --fire-red-dark: #8e0000; --mil-blue: #1a237e;
+      --orange-swap: #f39c12; --shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --radius: 16px; --transition: all 0.25s ease;
     }
 
-    .panel{
-      background:var(--card); border:1px solid #e6edf5; border-radius:var(--radius);
-      box-shadow:var(--shadow); padding:14px; margin-top:12px;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+    body { 
+      margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; 
+      background: var(--bg); color: var(--text); padding-bottom: 90px;
     }
 
-    .nav-date{
-      display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; margin-bottom:12px;
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
+      color: #fff; padding: 20px 15px; text-align: center; box-shadow: var(--shadow);
+      position: sticky; top: 0; z-index: 100;
     }
-    .date-display{ text-align:center; }
-    .date-display .week{ font-size:12px; font-weight:800; color:var(--muted); margin-bottom:4px; }
-    .date-display .date{ font-size:24px; font-weight:900; color:var(--primary); line-height:1.1; }
-    .date-display .weekday{ font-size:15px; font-weight:800; color:#334155; margin-top:4px; }
+    .app-header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; }
 
-    button{
-      border:none; border-radius:12px; padding:11px 14px; font-weight:900; cursor:pointer; transition:.15s ease;
-    }
-    button:hover{ transform:translateY(-1px); opacity:.98; }
+    .container { padding: 15px; max-width: 600px; margin: 0 auto; }
 
-    .btn-nav{ background:#dce9f8; color:var(--primary); font-size:17px; min-width:52px; }
-    .btn-today{ background:var(--accent); color:#111827; font-size:11px; padding:8px 10px; }
-    .btn-primary{ background:var(--primary2); color:#fff; }
-    .btn-soft{ background:#e8f1fb; color:var(--primary); }
-    .btn-warn{ background:var(--warn-soft); color:var(--warn); border:1px solid #f3dea1; }
-    .btn-danger{ background:var(--danger-soft); color:var(--danger); border:1px solid #fecaca; }
-    .btn-success{ background:var(--success-soft); color:var(--success); border:1px solid #b7ebc6; }
-    .btn-ghost{ background:#eef3f8; color:#475569; }
+    /* Busca */
+    .search-box {
+      background: #fff; border-radius: 12px; padding: 10px 15px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 15px; box-shadow: var(--shadow);
+    }
+    .search-box input { border: none; width: 100%; font-size: 1rem; color: var(--text); }
 
-    .toolbar{
-      display:grid; grid-template-columns:1fr 240px 170px; gap:10px;
+    /* Navegação de Dias */
+    .day-nav {
+      background: #fff; border-radius: var(--radius); padding: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 15px; box-shadow: var(--shadow);
     }
-    input[type="text"], select, input[type="file"], textarea{
-      width:100%; border:1px solid var(--line); border-radius:12px; padding:13px 14px; font-size:15px; background:#fff; outline:none;
-    }
-    textarea{ min-height:110px; resize:vertical; }
-
-    .action-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
-    .summary-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:12px; }
-    .summary-card{
-      background:#f8fbff; border:1px solid #e3ebf3; border-radius:16px; padding:14px; text-align:center;
-    }
-    .summary-card .n{ font-size:24px; font-weight:900; color:var(--primary); line-height:1.15; }
-    .summary-card .t{ margin-top:6px; font-size:12px; color:var(--muted); font-weight:800; }
-
-    .cards{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:14px; }
-    .func-card{ border:1px solid #dfe7f0; border-radius:18px; overflow:hidden; background:#fff; box-shadow:0 6px 18px rgba(15,23,42,.05); }
-    .func-head{
-      padding:12px 14px; background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
-      border-bottom:1px solid #dfe7f0; display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .func-name{ font-size:19px; font-weight:900; color:#15365b; }
-    .func-tag{ font-size:11px; font-weight:900; color:var(--primary); background:#e8f1fb; border-radius:999px; padding:6px 10px; white-space:nowrap; }
-    .turnos{ padding:12px; display:grid; gap:10px; }
-    .turno{ border:1px solid #e5ebf2; border-radius:14px; padding:12px; background:#fbfdff; }
-    .turno-top{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
-    .turno-label{ font-size:11px; color:var(--muted); font-weight:900; text-transform:uppercase; }
-    .turno-badge{ font-size:11px; font-weight:900; color:var(--primary); background:#e8f1fb; border-radius:999px; padding:6px 10px; }
-    .militar-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .militar{ flex:1; font-size:19px; font-weight:900; color:#17212f; line-height:1.2; min-height:24px; }
-    .empty{ color:#94a3b8; font-style:italic; font-weight:800; }
-    .meta{ margin-top:6px; font-size:12px; color:#475569; font-weight:800; }
-    .troca-chip{
-      display:inline-block; margin-top:7px; font-size:10px; font-weight:900; background:#fff7ed;
-      color:#c2410c; border:1px solid #fed7aa; border-radius:999px; padding:4px 8px;
+    .btn-nav {
+      background: var(--bg); border: none; width: 45px; height: 45px;
+      border-radius: 50%; color: var(--mil-blue); cursor: pointer; font-size: 1.2rem;
     }
 
-    .box-row{ display:grid; grid-template-columns:1.2fr 1fr; gap:12px; margin-top:14px; }
-    .box{ border:1px solid #dfe7f0; border-radius:18px; overflow:hidden; background:#fff; box-shadow:0 6px 18px rgba(15,23,42,.05); }
-    .box-title{ padding:12px 14px; background:#f5f8fb; border-bottom:1px solid #e1e8ef; font-size:15px; font-weight:900; color:#334155; }
-    .box-content{ padding:14px; }
-    .item-card{ border:1px solid #e5eaf1; border-radius:12px; padding:11px; background:#fbfcfe; margin-bottom:8px; }
-    .item-card:last-child{ margin-bottom:0; }
-    .m1{ font-size:13px; font-weight:900; color:#334155; margin-bottom:4px; }
-    .m2{ font-size:12px; color:#64748b; font-weight:700; line-height:1.5; white-space:pre-wrap; }
-    .note-text{ font-size:13px; color:#475569; font-weight:700; line-height:1.6; white-space:pre-wrap; }
-    .empty-state{ background:#fff; border-radius:14px; padding:15px; text-align:center; color:var(--muted); font-weight:800; border:1px dashed #d9e2ec; }
+    .day-info { text-align: center; }
+    .day-info h2 { margin: 0; font-size: 1.1rem; color: var(--mil-blue); }
+    .day-info span { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
 
-    .bottom-tabs{
-      position:fixed; left:50%; transform:translateX(-50%); bottom:12px; z-index:40;
-      width:min(980px, calc(100% - 24px));
-      background:rgba(255,255,255,.92); backdrop-filter:blur(10px);
-      border:1px solid #e2e8f0; border-radius:22px; box-shadow:0 10px 30px rgba(15,23,42,.08);
-      padding:10px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px;
+    /* Cartões */
+    .func-card {
+      background: var(--card); border-radius: var(--radius); margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #edf2f7; overflow: hidden;
     }
-    .tab-btn{ background:#f5f8fb; color:#3d5875; box-shadow:none; font-size:13px; padding:12px 10px; min-height:52px; }
-    .tab-btn.active{ background:#dce9f8; color:#123a68; border:1px solid #c4dbf7; }
+    .func-header {
+      padding: 15px; display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; background: #fff;
+    }
+    .func-title { font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--mil-blue); }
+    .func-title i { color: var(--fire-red); width: 20px; text-align: center; }
 
-    .hidden{ display:none !important; }
+    .func-content { display: none; padding: 15px; background: #fcfcfc; border-top: 1px solid #f1f1f1; }
+    .func-card.expanded .func-content { display: block; }
+    .func-card.expanded .chevron { transform: rotate(180deg); }
 
-    .modal{
-      position:fixed; inset:0; background:rgba(15,23,42,.55); display:none; align-items:center; justify-content:center; padding:14px; z-index:999;
+    .turno-box {
+      background: #fff; border: 1px solid #eee; border-radius: 10px;
+      padding: 10px; margin-bottom: 8px;
     }
-    .modal.show{ display:flex; }
-    .modal-box{
-      width:min(760px,100%); max-height:92vh; overflow:auto; background:#fff; border-radius:20px;
-      box-shadow:0 18px 42px rgba(0,0,0,.2); border:1px solid #e5eaf1;
-    }
-    .modal-head{
-      padding:14px 16px; background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
-      border-bottom:1px solid #dfe7f0; display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .modal-head h3{ margin:0; font-size:18px; color:#15365b; }
-    .modal-body{ padding:16px; display:grid; gap:12px; }
-    .mini-info{
-      background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px;
-      font-size:13px; color:#475569; font-weight:700; line-height:1.55;
-    }
-    .modal-actions{ padding:0 16px 16px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
-    .status-box{
-      background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px;
-      font-size:13px; font-weight:800; color:#475569; white-space:pre-wrap;
-    }
-    .status-success{ background:#ecfdf3; border-color:#abefc6; color:#067647; }
-    .status-error{ background:#fef3f2; border-color:#fecdca; color:#b42318; }
-    .hint{ font-size:12px; color:#64748b; font-weight:700; line-height:1.5; }
+    .turno-label { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+    .militar-name { font-size: 1rem; font-weight: 700; color: var(--fire-red); margin-top: 2px; }
+    .militar-name.swapped { color: var(--orange-swap); }
+    .tag-swap { font-size: 0.65rem; background: var(--orange-swap); color: #fff; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
 
-    @media (max-width: 980px){
-      .toolbar{ grid-template-columns:1fr; }
-      .summary-grid,.cards,.box-row{ grid-template-columns:1fr; }
+    /* Rodapé */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+      background: #fff; display: flex; border-top: 1px solid #eee; z-index: 100;
     }
-    @media (max-width: 860px){
-      .nav-date{ grid-template-columns:1fr; }
-      .hero h1{ font-size:22px; }
-      .date-display .date{ font-size:20px; }
-      .militar{ font-size:17px; }
-      .militar-row{ flex-direction:column; align-items:stretch; }
-      .modal-actions{ flex-direction:column; }
-      .bottom-tabs{ grid-template-columns:repeat(2,1fr); }
+    .nav-btn {
+      flex: 1; border: none; background: none; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 5px; color: var(--muted); font-weight: 700; font-size: 0.75rem;
     }
+    .nav-btn.active { color: var(--fire-red); }
+    .nav-btn i { font-size: 1.4rem; }
+
+    /* Afastamentos */
+    .afast-card { background: #fff3e0; border-left: 5px solid var(--orange-swap); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; }
+
+    /* Modal */
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); display: none; align-items: flex-end; z-index: 200;
+    }
+    .modal.show { display: flex; }
+    .modal-body {
+      background: #fff; width: 100%; border-radius: 24px 24px 0 0;
+      padding: 25px; animation: slideUp 0.3s ease;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: var(--muted); }
+    .form-control { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 1rem; }
+    .btn-confirm { background: var(--fire-red); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; margin-top: 10px; }
+
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="hero">
-      <div class="hero-card">
-        <div class="hero-top">
-          <div>
-            <h1>ðŸ“‹ Escala APP ULTRA PRO â€¢ CBMRS SLS</h1>
-            <div class="hero-sub">VersÃ£o mais completa: busca, filtros, troca, histÃ³rico, backup, importaÃ§Ã£o de PDF e visual em formato app.</div>
-          </div>
-        </div>
-        <div class="hero-badges">
-          <div class="badge" id="badgeModo">Modo navegador</div>
-          <div class="badge" id="badgeBackup">Sem backup</div>
-          <div class="badge" id="badgeArquivo">Escala local</div>
-        </div>
-      </div>
+
+  <header class="app-header">
+    <h1>CBMRS • SLS • 6º BBM</h1>
+  </header>
+
+  <div class="container" id="viewEscala">
+    <div class="search-box">
+      <i class="fas fa-search" style="color: var(--muted)"></i>
+      <input type="text" id="searchInput" placeholder="Buscar militar na escala..." oninput="render()">
     </div>
 
-    <section class="panel" id="tabEscala">
-      <div class="nav-date">
-        <button class="btn-nav" id="btnAnterior">â®</button>
-        <div class="date-display">
-          <div class="week" id="labelSemana">---</div>
-          <div class="date" id="labelData">--/--/----</div>
-          <div class="weekday" id="labelDiaSemana">---</div>
-          <button class="btn-today" id="btnHoje">HOJE</button>
-        </div>
-        <button class="btn-nav" id="btnProximo">â¯</button>
+    <nav class="day-nav">
+      <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
+      <div class="day-info">
+        <h2 id="diaNome">Segunda-Feira</h2>
+        <span id="diaData">30/03/2026</span>
       </div>
+      <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
+    </nav>
 
-      <div class="toolbar">
-        <input type="text" id="buscaInput" placeholder="ðŸ” Buscar militar ou funÃ§Ã£o..." />
-        <select id="selectDia"></select>
-        <select id="filtroFuncao">
-          <option value="">Todas as funÃ§Ãµes</option>
-        </select>
-      </div>
+    <div id="funcList"></div>
 
-      <div class="action-row">
-        <button class="btn-soft" id="btnImportar">Importar escala PDF</button>
-        <button class="btn-soft" id="btnExportar">Exportar backup JSON</button>
-        <button class="btn-ghost" id="btnLimparBusca">Limpar filtros</button>
-        <button class="btn-danger" id="btnRestaurarOriginal">Restaurar escala original</button>
-      </div>
-
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="n" id="totalFuncoes">0</div>
-          <div class="t">FunÃ§Ãµes exibidas</div>
-        </div>
-        <div class="summary-card">
-          <div class="n" id="totalMilitares">0</div>
-          <div class="t">Militares Ãºnicos</div>
-        </div>
-        <div class="summary-card">
-          <div class="n" id="cargaResumo">-</div>
-          <div class="t">Carga horÃ¡ria</div>
-        </div>
-        <div class="summary-card">
-          <div class="n" id="totalTrocas">0</div>
-          <div class="t">Trocas no dia</div>
-        </div>
-        <div class="summary-card">
-          <div class="n" id="postosVazios">0</div>
-          <div class="t">Postos vazios</div>
-        </div>
-      </div>
-
-      <div class="cards" id="listaEscala"></div>
-    </section>
-
-    <section class="panel hidden" id="tabHistorico">
-      <div class="box-title" style="margin:-14px -14px 14px -14px;">HistÃ³rico de trocas do dia</div>
-      <div id="historicoTrocas"></div>
-    </section>
-
-    <section class="panel hidden" id="tabResumo">
-      <div class="box-title" style="margin:-14px -14px 14px -14px;">Resumo operacional</div>
-      <div class="box-row" style="margin-top:0;">
-        <div class="box">
-          <div class="box-title">ObservaÃ§Ãµes / indisponÃ­veis</div>
-          <div class="box-content">
-            <div class="note-text" id="txtObs"></div>
-          </div>
-        </div>
-        <div class="box">
-          <div class="box-title">Quadro do dia</div>
-          <div class="box-content" id="resumoDia"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel hidden" id="tabAjuda">
-      <div class="box-title" style="margin:-14px -14px 14px -14px;">Ajuda rÃ¡pida</div>
-      <div class="mini-info">
-        1. Use <strong>Importar escala PDF</strong> para carregar PDF, imagem, TXT, CSV, JSON ou texto colado.<br><br>
-        2. Use <strong>Trocar</strong> dentro de cada funÃ§Ã£o para registrar substituiÃ§Ãµes.<br><br>
-        3. Use <strong>Exportar backup JSON</strong> para salvar uma cÃ³pia da escala atual.<br><br>
-        4. Use <strong>Restaurar escala original</strong> para voltar ao modelo inicial desta pÃ¡gina.<br><br>
-        5. Tudo fica salvo localmente no navegador deste aparelho.
-      </div>
-    </section>
+    <div class="afast-card">
+      <strong><i class="fas fa-user-clock"></i> Afastamentos:</strong><br>
+      SD TOMASCHEWSKI (Férias) • SGT VICENTE/JASSON (Op. Verão)
+    </div>
   </div>
 
-  <div class="bottom-tabs">
-    <button class="tab-btn active" data-tab="tabEscala">Escala</button>
-    <button class="tab-btn" data-tab="tabHistorico">Trocas</button>
-    <button class="tab-btn" data-tab="tabResumo">Resumo</button>
-    <button class="tab-btn" data-tab="tabAjuda">Ajuda</button>
-  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="showView('escala')"><i class="fas fa-calendar-alt"></i>Escala</button>
+    <button class="nav-btn" onclick="abrirModal()"><i class="fas fa-exchange-alt"></i>Troca</button>
+    <button class="nav-btn" onclick="limparTrocas()"><i class="fas fa-sync"></i>Reset</button>
+  </nav>
 
   <div class="modal" id="modalTroca">
-    <div class="modal-box">
-      <div class="modal-head">
-        <h3>Trocar serviÃ§o</h3>
-        <button class="btn-warn" id="btnFecharTroca">Fechar</button>
+    <div class="modal-body">
+      <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
+        <h3 style="margin:0">Solicitar Troca</h3>
+        <i class="fas fa-times" onclick="fecharModal()" style="font-size: 1.5rem; color: var(--muted)"></i>
       </div>
-      <div class="modal-body">
-        <div class="mini-info" id="infoTroca"></div>
-        <div>
-          <label style="font-size:12px;font-weight:900;color:#475569;">Selecione o substituto</label>
-          <select id="selectMilitar"></select>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:900;color:#475569;">ObservaÃ§Ã£o da troca</label>
-          <textarea id="obsTroca" placeholder="Ex.: permuta, troca autorizada, necessidade de serviÃ§o..."></textarea>
-        </div>
+      <div class="form-group">
+        <label>Selecione a Função</label>
+        <select id="selectTurno" class="form-control" onchange="updateMilitarOriginal()"></select>
       </div>
-      <div class="modal-actions">
-        <button class="btn-warn" id="btnCancelarTroca">Cancelar</button>
-        <button class="btn-success" id="btnSalvarTroca">Salvar alteraÃ§Ã£o</button>
+      <div class="form-group">
+        <label>Saindo:</label>
+        <input type="text" id="militarSaindo" class="form-control" readonly style="background:#f8f9fa; font-weight:700; color:var(--fire-red)">
       </div>
-    </div>
-  </div>
-
-  <div class="modal" id="modalImportacao">
-    <div class="modal-box">
-      <div class="modal-head">
-        <h3>Importar escala</h3>
-        <button class="btn-warn" id="btnFecharImportacao">Fechar</button>
+      <div class="form-group">
+        <label>Militar Substituto</label>
+        <select id="selectSubstituto" class="form-control"></select>
       </div>
-      <div class="modal-body">
-        <div class="mini-info">
-          VocÃª pode importar a escala por arquivo ou texto colado.<br><br>
-          Formatos aceitos: <strong>PDF, imagem, TXT, CSV e JSON</strong>.<br>
-          O sistema faz <strong>backup automÃ¡tico</strong> antes da importaÃ§Ã£o.
-        </div>
-
-        <div>
-          <label style="font-size:12px;font-weight:900;color:#475569;">Selecionar arquivo</label>
-          <input type="file" id="arquivoImportacao" accept=".json,.txt,.csv,.pdf,image/*" />
-        </div>
-
-        <div>
-          <label style="font-size:12px;font-weight:900;color:#475569;">Ou colar o texto da escala</label>
-          <textarea id="textoImportacao" placeholder="Cole aqui o conteÃºdo da escala..."></textarea>
-        </div>
-
-        <div class="hint">CSV aceito com colunas como: Data;DiaSemana;Funcao;Turno;Militar;Horas;Codigo;Observacoes</div>
-        <div class="status-box" id="statusImportacao">Aguardando importaÃ§Ã£o.</div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-warn" id="btnCancelarImportacao">Cancelar</button>
-        <button class="btn-danger" id="btnRestaurarBackup">Restaurar backup</button>
-        <button class="btn-primary" id="btnExecutarImportacao">Importar agora</button>
-      </div>
+      <button class="btn-confirm" onclick="salvarTroca()">CONFIRMAR TROCA</button>
     </div>
   </div>
 
   <script>
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.js";
-    }
+    const milLista = ["1º SGT DIEFERSON", "1º SGT BATISTA", "2º SGT ANDERSON", "2º SGT LISCANO", "2º SGT VINICIUS", "SD CAMACHO", "SD ISQUIERDO", "SD PEGLOW", "SD MOTTA", "SD BORGES", "SD MAX", "SD TOMASCHEWSKI", "SD WILLIAM", "SD SOARES", "SD TEMP LARSSON"].sort();
 
-    const STORAGE_KEY = "escala_cbmrs_ultra_v1";
-    const BACKUP_KEY = "escala_cbmrs_ultra_v1_backup";
+    const escala = [
+      { d: "30/03", n: "Segunda", f: [
+        { n: "CG", i: "user-shield", t: ["SD CAMACHO", "SD CAMACHO"] },
+        { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
+        { n: "COBOM", i: "headset", t: ["SD TEMP LARSSON", "SD MOTTA"] }
+      ]},
+      { d: "31/03", n: "Terça", f: [
+        { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
+        { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD TOMASCHEWSKI", "SD TOMASCHEWSKI"] },
+        { n: "COBOM", i: "headset", t: ["SD BORGES", "SD CAMACHO"] }
+      ]},
+      { d: "01/04", n: "Quarta", f: [
+        { n: "CG", i: "user-shield", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
+        { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD MOTTA", "SD MOTTA"] },
+        { n: "COBOM", i: "headset", t: ["SD MAX", "SD MAX"] }
+      ]},
+      { d: "02/04", n: "Quinta", f: [
+        { n: "CG", i: "user-shield", t: ["SD CAMACHO", "SD CAMACHO"] },
+        { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
+        { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
+      ]},
+      { d: "03/04", n: "Sexta", f: [
+        { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
+        { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
+        { n: "COBOM", i: "headset", t: ["SD SOARES", "SD SOARES"] }
+      ]},
+      { d: "04/04", n: "Sábado", f: [
+        { n: "CG", i: "user-shield", t: ["2º SGT VINICIUS", "2º SGT VINICIUS"] },
+        { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
+        { n: "COBOM", i: "headset", t: ["SD CAMACHO", "SD CAMACHO"] }
+      ]},
+      { d: "05/04", n: "Domingo", f: [
+        { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
+        { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
+        { n: "CLD", i: "fire-extinguisher", t: ["SD MAX", "SD MAX"] },
+        { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
+      ]}
+    ];
 
-    function criarTurno(codigo, militar, horas = 12) { return { codigo, militar, horas }; }
-    function criarFuncao(nome, turnos) { return { nome, turnos }; }
-    function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
-
-    const escalaOriginal = {
-      titulo: "Semana 30/03 a 05/04",
-      obs: [
-        "B.I. nÂº 026/2026.",
-        "IndisponÃ­vel: SD BM TOMASCHEWSKI (FÃ‰RIAS).",
-        "Modelo de escala operacional com funÃ§Ãµes CG, COV, CLD, CLE e COBOM."
-      ].join(" "),
-      dias: [
-        { data: "2026-03-30", diaSemana: "SEGUNDA-FEIRA", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "SD BM CAMACHO"), criarTurno("41", "SD BM CAMACHO")]),
-          criarFuncao("COV", [criarTurno("23", "2Âº SGT BM LISCANO"), criarTurno("41", "2Âº SGT BM LISCANO")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM ISQUIERDO"), criarTurno("41", "SD BM ISQUIERDO")]),
-          criarFuncao("CLE", [criarTurno("23", "SD BM WILLIAM"), criarTurno("41", "SD BM WILLIAM")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD TEMP LARSSON"), criarTurno("41", "SD BM MOTTA")])
-        ]},
-        { data: "2026-03-31", diaSemana: "TERÃ‡A-FEIRA", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "2Âº SGT BM ANDERSON"), criarTurno("41", "2Âº SGT BM ANDERSON")]),
-          criarFuncao("COV", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM TOMASCHEWSKI"), criarTurno("41", "SD BM TOMASCHEWSKI")]),
-          criarFuncao("CLE", [criarTurno("23", "SD BM SOARES"), criarTurno("41", "SD BM SOARES")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD BM BORGES"), criarTurno("41", "SD BM CAMACHO")])
-        ]},
-        { data: "2026-04-01", diaSemana: "QUARTA-FEIRA", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "SD BM ISQUIERDO"), criarTurno("41", "SD BM ISQUIERDO")]),
-          criarFuncao("COV", [criarTurno("23", "2Âº SGT BM VINICIUS"), criarTurno("41", "2Âº SGT BM VINICIUS")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM MOTTA"), criarTurno("41", "SD BM MOTTA")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")])
-        ]},
-        { data: "2026-04-02", diaSemana: "QUINTA-FEIRA", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "SD BM CAMACHO"), criarTurno("41", "SD BM CAMACHO")]),
-          criarFuncao("COV", [criarTurno("23", "2Âº SGT BM LISCANO"), criarTurno("41", "2Âº SGT BM LISCANO")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM WILLIAM"), criarTurno("41", "SD BM WILLIAM")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD BM BATISTA"), criarTurno("41", "SD BM BATISTA")])
-        ]},
-        { data: "2026-04-03", diaSemana: "SEXTA-FEIRA", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "2Âº SGT BM ANDERSON"), criarTurno("41", "2Âº SGT BM ANDERSON")]),
-          criarFuncao("COV", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM BORGES"), criarTurno("41", "SD BM BORGES")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD BM SOARES"), criarTurno("41", "SD BM SOARES")])
-        ]},
-        { data: "2026-04-04", diaSemana: "SÃBADO", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "2Âº SGT BM VINICIUS"), criarTurno("41", "2Âº SGT BM VINICIUS")]),
-          criarFuncao("COV", [criarTurno("23", "SD BM PEGLOW"), criarTurno("41", "SD BM PEGLOW")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM ISQUIERDO"), criarTurno("41", "SD BM ISQUIERDO")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD BM CAMACHO"), criarTurno("41", "SD BM CAMACHO")])
-        ]},
-        { data: "2026-04-05", diaSemana: "DOMINGO", trocas: [], funcoes: [
-          criarFuncao("CG", [criarTurno("23", "1Âº SGT BM BATISTA"), criarTurno("41", "1Âº SGT BM BATISTA")]),
-          criarFuncao("COV", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
-          criarFuncao("CLD", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
-          criarFuncao("COBOM", [criarTurno("23", "SD BM BATISTA"), criarTurno("41", "SD BM BATISTA")])
-        ]}
-      ]
-    };
-
-    const militaresFull = [
-      "1Âº SGT BM BATISTA","1Âº SGT DIEFERSON","1Âº SGT BM VICENTE","2Âº SGT BM ANDERSON","2Âº SGT BM LISCANO",
-      "2Âº SGT BM VINICIUS","SD BM BATISTA","SD BM BORGES","SD BM CAMACHO","SD BM ISQUIERDO","SD TEMP LARSSON",
-      "SD BM MAX","SD BM MOTTA","SD BM PEGLOW","SD BM SOARES","SD BM TOMASCHEWSKI","SD BM WILLIAM"
-    ].sort((a, b) => a.localeCompare(b, "pt-BR"));
-
-    let db = null;
-    let indexAtual = 0;
-    let trocaPendente = null;
-    let nomeArquivoAtual = "Escala local";
-
-    function salvarBackup() {
-      localStorage.setItem(BACKUP_KEY, JSON.stringify({ db, indexAtual, nomeArquivoAtual }));
-      atualizarBadges();
-    }
-
-    function salvarDados() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ db, indexAtual, nomeArquivoAtual }));
-      atualizarBadges();
-    }
-
-    function carregarDados() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        db = parsed.db;
-        indexAtual = parsed.indexAtual || 0;
-        nomeArquivoAtual = parsed.nomeArquivoAtual || "Escala local";
-      } else {
-        db = clone(escalaOriginal);
-        indexAtual = 0;
-        nomeArquivoAtual = "Escala local";
-      }
-    }
-
-    function restaurarBackup() {
-      const raw = localStorage.getItem(BACKUP_KEY);
-      if (!raw) {
-        setStatusImportacao("Nenhum backup encontrado.", "error");
-        return;
-      }
-      const parsed = JSON.parse(raw);
-      db = parsed.db;
-      indexAtual = parsed.indexAtual || 0;
-      nomeArquivoAtual = parsed.nomeArquivoAtual || "Escala restaurada";
-      preencherSelectDia();
-      preencherFiltroFuncao();
-      render();
-      setStatusImportacao("Backup restaurado com sucesso.", "success");
-    }
-
-    function atualizarBadges() {
-      const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-      document.getElementById("badgeModo").textContent = standalone ? "Modo app" : "Modo navegador";
-      document.getElementById("badgeBackup").textContent = localStorage.getItem(BACKUP_KEY) ? "Backup disponÃ­vel" : "Sem backup";
-      document.getElementById("badgeArquivo").textContent = nomeArquivoAtual || "Escala local";
-    }
-
-    function preencherMilitares() {
-      const sel = document.getElementById("selectMilitar");
-      sel.innerHTML = '<option value="">Selecione...</option>';
-      militaresFull.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m;
-        opt.textContent = m;
-        sel.appendChild(opt);
-      });
-    }
-
-    function formatarData(iso) {
-      const [a,m,d] = iso.split("-");
-      return `${d}/${m}/${a}`;
-    }
-
-    function obterRotuloTurno(codigo) {
-      const c = String(codigo).toUpperCase();
-      if (c === "23") return "12h Dia";
-      if (c === "41") return "12h Noite";
-      if (c === "CM") return "Carga horÃ¡ria";
-      return `Turno ${codigo}`;
-    }
-
-    function preencherSelectDia() {
-      const select = document.getElementById("selectDia");
-      select.innerHTML = "";
-      db.dias.forEach((dia, idx) => {
-        const opt = document.createElement("option");
-        opt.value = idx;
-        opt.textContent = `${formatarData(dia.data)} â€¢ ${dia.diaSemana}`;
-        select.appendChild(opt);
-      });
-      select.value = String(indexAtual);
-    }
-
-    function preencherFiltroFuncao() {
-      const filtro = document.getElementById("filtroFuncao");
-      const atual = filtro.value;
-      const nomes = [...new Set(db.dias.flatMap(d => d.funcoes.map(f => f.nome)).filter(Boolean))].sort((a,b) => a.localeCompare(b, "pt-BR"));
-      filtro.innerHTML = '<option value="">Todas as funÃ§Ãµes</option>';
-      nomes.forEach(nome => {
-        const opt = document.createElement("option");
-        opt.value = nome;
-        opt.textContent = nome;
-        filtro.appendChild(opt);
-      });
-      if ([...filtro.options].some(o => o.value === atual)) filtro.value = atual;
-    }
-
-    function contarMilitaresUnicos(dia, filtro, funcaoFiltro) {
-      const s = new Set();
-      dia.funcoes.forEach(func => {
-        if (funcaoFiltro && func.nome !== funcaoFiltro) return;
-        const funcMatch = !filtro || func.nome.toUpperCase().includes(filtro);
-        func.turnos.forEach(turno => {
-          const nome = (turno.militar || "").toUpperCase();
-          const match = !filtro || nome.includes(filtro) || funcMatch;
-          if (match && nome) s.add(nome);
-        });
-      });
-      return s.size;
-    }
-
-    function calcularCargaResumo(dia, filtro, funcaoFiltro) {
-      const mapa = {};
-      dia.funcoes.forEach(func => {
-        if (funcaoFiltro && func.nome !== funcaoFiltro) return;
-        const funcMatch = !filtro || func.nome.toUpperCase().includes(filtro);
-        func.turnos.forEach(turno => {
-          const nome = (turno.militar || "").trim();
-          const match = !filtro || nome.toUpperCase().includes(filtro) || funcMatch;
-          if (!nome || !match) return;
-          mapa[nome] = (mapa[nome] || 0) + Number(turno.horas || 12);
-        });
-      });
-      const grupos = {};
-      Object.values(mapa).forEach(h => grupos[h] = (grupos[h] || 0) + 1);
-      const partes = Object.keys(grupos).map(Number).sort((a,b)=>b-a).map(h => `${grupos[h]} de ${h}h`);
-      return partes.length ? partes.join(" â€¢ ") : "-";
-    }
-
-    function contarPostosVazios(dia, filtro, funcaoFiltro) {
-      let total = 0;
-      dia.funcoes.forEach(func => {
-        if (funcaoFiltro && func.nome !== funcaoFiltro) return;
-        const funcMatch = !filtro || func.nome.toUpperCase().includes(filtro);
-        func.turnos.forEach(turno => {
-          const nome = (turno.militar || "");
-          const match = !filtro || nome.toUpperCase().includes(filtro) || funcMatch || !nome;
-          if (match && !nome) total++;
-        });
-      });
-      return total;
-    }
-
-    function renderHistorico(dia) {
-      const box = document.getElementById("historicoTrocas");
-      const trocas = Array.isArray(dia.trocas) ? dia.trocas : [];
-      if (!trocas.length) {
-        box.innerHTML = `<div class="empty-state">Nenhuma troca registrada neste dia.</div>`;
-        return;
-      }
-      box.innerHTML = trocas.map(t => `
-        <div class="item-card">
-          <div class="m1">${t.funcao} â€¢ ${t.turno}</div>
-          <div class="m2">Saiu: ${t.antigo || "-"}
-Entrou: ${t.novo || "-"}
-Obs.: ${t.obs || "-"}
-Registro: ${t.dataRegistro || "-"}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderResumoDia(dia) {
-      const resumo = document.getElementById("resumoDia");
-      const linhas = [];
-      dia.funcoes.forEach(func => {
-        const nomes = func.turnos.map(t => t.militar || "Sem militar").join(" / ");
-        linhas.push(`
-          <div class="item-card">
-            <div class="m1">${func.nome}</div>
-            <div class="m2">${nomes}</div>
-          </div>
-        `);
-      });
-      resumo.innerHTML = linhas.join("");
-    }
+    let trocas = JSON.parse(localStorage.getItem('trocas_cbmrs')) || {};
+    let diaIdx = 0;
 
     function render() {
-      const dia = db.dias[indexAtual];
-      const filtro = document.getElementById("buscaInput").value.trim().toUpperCase();
-      const funcaoFiltro = document.getElementById("filtroFuncao").value;
+      const dia = escala[diaIdx];
+      const search = document.getElementById('searchInput').value.toUpperCase();
+      document.getElementById('diaNome').textContent = dia.n + "-Feira";
+      document.getElementById('diaData').textContent = dia.d + "/2026";
+      
+      const list = document.getElementById('funcList');
+      list.innerHTML = "";
 
-      document.getElementById("labelSemana").textContent = db.titulo || "Escala";
-      document.getElementById("labelData").textContent = formatarData(dia.data);
-      document.getElementById("labelDiaSemana").textContent = dia.diaSemana;
-      document.getElementById("txtObs").textContent = db.obs || "-";
-      document.getElementById("selectDia").value = String(indexAtual);
+      dia.f.forEach((func, fIdx) => {
+        const t0_key = `${dia.d}|${func.n}|0`;
+        const t1_key = `${dia.d}|${func.n}|1`;
+        const m0 = trocas[t0_key] || func.t[0];
+        const m1 = trocas[t1_key] || func.t[1];
 
-      const container = document.getElementById("listaEscala");
-      container.innerHTML = "";
-      let funcoesExibidas = 0;
+        if (search && !m0.includes(search) && !m1.includes(search)) return;
 
-      dia.funcoes.forEach((func, fIdx) => {
-        if (funcaoFiltro && func.nome !== funcaoFiltro) return;
-
-        const funcMatch = !filtro || func.nome.toUpperCase().includes(filtro);
-        let turnosHtml = "";
-        let encontrou = false;
-
-        func.turnos.forEach((turno, tIdx) => {
-          const nome = (turno.militar || "");
-          const nomeUpper = nome.toUpperCase();
-          if (filtro && !funcMatch && !nomeUpper.includes(filtro)) return;
-          encontrou = true;
-
-          const houveTroca = (dia.trocas || []).some(tr => tr.funcao === func.nome && tr.turnoCodigo === turno.codigo);
-
-          turnosHtml += `
-            <div class="turno">
-              <div class="turno-top">
-                <div class="turno-label">Turno</div>
-                <div class="turno-badge">${obterRotuloTurno(turno.codigo)} â€¢ cÃ³d. ${turno.codigo}</div>
-              </div>
-              <div class="militar-row">
-                <div class="militar ${!nome ? 'empty' : ''}">${nome || "Sem militar escalado"}</div>
-                <button class="btn-warn" onclick="abrirTroca(${fIdx}, ${tIdx})">Trocar</button>
-              </div>
-              <div class="meta">${Number(turno.horas || 12)}h</div>
-              ${houveTroca ? '<div class="troca-chip">Troca registrada</div>' : ''}
+        const card = document.createElement('div');
+        card.className = `func-card ${fIdx === 0 ? 'expanded' : ''}`;
+        card.innerHTML = `
+          <div class="func-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <div class="func-title"><i class="fas fa-${func.i}"></i> ${func.n}</div>
+            <i class="fas fa-chevron-down chevron" style="color:var(--muted)"></i>
+          </div>
+          <div class="func-content">
+            <div class="turno-box">
+              <div class="turno-label">Turno 23 (Dia)</div>
+              <div class="militar-name ${trocas[t0_key] ? 'swapped' : ''}">${m0} ${trocas[t0_key] ? '<span class="tag-swap">TROCADO</span>' : ''}</div>
             </div>
-          `;
-        });
-
-        if (encontrou) {
-          funcoesExibidas++;
-          container.innerHTML += `
-            <div class="func-card">
-              <div class="func-head">
-                <div class="func-name">${func.nome}</div>
-                <div class="func-tag">${func.turnos.length} turno(s)</div>
-              </div>
-              <div class="turnos">${turnosHtml}</div>
+            <div class="turno-box">
+              <div class="turno-label">Turno 41 (Noite)</div>
+              <div class="militar-name ${trocas[t1_key] ? 'swapped' : ''}">${m1} ${trocas[t1_key] ? '<span class="tag-swap">TROCADO</span>' : ''}</div>
             </div>
-          `;
-        }
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function mudarDia(v) { diaIdx = (diaIdx + v + escala.length) % escala.length; render(); }
+
+    function abrirModal() {
+      const sT = document.getElementById('selectTurno');
+      sT.innerHTML = '<option value="">Selecione...</option>';
+      escala[diaIdx].f.forEach((f, fi) => {
+        sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
+        sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
       });
 
-      if (!container.innerHTML) {
-        container.innerHTML = `<div class="empty-state">Nenhum resultado encontrado para os filtros atuais.</div>`;
-      }
-
-      document.getElementById("totalFuncoes").textContent = funcoesExibidas;
-      document.getElementById("totalMilitares").textContent = contarMilitaresUnicos(dia, filtro, funcaoFiltro);
-      document.getElementById("cargaResumo").textContent = calcularCargaResumo(dia, filtro, funcaoFiltro);
-      document.getElementById("totalTrocas").textContent = (dia.trocas || []).length;
-      document.getElementById("postosVazios").textContent = contarPostosVazios(dia, filtro, funcaoFiltro);
-
-      renderHistorico(dia);
-      renderResumoDia(dia);
-      salvarDados();
-      atualizarBadges();
+      const sS = document.getElementById('selectSubstituto');
+      sS.innerHTML = '<option value="">Quem assume?</option>';
+      milLista.forEach(m => sS.innerHTML += `<option value="${m}">${m}</option>`);
+      
+      document.getElementById('modalTroca').classList.add('show');
     }
 
-    function mudarDia(delta) {
-      const novo = indexAtual + delta;
-      if (novo >= 0 && novo < db.dias.length) {
-        indexAtual = novo;
-        render();
-      }
+    function updateMilitarOriginal() {
+      const val = document.getElementById('selectTurno').value;
+      if (!val) return;
+      const [fi, ti] = val.split('|');
+      document.getElementById('militarSaindo').value = escala[diaIdx].f[fi].t[ti];
     }
 
-    function irHoje() {
-      const hoje = new Date();
-      const iso = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
-      const idx = db.dias.findIndex(d => d.data === iso);
-      indexAtual = idx >= 0 ? idx : 0;
+    function salvarTroca() {
+      const turno = document.getElementById('selectTurno').value;
+      const sub = document.getElementById('selectSubstituto').value;
+      if (!turno || !sub) return alert("Preencha tudo!");
+      
+      const [fi, ti] = turno.split('|');
+      const key = `${escala[diaIdx].d}|${escala[diaIdx].f[fi].n}|${ti}`;
+      trocas[key] = sub;
+      localStorage.setItem('trocas_cbmrs', JSON.stringify(trocas));
+      fecharModal();
       render();
     }
 
-    function abrirTroca(funcIndex, turnoIndex) {
-      const dia = db.dias[indexAtual];
-      const func = dia.funcoes[funcIndex];
-      const turno = func.turnos[turnoIndex];
-      trocaPendente = { funcIndex, turnoIndex };
+    function fecharModal() { document.getElementById('modalTroca').classList.remove('show'); }
+    function limparTrocas() { if(confirm("Limpar todas as trocas?")) { localStorage.removeItem('trocas_cbmrs'); location.reload(); }}
 
-      document.getElementById("infoTroca").innerHTML =
-        `<strong>Dia:</strong> ${dia.diaSemana} â€¢ ${formatarData(dia.data)}<br>
-         <strong>FunÃ§Ã£o:</strong> ${func.nome}<br>
-         <strong>Turno:</strong> ${obterRotuloTurno(turno.codigo)}<br>
-         <strong>Militar atual:</strong> ${turno.militar || "Sem militar"}`;
-
-      document.getElementById("selectMilitar").value = turno.militar || "";
-      document.getElementById("obsTroca").value = "";
-      document.getElementById("modalTroca").classList.add("show");
-    }
-
-    function fecharTroca() {
-      document.getElementById("modalTroca").classList.remove("show");
-      trocaPendente = null;
-    }
-
-    function confirmarTroca() {
-      if (!trocaPendente) return;
-      const novoMilitar = document.getElementById("selectMilitar").value.trim();
-      const obs = document.getElementById("obsTroca").value.trim();
-      if (!novoMilitar) {
-        alert("Selecione o militar substituto.");
-        return;
-      }
-
-      salvarBackup();
-
-      const dia = db.dias[indexAtual];
-      const func = dia.funcoes[trocaPendente.funcIndex];
-      const turno = func.turnos[trocaPendente.turnoIndex];
-      const anterior = turno.militar || "";
-
-      turno.militar = novoMilitar;
-      if (!Array.isArray(dia.trocas)) dia.trocas = [];
-      dia.trocas.unshift({
-        funcao: func.nome,
-        turno: obterRotuloTurno(turno.codigo),
-        turnoCodigo: turno.codigo,
-        antigo: anterior,
-        novo: novoMilitar,
-        obs,
-        dataRegistro: new Date().toLocaleString("pt-BR")
-      });
-
-      fecharTroca();
-      render();
-      alert("Troca realizada com sucesso.");
-    }
-
-    function restaurarOriginal() {
-      if (!confirm("Deseja restaurar a escala original desta pÃ¡gina?")) return;
-      db = clone(escalaOriginal);
-      indexAtual = 0;
-      nomeArquivoAtual = "Escala local";
-      preencherSelectDia();
-      preencherFiltroFuncao();
-      render();
-      alert("Escala original restaurada com sucesso.");
-    }
-
-    function mostrarTab(tabId) {
-      document.querySelectorAll("[id^='tab']").forEach(el => {
-        if (["tabEscala","tabHistorico","tabResumo","tabAjuda"].includes(el.id)) {
-          el.classList.add("hidden");
-        }
-      });
-      document.getElementById(tabId).classList.remove("hidden");
-      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tabId));
-    }
-
-    function setStatusImportacao(msg, tipo="") {
-      const el = document.getElementById("statusImportacao");
-      el.textContent = msg;
-      el.className = "status-box";
-      if (tipo === "success") el.classList.add("status-success");
-      if (tipo === "error") el.classList.add("status-error");
-    }
-
-    function abrirImportacao() {
-      document.getElementById("modalImportacao").classList.add("show");
-      setStatusImportacao(localStorage.getItem(BACKUP_KEY) ? "Aguardando importaÃ§Ã£o. HÃ¡ backup disponÃ­vel." : "Aguardando importaÃ§Ã£o.");
-    }
-    function fecharImportacao() {
-      document.getElementById("modalImportacao").classList.remove("show");
-    }
-
-    function exportarJsonAtual() {
-      const blob = new Blob([JSON.stringify({ db, indexAtual, nomeArquivoAtual }, null, 2)], { type: "application/json;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `escala_backup_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function normalizarTexto(txt) {
-      return (txt || "").replace(/\r/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{2,}/g, "\n").trim();
-    }
-
-    function extrairDatasBR(texto) {
-      return [...new Set((texto.match(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/g) || []))];
-    }
-
-    function brToIso(br) {
-      const [d,m,a] = br.split("/");
-      return `${a}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    }
-
-    function detectarDiaSemana(dataISO) {
-      const [y,m,d] = dataISO.split("-").map(Number);
-      const dt = new Date(y, m-1, d);
-      return ["DOMINGO","SEGUNDA-FEIRA","TERÃ‡A-FEIRA","QUARTA-FEIRA","QUINTA-FEIRA","SEXTA-FEIRA","SÃBADO"][dt.getDay()];
-    }
-
-    function criarDiaVazio(dataISO) {
-      return {
-        data: dataISO,
-        diaSemana: detectarDiaSemana(dataISO),
-        trocas: [],
-        funcoes: [
-          criarFuncao("CG", [criarTurno("23",""), criarTurno("41","")]),
-          criarFuncao("COV", [criarTurno("23",""), criarTurno("41","")]),
-          criarFuncao("CLD", [criarTurno("23",""), criarTurno("41","")]),
-          criarFuncao("CLE", [criarTurno("23",""), criarTurno("41","")]),
-          criarFuncao("COBOM", [criarTurno("23",""), criarTurno("41","")])
-        ]
-      };
-    }
-
-    function importarJSON(texto) {
-      const obj = JSON.parse(texto);
-      if (!obj || !Array.isArray(obj.dias)) throw new Error("JSON invÃ¡lido para estrutura da escala.");
-      db = obj;
-      indexAtual = 0;
-    }
-
-    function importarCSVEstruturado(textoCSV) {
-      const txt = normalizarTexto(textoCSV);
-      const linhas = txt.split("\n").filter(Boolean);
-      if (linhas.length < 2) throw new Error("CSV sem dados.");
-
-      const sep = linhas[0].includes(";") ? ";" : ",";
-      const head = linhas[0].split(sep).map(v => v.trim().toLowerCase());
-
-      const idxData = head.findIndex(c => c === "data");
-      const idxDia = head.findIndex(c => c === "diasemana" || c === "dia_semana");
-      const idxFunc = head.findIndex(c => c === "funcao" || c === "funÃ§Ã£o");
-      const idxTurno = head.findIndex(c => c === "turno");
-      const idxMilitar = head.findIndex(c => c === "militar");
-      const idxHoras = head.findIndex(c => c === "horas");
-      const idxCodigo = head.findIndex(c => c === "codigo" || c === "cÃ³digo");
-      const idxObs = head.findIndex(c => c === "observacoes" || c === "observaÃ§Ã£o" || c === "obs");
-
-      if (idxData < 0 || idxFunc < 0 || idxTurno < 0 || idxMilitar < 0) {
-        throw new Error("CSV invÃ¡lido. Use no mÃ­nimo: Data;Funcao;Turno;Militar.");
-      }
-
-      const mapa = new Map();
-      const observacoes = [];
-
-      for (let i=1; i<linhas.length; i++) {
-        const cols = linhas[i].split(sep).map(v => v.trim());
-        const dataBr = cols[idxData];
-        if (!dataBr) continue;
-
-        const dataISO = /^\d{4}-\d{2}-\d{2}$/.test(dataBr) ? dataBr : brToIso(dataBr);
-        if (!mapa.has(dataISO)) {
-          mapa.set(dataISO, {
-            data: dataISO,
-            diaSemana: (idxDia >= 0 ? cols[idxDia] : "") || detectarDiaSemana(dataISO),
-            trocas: [],
-            funcoes: []
-          });
-        }
-
-        const dia = mapa.get(dataISO);
-        const nomeFunc = (cols[idxFunc] || "").toUpperCase();
-        const militar = cols[idxMilitar] || "";
-        const codigo = (idxCodigo >= 0 ? cols[idxCodigo] : cols[idxTurno] || "").toUpperCase() || "23";
-        const horas = Number((idxHoras >= 0 ? cols[idxHoras] : "") || 12);
-        const obs = idxObs >= 0 ? (cols[idxObs] || "") : "";
-        if (obs) observacoes.push(obs);
-
-        let func = dia.funcoes.find(f => f.nome === nomeFunc);
-        if (!func) {
-          func = { nome: nomeFunc, turnos: [] };
-          dia.funcoes.push(func);
-        }
-        func.turnos.push({ codigo, militar, horas });
-      }
-
-      db = {
-        titulo: "Semana importada por CSV",
-        obs: [...new Set(observacoes)].join(" â€¢ "),
-        dias: [...mapa.values()].sort((a,b) => a.data.localeCompare(b.data))
-      };
-      indexAtual = 0;
-    }
-
-    function importarTextoGenerico(texto) {
-      const txt = normalizarTexto(texto);
-      if (!txt) throw new Error("Texto vazio.");
-      const datas = extrairDatasBR(txt);
-      if (!datas.length) throw new Error("Nenhuma data encontrada no texto importado.");
-
-      db = {
-        titulo: /escala/i.test(txt) ? "Escala importada" : "Semana importada",
-        obs: txt.slice(0, 500),
-        dias: datas.map(d => criarDiaVazio(brToIso(d)))
-      };
-      indexAtual = 0;
-    }
-
-    async function extrairTextoPDF(file) {
-      if (!window.pdfjsLib) throw new Error("PDF.js nÃ£o carregou.");
-      const buffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
-      let texto = "";
-      const canvases = [];
-
-      for (let p=1; p<=pdf.numPages; p++) {
-        const page = await pdf.getPage(p);
-        const textContent = await page.getTextContent();
-        texto += "\n" + textContent.items.map(i => i.str).join(" ");
-
-        const viewport = page.getViewport({ scale: 2 });
-        const canvas = document.createElement("canvas");
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext("2d");
-        await page.render({ canvasContext: ctx, viewport }).promise;
-        canvases.push(canvas);
-      }
-      return { texto, canvases };
-    }
-
-    async function executarOCRCanvas(canvas) {
-      if (!window.Tesseract) throw new Error("Tesseract nÃ£o carregou.");
-      const result = await Tesseract.recognize(canvas, "por", {
-        logger: m => {
-          if (m.status === "recognizing text") {
-            setStatusImportacao(`Lendo OCR... ${Math.round((m.progress || 0) * 100)}%`);
-          }
-        }
-      });
-      return result.data.text || "";
-    }
-
-    async function lerImagemOCR(file) {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = url;
-      });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvas.getContext("2d").drawImage(img, 0, 0);
-
-      const texto = await executarOCRCanvas(canvas);
-      URL.revokeObjectURL(url);
-      return texto;
-    }
-
-    function tentarImportarTexto(texto, nomeArquivo = "") {
-      const cab = normalizarTexto(texto).split("\n")[0]?.toLowerCase() || "";
-      const ehCSV = nomeArquivo.endsWith(".csv") || (cab.includes("data") && cab.includes("funcao") && cab.includes("turno") && cab.includes("militar"));
-
-      if (nomeArquivo.endsWith(".json")) importarJSON(texto);
-      else if (ehCSV) importarCSVEstruturado(texto);
-      else importarTextoGenerico(texto);
-    }
-
-    async function executarImportacao() {
-      const arquivo = document.getElementById("arquivoImportacao").files[0];
-      const textoManual = document.getElementById("textoImportacao").value.trim();
-
-      try {
-        salvarBackup();
-        let textoFinal = textoManual || "";
-
-        if (!arquivo && !textoFinal) throw new Error("Selecione um arquivo ou cole um texto.");
-
-        if (arquivo) {
-          const nome = arquivo.name.toLowerCase();
-          const tipo = arquivo.type || "";
-          nomeArquivoAtual = arquivo.name;
-
-          if (nome.endsWith(".json")) {
-            const txt = await arquivo.text();
-            importarJSON(txt);
-          } else if (nome.endsWith(".txt") || nome.endsWith(".csv")) {
-            textoFinal += "\n" + await arquivo.text();
-            tentarImportarTexto(textoFinal, nome);
-          } else if (nome.endsWith(".pdf") || tipo === "application/pdf") {
-            setStatusImportacao("Lendo PDF...");
-            const { texto, canvases } = await extrairTextoPDF(arquivo);
-            textoFinal += "\n" + texto;
-
-            if (texto.replace(/\s/g, "").length < 100) {
-              setStatusImportacao("PDF com pouco texto. Executando OCR...");
-              for (const canvas of canvases) {
-                textoFinal += "\n" + await executarOCRCanvas(canvas);
-              }
-            }
-            tentarImportarTexto(textoFinal, nome);
-          } else if (tipo.startsWith("image/")) {
-            setStatusImportacao("Executando OCR da imagem...");
-            textoFinal += "\n" + await lerImagemOCR(arquivo);
-            tentarImportarTexto(textoFinal, nome);
-          } else {
-            throw new Error("Formato nÃ£o suportado.");
-          }
-        } else {
-          nomeArquivoAtual = "Texto colado";
-          tentarImportarTexto(textoFinal, "texto_colado.txt");
-        }
-
-        preencherSelectDia();
-        preencherFiltroFuncao();
-        render();
-        setStatusImportacao("ImportaÃ§Ã£o concluÃ­da com sucesso.", "success");
-      } catch (e) {
-        setStatusImportacao("Erro na importaÃ§Ã£o: " + e.message + "\nUse o botÃ£o 'Restaurar backup' se necessÃ¡rio.", "error");
-      }
-    }
-
-    function limparFiltros() {
-      document.getElementById("buscaInput").value = "";
-      document.getElementById("filtroFuncao").value = "";
-      render();
-    }
-
-    document.getElementById("btnAnterior").addEventListener("click", () => mudarDia(-1));
-    document.getElementById("btnProximo").addEventListener("click", () => mudarDia(1));
-    document.getElementById("btnHoje").addEventListener("click", irHoje);
-    document.getElementById("selectDia").addEventListener("change", e => { indexAtual = Number(e.target.value); render(); });
-    document.getElementById("buscaInput").addEventListener("input", render);
-    document.getElementById("filtroFuncao").addEventListener("change", render);
-    document.getElementById("btnImportar").addEventListener("click", abrirImportacao);
-    document.getElementById("btnExportar").addEventListener("click", exportarJsonAtual);
-    document.getElementById("btnLimparBusca").addEventListener("click", limparFiltros);
-    document.getElementById("btnRestaurarOriginal").addEventListener("click", restaurarOriginal);
-
-    document.getElementById("btnFecharTroca").addEventListener("click", fecharTroca);
-    document.getElementById("btnCancelarTroca").addEventListener("click", fecharTroca);
-    document.getElementById("btnSalvarTroca").addEventListener("click", confirmarTroca);
-    document.getElementById("modalTroca").addEventListener("click", e => { if (e.target.id === "modalTroca") fecharTroca(); });
-
-    document.getElementById("btnFecharImportacao").addEventListener("click", fecharImportacao);
-    document.getElementById("btnCancelarImportacao").addEventListener("click", fecharImportacao);
-    document.getElementById("btnRestaurarBackup").addEventListener("click", restaurarBackup);
-    document.getElementById("btnExecutarImportacao").addEventListener("click", executarImportacao);
-    document.getElementById("modalImportacao").addEventListener("click", e => { if (e.target.id === "modalImportacao") fecharImportacao(); });
-
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => mostrarTab(btn.dataset.tab));
-    });
-
-    function init() {
-      carregarDados();
-      preencherMilitares();
-      preencherSelectDia();
-      preencherFiltroFuncao();
-      atualizarBadges();
-      render();
-    }
-
-    window.onload = init;
+    render();
   </script>
 </body>
 </html>
