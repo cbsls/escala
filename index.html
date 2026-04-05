@@ -71,7 +71,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       box-shadow: var(--shadow);
     }
 
@@ -81,6 +81,24 @@
       font-size: 1rem;
       color: var(--text);
       background: transparent;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .btn-expand {
+      border: none;
+      background: #eef2f7;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     .day-nav {
@@ -330,14 +348,18 @@
 <body>
 
   <header class="app-header">
-    <h1>ESCALA • CBSLS </h1>
-    <div class="app-subtitle">Escala semanal atualizada • 06/04/2026 a 12/04/2026</div>
+    <h1>ESCALA â€¢ CBSLS</h1>
+    <div class="app-subtitle">Escala semanal atualizada â€¢ 06/04/2026 a 12/04/2026</div>
   </header>
 
   <div class="container" id="viewEscala">
     <div class="search-box">
       <i class="fas fa-search" style="color: var(--muted)"></i>
       <input type="text" id="searchInput" placeholder="Buscar militar na escala..." oninput="render()">
+    </div>
+
+    <div class="top-actions">
+      <button class="btn-expand" id="btnExpandirTodos" onclick="toggleExpandirTodos()">Expandir todos</button>
     </div>
 
     <nav class="day-nav">
@@ -353,8 +375,8 @@
     <div id="funcList"></div>
 
     <div class="afast-card">
-      <strong><i class="fas fa-user-clock"></i> Observações:</strong><br>
-      Semana atual corrigida conforme datas e escalados informados de 06/04/2026 até 12/04/2026.
+      <strong><i class="fas fa-user-clock"></i> ObservaÃ§Ãµes:</strong><br>
+      Semana atual corrigida conforme datas e escalados informados de 06/04/2026 atÃ© 12/04/2026.
     </div>
   </div>
 
@@ -372,7 +394,7 @@
       </div>
 
       <div class="form-group">
-        <label>Selecione a Função / Turno</label>
+        <label>Selecione a FunÃ§Ã£o / Turno</label>
         <select id="selectTurno" class="form-control" onchange="updateMilitarOriginal()"></select>
       </div>
 
@@ -392,26 +414,26 @@
 
   <script>
     function showView() {
-      // Mantido apenas para compatibilidade com o botão da barra inferior
+      // Mantido apenas para compatibilidade com o botÃ£o da barra inferior
     }
 
     const ADMIN_PASSWORD = "123456";
 
     const milLista = [
       "SD BORGES",
-      "2º SGT LISCANO",
+      "2Âº SGT LISCANO",
       "SD SOARES",
       "SD MOTTA",
       "SD ISQUIERDO",
       "SD PEGLOW",
       "SD WILLIAM",
       "SD BATISTA",
-      "1º SGT BATISTA",
+      "1Âº SGT BATISTA",
       "SD TEMP LARSSON",
       "SD CAMACHO",
-      "2º SGT ANDERSON",
+      "2Âº SGT ANDERSON",
       "SD MAX",
-      "2º SGT VINICIUS"
+      "2Âº SGT VINICIUS"
     ].sort();
 
     const escala = [
@@ -420,20 +442,20 @@
         n: "Segunda-Feira",
         f: [
           { n: "CG OU CLD", i: "user-shield", t: ["SD BORGES", "SD BORGES"] },
-          { n: "COV OU CG", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+          { n: "COV OU CG", i: "truck-pickup", t: ["2Âº SGT LISCANO", "2Âº SGT LISCANO"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD SOARES", "SD SOARES"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },          
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },          
           { n: "COBOM", i: "headset", t: ["SD MOTTA", "SD MOTTA"] }
         ]
       },
       {
         d: "07/04/2026",
-        n: "Terça-Feira",
+        n: "TerÃ§a-Feira",
         f: [
           { n: "CG OU CLD", i: "user-shield", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
           { n: "COV OU CG", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },
           { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
         ]
       },
@@ -441,10 +463,10 @@
         d: "08/04/2026",
         n: "Quarta-Feira",
         f: [
-          { n: "CG OU CLD", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
+          { n: "CG OU CLD", i: "user-shield", t: ["1Âº SGT BATISTA", "1Âº SGT BATISTA"] },
           { n: "COV OU CG", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD SOARES", "SD SOARES"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },
           { n: "COBOM", i: "headset", t: ["SD CAMACHO", "SD CAMACHO"] }
         ]
       },
@@ -452,10 +474,10 @@
         d: "09/04/2026",
         n: "Quinta-Feira",
         f: [
-          { n: "CG OU CLD", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
-          { n: "COV OU CG", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+          { n: "CG OU CLD", i: "user-shield", t: ["2Âº SGT ANDERSON", "2Âº SGT ANDERSON"] },
+          { n: "COV OU CG", i: "truck-pickup", t: ["2Âº SGT LISCANO", "2Âº SGT LISCANO"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },
           { n: "COBOM", i: "headset", t: ["SD MAX", "SD MAX"] }
         ]
       },
@@ -463,21 +485,21 @@
         d: "10/04/2026",
         n: "Sexta-Feira",
         f: [
-          { n: "CG OU CLD", i: "user-shield", t: ["2º SGT VINICIUS", "2º SGT VINICIUS"] },
+          { n: "CG OU CLD", i: "user-shield", t: ["2Âº SGT VINICIUS", "2Âº SGT VINICIUS"] },
           { n: "COV OU CG", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },
           { n: "COBOM", i: "headset", t: ["SD ISQUIERDO", "SD ISQUIERDO"] }
         ]
       },
       {
         d: "11/04/2026",
-        n: "Sábado",
+        n: "SÃ¡bado",
         f: [
-          { n: "CG OU CLD", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
+          { n: "CG OU CLD", i: "user-shield", t: ["1Âº SGT BATISTA", "1Âº SGT BATISTA"] },
           { n: "COV OU CG", i: "truck-pickup", t: ["SD MOTTA", "SD MOTTA"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD SOARES", "SD SOARES"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },
           { n: "COBOM", i: "headset", t: ["SD BORGES", "SD BORGES"] }
         ]
       },
@@ -485,10 +507,10 @@
         d: "12/04/2026",
         n: "Domingo",
         f: [
-          { n: "CG OU CLD", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
-          { n: "COV OU CG", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+          { n: "CG OU CLD", i: "user-shield", t: ["2Âº SGT ANDERSON", "2Âº SGT ANDERSON"] },
+          { n: "COV OU CG", i: "truck-pickup", t: ["2Âº SGT LISCANO", "2Âº SGT LISCANO"] },
           { n: "CLD", i: "fire-extinguisher", t: ["SD MAX", "SD MAX"] },
-          { n: "CLE", i: "fire-extinguisher", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
+          { n: "CLE", i: "fire-extinguisher", t: ["NÃƒO ESCALADO", "NÃƒO ESCALADO"] },
           { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
         ]
       }
@@ -496,6 +518,17 @@
 
     let trocas = JSON.parse(localStorage.getItem('trocas_CBSLS_semana_atual')) || {};
     let diaIdx = 0;
+    let expandirTodos = false;
+
+    function atualizarBotaoExpandir() {
+      const btn = document.getElementById('btnExpandirTodos');
+      btn.textContent = expandirTodos ? 'Recolher todos' : 'Expandir todos';
+    }
+
+    function toggleExpandirTodos() {
+      expandirTodos = !expandirTodos;
+      render();
+    }
 
     function render() {
       const dia = escala[diaIdx];
@@ -503,11 +536,12 @@
 
       document.getElementById('diaNome').textContent = dia.n;
       document.getElementById('diaData').textContent = dia.d;
+      atualizarBotaoExpandir();
 
       const list = document.getElementById('funcList');
       list.innerHTML = "";
 
-      dia.f.forEach((func, fIdx) => {
+      dia.f.forEach((func) => {
         const t0_key = `${dia.d}|${func.n}|0`;
         const t1_key = `${dia.d}|${func.n}|1`;
 
@@ -522,7 +556,7 @@
         ) return;
 
         const card = document.createElement('div');
-        card.className = `func-card ${fIdx === 0 ? 'expanded' : ''}`;
+        card.className = `func-card ${expandirTodos ? 'expanded' : ''}`;
         card.innerHTML = `
           <div class="func-header" onclick="this.parentElement.classList.toggle('expanded')">
             <div class="func-title"><i class="fas fa-${func.i}"></i> ${func.n}</div>
