@@ -7,112 +7,332 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
     :root {
-      --bg: #f4f7f6; --card: #ffffff; --text: #2c3e50; --muted: #7f8c8d;
-      --fire-red: #c62828; --fire-red-dark: #8e0000; --mil-blue: #1a237e;
-      --orange-swap: #f39c12; --shadow: 0 4px 15px rgba(0,0,0,0.1);
-      --radius: 16px; --transition: all 0.25s ease;
+      --bg: #f4f7f6;
+      --card: #ffffff;
+      --text: #2c3e50;
+      --muted: #7f8c8d;
+      --fire-red: #c62828;
+      --fire-red-dark: #8e0000;
+      --mil-blue: #1a237e;
+      --orange-swap: #f39c12;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --radius: 16px;
+      --transition: all 0.25s ease;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-    body { 
-      margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; 
-      background: var(--bg); color: var(--text); padding-bottom: 90px;
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
     }
 
-    /* Header */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 90px;
+    }
+
     .app-header {
       background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
-      color: #fff; padding: 20px 15px; text-align: center; box-shadow: var(--shadow);
-      position: sticky; top: 0; z-index: 100;
+      color: #fff;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .app-header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; }
 
-    .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
 
-    /* Busca */
+    .app-subtitle {
+      margin-top: 5px;
+      font-size: 0.8rem;
+      opacity: 0.95;
+      font-weight: 600;
+    }
+
+    .container {
+      padding: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
     .search-box {
-      background: #fff; border-radius: 12px; padding: 10px 15px;
-      display: flex; align-items: center; gap: 10px; margin-bottom: 15px; box-shadow: var(--shadow);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
     }
-    .search-box input { border: none; width: 100%; font-size: 1rem; color: var(--text); }
 
-    /* Navegação de Dias */
+    .search-box input {
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+      color: var(--text);
+      background: transparent;
+    }
+
     .day-nav {
-      background: #fff; border-radius: var(--radius); padding: 12px;
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 15px; box-shadow: var(--shadow);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+      gap: 10px;
     }
+
     .btn-nav {
-      background: var(--bg); border: none; width: 45px; height: 45px;
-      border-radius: 50%; color: var(--mil-blue); cursor: pointer; font-size: 1.2rem;
+      background: var(--bg);
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      color: var(--mil-blue);
+      cursor: pointer;
+      font-size: 1.2rem;
+      flex-shrink: 0;
     }
 
-    .day-info { text-align: center; }
-    .day-info h2 { margin: 0; font-size: 1.1rem; color: var(--mil-blue); }
-    .day-info span { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+    .day-info {
+      text-align: center;
+      flex: 1;
+    }
 
-    /* Cartões */
+    .day-info h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--mil-blue);
+    }
+
+    .day-info span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: block;
+    }
+
+    .day-info .week-label {
+      font-size: 0.75rem;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
     .func-card {
-      background: var(--card); border-radius: var(--radius); margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #edf2f7; overflow: hidden;
+      background: var(--card);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid #edf2f7;
+      overflow: hidden;
     }
-    .func-header {
-      padding: 15px; display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; background: #fff;
-    }
-    .func-title { font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--mil-blue); }
-    .func-title i { color: var(--fire-red); width: 20px; text-align: center; }
 
-    .func-content { display: none; padding: 15px; background: #fcfcfc; border-top: 1px solid #f1f1f1; }
-    .func-card.expanded .func-content { display: block; }
-    .func-card.expanded .chevron { transform: rotate(180deg); }
+    .func-header {
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .func-title {
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--mil-blue);
+    }
+
+    .func-title i {
+      color: var(--fire-red);
+      width: 20px;
+      text-align: center;
+    }
+
+    .func-content {
+      display: none;
+      padding: 15px;
+      background: #fcfcfc;
+      border-top: 1px solid #f1f1f1;
+    }
+
+    .func-card.expanded .func-content {
+      display: block;
+    }
+
+    .func-card.expanded .chevron {
+      transform: rotate(180deg);
+    }
 
     .turno-box {
-      background: #fff; border: 1px solid #eee; border-radius: 10px;
-      padding: 10px; margin-bottom: 8px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
     }
-    .turno-label { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; }
-    .militar-name { font-size: 1rem; font-weight: 700; color: var(--fire-red); margin-top: 2px; }
-    .militar-name.swapped { color: var(--orange-swap); }
-    .tag-swap { font-size: 0.65rem; background: var(--orange-swap); color: #fff; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
 
-    /* Rodapé */
+    .turno-box:last-child {
+      margin-bottom: 0;
+    }
+
+    .turno-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .militar-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--fire-red);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .militar-name.swapped {
+      color: var(--orange-swap);
+    }
+
+    .tag-swap {
+      font-size: 0.65rem;
+      background: var(--orange-swap);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+
+    .afast-card {
+      background: #fff3e0;
+      border-left: 5px solid var(--orange-swap);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
     .bottom-nav {
-      position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
-      background: #fff; display: flex; border-top: 1px solid #eee; z-index: 100;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 75px;
+      background: #fff;
+      display: flex;
+      border-top: 1px solid #eee;
+      z-index: 100;
     }
+
     .nav-btn {
-      flex: 1; border: none; background: none; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 5px; color: var(--muted); font-weight: 700; font-size: 0.75rem;
+      flex: 1;
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.75rem;
+      cursor: pointer;
     }
-    .nav-btn.active { color: var(--fire-red); }
-    .nav-btn i { font-size: 1.4rem; }
 
-    /* Afastamentos */
-    .afast-card { background: #fff3e0; border-left: 5px solid var(--orange-swap); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; }
+    .nav-btn.active {
+      color: var(--fire-red);
+    }
 
-    /* Modal */
+    .nav-btn i {
+      font-size: 1.4rem;
+    }
+
     .modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); display: none; align-items: flex-end; z-index: 200;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: flex-end;
+      z-index: 200;
     }
-    .modal.show { display: flex; }
-    .modal-body {
-      background: #fff; width: 100%; border-radius: 24px 24px 0 0;
-      padding: 25px; animation: slideUp 0.3s ease;
-    }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: var(--muted); }
-    .form-control { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 1rem; }
-    .btn-confirm { background: var(--fire-red); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; margin-top: 10px; }
 
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-body {
+      background: #fff;
+      width: 100%;
+      border-radius: 24px 24px 0 0;
+      padding: 25px;
+      animation: slideUp 0.3s ease;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      background: #fff;
+    }
+
+    .btn-confirm {
+      background: var(--fire-red);
+      color: #fff;
+      border: none;
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <header class="app-header">
     <h1>CBMRS • SLS • 6º BBM</h1>
+    <div class="app-subtitle">Escala semanal atualizada • 05/04/2026 a 11/04/2026</div>
   </header>
 
   <div class="container" id="viewEscala">
@@ -124,8 +344,9 @@
     <nav class="day-nav">
       <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
       <div class="day-info">
-        <h2 id="diaNome">Segunda-Feira</h2>
-        <span id="diaData">30/03/2026</span>
+        <span class="week-label">Semana atual</span>
+        <h2 id="diaNome">Domingo</h2>
+        <span id="diaData">05/04/2026</span>
       </div>
       <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
     </nav>
@@ -133,8 +354,8 @@
     <div id="funcList"></div>
 
     <div class="afast-card">
-      <strong><i class="fas fa-user-clock"></i> Afastamentos:</strong><br>
-      SD TOMASCHEWSKI (Férias) • SGT VICENTE/JASSON (Op. Verão)
+      <strong><i class="fas fa-user-clock"></i> Observações:</strong><br>
+      Semana atual atualizada conforme escalados informados.
     </div>
   </div>
 
@@ -146,93 +367,151 @@
 
   <div class="modal" id="modalTroca">
     <div class="modal-body">
-      <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
+      <div style="display:flex; justify-content: space-between; margin-bottom: 20px; align-items:center;">
         <h3 style="margin:0">Solicitar Troca</h3>
-        <i class="fas fa-times" onclick="fecharModal()" style="font-size: 1.5rem; color: var(--muted)"></i>
+        <i class="fas fa-times" onclick="fecharModal()" style="font-size: 1.5rem; color: var(--muted); cursor:pointer;"></i>
       </div>
+
       <div class="form-group">
-        <label>Selecione a Função</label>
+        <label>Selecione a Função / Turno</label>
         <select id="selectTurno" class="form-control" onchange="updateMilitarOriginal()"></select>
       </div>
+
       <div class="form-group">
         <label>Saindo:</label>
         <input type="text" id="militarSaindo" class="form-control" readonly style="background:#f8f9fa; font-weight:700; color:var(--fire-red)">
       </div>
+
       <div class="form-group">
         <label>Militar Substituto</label>
         <select id="selectSubstituto" class="form-control"></select>
       </div>
+
       <button class="btn-confirm" onclick="salvarTroca()">CONFIRMAR TROCA</button>
     </div>
   </div>
 
   <script>
-    const milLista = ["1º SGT DIEFERSON", "1º SGT BATISTA", "2º SGT ANDERSON", "2º SGT LISCANO", "2º SGT VINICIUS", "SD CAMACHO", "SD ISQUIERDO", "SD PEGLOW", "SD MOTTA", "SD BORGES", "SD MAX", "SD TOMASCHEWSKI", "SD WILLIAM", "SD SOARES", "SD TEMP LARSSON"].sort();
+    function showView() {
+      // Mantido apenas para compatibilidade com o botão da barra inferior
+    }
+
+    const milLista = [
+      "SD BORGES",
+      "2º SGT LISCANO",
+      "SD SOARES",
+      "SD MOTTA",
+      "SD ISQUIERDO",
+      "SD PEGLOW",
+      "SD WILLIAM",
+      "SD BATISTA",
+      "1º SGT BATISTA",
+      "SD TEMP LARSSON",
+      "SD CAMACHO",
+      "2º SGT ANDERSON",
+      "SD MAX",
+      "2º SGT VINICIUS"
+    ].sort();
 
     const escala = [
-      { d: "30/03", n: "Segunda", f: [
-        { n: "CG", i: "user-shield", t: ["SD CAMACHO", "SD CAMACHO"] },
-        { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
-        { n: "COBOM", i: "headset", t: ["SD TEMP LARSSON", "SD MOTTA"] }
-      ]},
-      { d: "31/03", n: "Terça", f: [
-        { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
-        { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD TOMASCHEWSKI", "SD TOMASCHEWSKI"] },
-        { n: "COBOM", i: "headset", t: ["SD BORGES", "SD CAMACHO"] }
-      ]},
-      { d: "01/04", n: "Quarta", f: [
-        { n: "CG", i: "user-shield", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
-        { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD MOTTA", "SD MOTTA"] },
-        { n: "COBOM", i: "headset", t: ["SD MAX", "SD MAX"] }
-      ]},
-      { d: "02/04", n: "Quinta", f: [
-        { n: "CG", i: "user-shield", t: ["SD CAMACHO", "SD CAMACHO"] },
-        { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
-        { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
-      ]},
-      { d: "03/04", n: "Sexta", f: [
-        { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
-        { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
-        { n: "COBOM", i: "headset", t: ["SD SOARES", "SD SOARES"] }
-      ]},
-      { d: "04/04", n: "Sábado", f: [
-        { n: "CG", i: "user-shield", t: ["2º SGT VINICIUS", "2º SGT VINICIUS"] },
-        { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
-        { n: "COBOM", i: "headset", t: ["SD CAMACHO", "SD CAMACHO"] }
-      ]},
-      { d: "05/04", n: "Domingo", f: [
-        { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
-        { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
-        { n: "CLD", i: "fire-extinguisher", t: ["SD MAX", "SD MAX"] },
-        { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
-      ]}
+      {
+        d: "05/04/2026",
+        n: "Domingo",
+        f: [
+          { n: "CG", i: "user-shield", t: ["SD BORGES", "SD BORGES"] },
+          { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD SOARES", "SD SOARES"] },
+          { n: "COBOM", i: "headset", t: ["SD MOTTA", "SD MOTTA"] }
+        ]
+      },
+      {
+        d: "06/04/2026",
+        n: "Segunda-Feira",
+        f: [
+          { n: "CG", i: "user-shield", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
+          { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
+          { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
+        ]
+      },
+      {
+        d: "07/04/2026",
+        n: "Terça-Feira",
+        f: [
+          { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
+          { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD SOARES", "SD SOARES"] },
+          { n: "COBOM", i: "headset", t: ["SD CAMACHO", "SD CAMACHO"] }
+        ]
+      },
+      {
+        d: "08/04/2026",
+        n: "Quarta-Feira",
+        f: [
+          { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
+          { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
+          { n: "COBOM", i: "headset", t: ["SD MAX", "SD MAX"] }
+        ]
+      },
+      {
+        d: "09/04/2026",
+        n: "Quinta-Feira",
+        f: [
+          { n: "CG", i: "user-shield", t: ["2º SGT VINICIUS", "2º SGT VINICIUS"] },
+          { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
+          { n: "COBOM", i: "headset", t: ["SD ISQUIERDO", "SD ISQUIERDO"] }
+        ]
+      },
+      {
+        d: "10/04/2026",
+        n: "Sexta-Feira",
+        f: [
+          { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
+          { n: "COV", i: "truck-pickup", t: ["SD MOTTA", "SD MOTTA"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD SOARES", "SD SOARES"] },
+          { n: "COBOM", i: "headset", t: ["SD BORGES", "SD BORGES"] }
+        ]
+      },
+      {
+        d: "11/04/2026",
+        n: "Sábado",
+        f: [
+          { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
+          { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
+          { n: "CLD", i: "fire-extinguisher", t: ["SD MAX", "SD MAX"] },
+          { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
+        ]
+      }
     ];
 
-    let trocas = JSON.parse(localStorage.getItem('trocas_cbmrs')) || {};
+    let trocas = JSON.parse(localStorage.getItem('trocas_cbmrs_semana_atual')) || {};
     let diaIdx = 0;
 
     function render() {
       const dia = escala[diaIdx];
-      const search = document.getElementById('searchInput').value.toUpperCase();
-      document.getElementById('diaNome').textContent = dia.n + "-Feira";
-      document.getElementById('diaData').textContent = dia.d + "/2026";
-      
+      const search = document.getElementById('searchInput').value.toUpperCase().trim();
+
+      document.getElementById('diaNome').textContent = dia.n;
+      document.getElementById('diaData').textContent = dia.d;
+
       const list = document.getElementById('funcList');
       list.innerHTML = "";
 
       dia.f.forEach((func, fIdx) => {
         const t0_key = `${dia.d}|${func.n}|0`;
         const t1_key = `${dia.d}|${func.n}|1`;
+
         const m0 = trocas[t0_key] || func.t[0];
         const m1 = trocas[t1_key] || func.t[1];
 
-        if (search && !m0.includes(search) && !m1.includes(search)) return;
+        if (
+          search &&
+          !func.n.toUpperCase().includes(search) &&
+          !m0.toUpperCase().includes(search) &&
+          !m1.toUpperCase().includes(search)
+        ) return;
 
         const card = document.createElement('div');
         card.className = `func-card ${fIdx === 0 ? 'expanded' : ''}`;
@@ -244,23 +523,41 @@
           <div class="func-content">
             <div class="turno-box">
               <div class="turno-label">Turno 23 (Dia)</div>
-              <div class="militar-name ${trocas[t0_key] ? 'swapped' : ''}">${m0} ${trocas[t0_key] ? '<span class="tag-swap">TROCADO</span>' : ''}</div>
+              <div class="militar-name ${trocas[t0_key] ? 'swapped' : ''}">
+                ${m0} ${trocas[t0_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
+              </div>
             </div>
             <div class="turno-box">
               <div class="turno-label">Turno 41 (Noite)</div>
-              <div class="militar-name ${trocas[t1_key] ? 'swapped' : ''}">${m1} ${trocas[t1_key] ? '<span class="tag-swap">TROCADO</span>' : ''}</div>
+              <div class="militar-name ${trocas[t1_key] ? 'swapped' : ''}">
+                ${m1} ${trocas[t1_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
+              </div>
             </div>
           </div>
         `;
         list.appendChild(card);
       });
+
+      if (!list.innerHTML) {
+        list.innerHTML = `
+          <div class="func-card">
+            <div class="func-header">
+              <div class="func-title"><i class="fas fa-search"></i> Nenhum resultado</div>
+            </div>
+          </div>
+        `;
+      }
     }
 
-    function mudarDia(v) { diaIdx = (diaIdx + v + escala.length) % escala.length; render(); }
+    function mudarDia(v) {
+      diaIdx = (diaIdx + v + escala.length) % escala.length;
+      render();
+    }
 
     function abrirModal() {
       const sT = document.getElementById('selectTurno');
       sT.innerHTML = '<option value="">Selecione...</option>';
+
       escala[diaIdx].f.forEach((f, fi) => {
         sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
         sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
@@ -268,33 +565,58 @@
 
       const sS = document.getElementById('selectSubstituto');
       sS.innerHTML = '<option value="">Quem assume?</option>';
-      milLista.forEach(m => sS.innerHTML += `<option value="${m}">${m}</option>`);
-      
+      milLista.forEach(m => {
+        sS.innerHTML += `<option value="${m}">${m}</option>`;
+      });
+
+      document.getElementById('militarSaindo').value = '';
       document.getElementById('modalTroca').classList.add('show');
     }
 
     function updateMilitarOriginal() {
       const val = document.getElementById('selectTurno').value;
-      if (!val) return;
+      if (!val) {
+        document.getElementById('militarSaindo').value = '';
+        return;
+      }
+
       const [fi, ti] = val.split('|');
-      document.getElementById('militarSaindo').value = escala[diaIdx].f[fi].t[ti];
+      const func = escala[diaIdx].f[fi];
+      const key = `${escala[diaIdx].d}|${func.n}|${ti}`;
+      const atual = trocas[key] || func.t[ti];
+
+      document.getElementById('militarSaindo').value = atual;
     }
 
     function salvarTroca() {
       const turno = document.getElementById('selectTurno').value;
       const sub = document.getElementById('selectSubstituto').value;
-      if (!turno || !sub) return alert("Preencha tudo!");
-      
+
+      if (!turno || !sub) {
+        alert("Preencha tudo!");
+        return;
+      }
+
       const [fi, ti] = turno.split('|');
       const key = `${escala[diaIdx].d}|${escala[diaIdx].f[fi].n}|${ti}`;
       trocas[key] = sub;
-      localStorage.setItem('trocas_cbmrs', JSON.stringify(trocas));
+
+      localStorage.setItem('trocas_cbmrs_semana_atual', JSON.stringify(trocas));
       fecharModal();
       render();
     }
 
-    function fecharModal() { document.getElementById('modalTroca').classList.remove('show'); }
-    function limparTrocas() { if(confirm("Limpar todas as trocas?")) { localStorage.removeItem('trocas_cbmrs'); location.reload(); }}
+    function fecharModal() {
+      document.getElementById('modalTroca').classList.remove('show');
+    }
+
+    function limparTrocas() {
+      if (confirm("Limpar todas as trocas desta semana?")) {
+        localStorage.removeItem('trocas_cbmrs_semana_atual');
+        trocas = {};
+        render();
+      }
+    }
 
     render();
   </script>
