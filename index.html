@@ -6,10 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#1d4f91">
-  <title>Escala PRO • CBMRS</title>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <title>Escala PRO • CBMRS SLS</title>
 
   <style>
     :root {
@@ -19,21 +16,20 @@
       --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
-      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow: 0 4px 12px rgba(0,0,0,0.1);
       --radius: 16px;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.5;
     }
 
-    /* Layout App */
+    /* Interface App */
     .app-header {
       background: var(--primary);
       color: white;
@@ -45,11 +41,11 @@
       box-shadow: var(--shadow);
     }
 
-    .app-header h1 { margin: 0; font-size: 18px; font-weight: 800; text-transform: uppercase; }
+    .app-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
 
     .container { max-width: 600px; margin: 0 auto; padding: 12px; }
 
-    /* Navegação */
+    /* Navegação de Datas */
     .nav-date {
       display: flex;
       justify-content: space-between;
@@ -62,22 +58,13 @@
     }
 
     .date-display { text-align: center; flex: 1; }
-    .date-display h2 { margin: 0; font-size: 22px; color: var(--primary); }
+    .date-display h2 { margin: 0; font-size: 20px; color: var(--primary); }
     .date-display span { font-size: 12px; color: var(--muted); font-weight: bold; }
 
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 10px 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
+    button { border: none; border-radius: 12px; padding: 10px 15px; font-weight: 700; cursor: pointer; }
     .btn-nav { background: #e2e8f0; color: var(--primary); font-size: 18px; }
-    .btn-today { background: var(--accent); color: #000; font-size: 11px; margin-top: 4px; padding: 4px 10px; }
+    .btn-today { background: var(--accent); color: #000; font-size: 11px; margin-top: 5px; padding: 4px 10px; }
 
-    /* Interface de Busca */
     .search-input {
       width: 100%;
       padding: 14px;
@@ -93,7 +80,7 @@
       border-radius: var(--radius);
       margin-bottom: 12px;
       box-shadow: var(--shadow);
-      border-left: 4px solid var(--primary);
+      border-left: 5px solid var(--primary);
       overflow: hidden;
     }
 
@@ -101,10 +88,9 @@
       padding: 10px 15px;
       background: #f8fafc;
       border-bottom: 1px solid #f1f5f9;
-      display: flex;
-      justify-content: space-between;
       font-weight: 800;
       color: var(--primary);
+      font-size: 14px;
     }
 
     .turno-row {
@@ -115,194 +101,169 @@
       border-bottom: 1px solid #f8fafc;
     }
 
-    .militar-info { font-size: 18px; font-weight: 700; color: #334155; }
-    .turno-tag { font-size: 10px; color: var(--muted); text-transform: uppercase; display: block; }
+    .militar-info { font-size: 16px; font-weight: 700; color: #334155; }
+    .turno-tag { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 800; }
 
-    .btn-swap { background: #fff7ed; color: #c2410c; font-size: 12px; border: 1px solid #fed7aa; }
-
-    /* Seções de Texto */
-    .info-box {
-      background: #fff;
-      padding: 12px;
-      border-radius: var(--radius);
-      margin-top: 15px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .info-box-title { font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 5px; display: block; }
+    .btn-swap { background: #fff7ed; color: #c2410c; font-size: 11px; border: 1px solid #fed7aa; }
 
     /* Modais */
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 15px;
       z-index: 1000;
     }
-
     .modal.active { display: flex; }
-
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: var(--radius);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .modal-content h3 { margin-top: 0; color: var(--primary); }
-
-    .input-field {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .btn-full { width: 100%; padding: 14px; margin-bottom: 8px; }
+    .modal-content { background: white; padding: 20px; border-radius: var(--radius); width: 100%; max-width: 400px; }
+    .input-field { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+    .btn-full { width: 100%; padding: 14px; margin-bottom: 8px; font-size: 14px; }
     .btn-save { background: var(--primary); color: white; }
-    .btn-cancel { background: #94a3b8; color: white; }
+    .btn-close { background: #94a3b8; color: white; }
 
-    @media (max-width: 480px) {
-      .date-display h2 { font-size: 18px; }
-      .militar-info { font-size: 16px; }
-    }
+    .info-box { background: #fff; padding: 12px; border-radius: var(--radius); margin-top: 10px; border: 1px solid #e2e8f0; }
+    .info-title { font-size: 11px; font-weight: 800; color: var(--muted); margin-bottom: 4px; display: block; }
   </style>
 </head>
 <body>
 
   <header class="app-header">
-    <h1 id="weekTitle">ESCALA CBMRS</h1>
+    <h1 id="appTitle">CBMRS - SÃO LOURENÇO DO SUL</h1>
   </header>
 
   <div class="container">
     <div class="nav-date">
-      <button class="btn-nav" onclick="navDia(-1)">❮</button>
+      <button class="btn-nav" onclick="mudarDia(-1)">❮</button>
       <div class="date-display">
-        <span id="txtDiaSemana">---</span>
-        <h2 id="txtData">--/--/--</h2>
-        <button class="btn-today" onclick="irParaHoje()">HOJE</button>
+        <span id="labelSemana">---</span>
+        <h2 id="labelData">--/--/--</h2>
+        <button class="btn-today" onclick="irHoje()">HOJE</button>
       </div>
-      <button class="btn-nav" onclick="navDia(1)">❯</button>
+      <button class="btn-nav" onclick="mudarDia(1)">❯</button>
     </div>
 
-    <input type="text" id="buscaMilitar" class="search-input" placeholder="🔍 Buscar nome do militar..." oninput="renderApp()">
+    <input type="text" id="buscaMilitar" class="search-input" placeholder="🔍 Buscar militar ou função..." oninput="render()">
 
-    <div id="listaFuncoes"></div>
+    <div id="listaEscala"></div>
 
     <div class="info-box">
-      <span class="info-box-title">NOTAS DA SEMANA</span>
-      <div id="txtObs" style="font-size: 13px; white-space: pre-wrap;"></div>
-    </div>
-
-    <div class="info-box">
-      <span class="info-box-title">MILITARES INDISPONÍVEIS</span>
-      <div id="txtIndisp" style="font-size: 12px;"></div>
-    </div>
-
-    <div style="text-align: center; margin-top: 20px;">
-      <button class="btn-cancel" style="font-size: 12px;" onclick="document.getElementById('modalImport').classList.add('active')">Importar Novos Dados</button>
+      <span class="info-title">OBSERVAÇÕES / INDISPONÍVEIS</span>
+      <div id="txtObs" style="font-size: 13px;"></div>
     </div>
   </div>
 
   <div id="modalTroca" class="modal">
     <div class="modal-content">
-      <h3>Trocar Militar</h3>
-      <p id="labelTroca" style="font-size: 14px; color: var(--muted);"></p>
-      <label style="font-size: 12px; font-weight: bold;">Novo Militar:</label>
-      <select id="selectSubstituto" class="input-field"></select>
-      <button class="btn-full btn-save" onclick="executarTroca()">Confirmar Alteração</button>
-      <button class="btn-full btn-cancel" onclick="fecharModais()">Sair</button>
-    </div>
-  </div>
-
-  <div id="modalImport" class="modal">
-    <div class="modal-content">
-      <h3>Importar Escala</h3>
-      <textarea id="textoImport" class="input-field" rows="6" placeholder="Cole o texto da escala ou JSON aqui..."></textarea>
-      <button class="btn-full btn-save" onclick="importarDados()">Carregar Escala</button>
-      <button class="btn-full btn-cancel" onclick="fecharModais()">Cancelar</button>
+      <h3 style="margin:0 0 10px 0; color:var(--primary)">Trocar Serviço</h3>
+      <p id="infoTroca" style="font-size: 13px; color: var(--muted)"></p>
+      <label style="font-size: 12px; font-weight: bold;">Selecione o Substituto:</label>
+      <select id="selectMilitar" class="input-field"></select>
+      <button class="btn-full btn-save" onclick="confirmarTroca()">Salvar Alteração</button>
+      <button class="btn-full btn-close" onclick="fecharModal()">Cancelar</button>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = "cbmrs_app_data_v1";
-    
-    // Lista de militares baseada no seu código original
-    const listaMilitares = [
-      "1 TEN MARCELO", "1 SGT DIEFERSON", "1 SGT BATISTA", "1 SGT VICENTE",
-      "2 SGT ANDERSON", "2 SGT LISCANO", "2 SGT VINICIUS", "SD BORGES", 
-      "SD CAMACHO", "SD ISQUIERDO", "SD LARSSON", "SD MAX", "SD MOTTA", 
-      "SD PEGLOW", "SD SOARES", "SD TOMASCHEWSKI", "SD WILLIAM", "SD BATISTA"
-    ].sort();
+    const STORAGE_KEY = "escala_cbmrs_sls_v1";
 
-    let appState = {
-      indice: 0,
-      dados: null
+    // Dados extraídos fielmente do PDF (30/03 a 05/04)
+    const escalaOficial = {
+      titulo: "Semana 30/03 a 05/04",
+      obs: "B.I. nº 026/2026. Indisponível: SD BM TOMASCHEWSKI (FÉRIAS).",
+      dias: [
+        { data: "2026-03-30", diaSemana: "SEGUNDA-FEIRA", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"SD BM CAMACHO"}, {r:"41", m:"SD BM CAMACHO"}]},
+          { nome: "COV", turnos: [{r:"23", m:"2º SGT BM LISCANO"}, {r:"41", m:"2º SGT BM LISCANO"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM ISQUIERDO"}, {r:"41", m:"SD BM ISQUIERDO"}]},
+          { nome: "CLE", turnos: [{r:"23", m:"SD BM WILLIAM"}, {r:"41", m:"SD BM WILLIAM"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD TEMP LARSSON"}, {r:"41", m:"SD BM MOTTA"}]}
+        ]},
+        { data: "2026-03-31", diaSemana: "TERÇA-FEIRA", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"2º SGT BM ANDERSON"}, {r:"41", m:"2º SGT BM ANDERSON"}]},
+          { nome: "COV", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM TOMASCHEWSKI"}, {r:"41", m:"SD BM TOMASCHEWSKI"}]},
+          { nome: "CLE", turnos: [{r:"23", m:"SD BM SOARES"}, {r:"41", m:"SD BM SOARES"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD BM BORGES"}, {r:"41", m:"SD BM CAMACHO"}]}
+        ]},
+        { data: "2026-04-01", diaSemana: "QUARTA-FEIRA", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"SD BM ISQUIERDO"}, {r:"41", m:"SD BM ISQUIERDO"}]},
+          { nome: "COV", turnos: [{r:"23", m:"2º SGT BM VINICIUS"}, {r:"41", m:"2º SGT BM VINICIUS"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM MOTTA"}, {r:"41", m:"SD BM MOTTA"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]}
+        ]},
+        { data: "2026-04-02", diaSemana: "QUINTA-FEIRA", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"SD BM CAMACHO"}, {r:"41", m:"SD BM CAMACHO"}]},
+          { nome: "COV", turnos: [{r:"23", m:"2º SGT BM LISCANO"}, {r:"41", m:"2º SGT BM LISCANO"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM WILLIAM"}, {r:"41", m:"SD BM WILLIAM"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD BM BATISTA"}, {r:"41", m:"SD BM BATISTA"}]}
+        ]},
+        { data: "2026-04-03", diaSemana: "SEXTA-FEIRA", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"2º SGT BM ANDERSON"}, {r:"41", m:"2º SGT BM ANDERSON"}]},
+          { nome: "COV", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM BORGES"}, {r:"41", m:"SD BM BORGES"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD BM SOARES"}, {r:"41", m:"SD BM SOARES"}]}
+        ]},
+        { data: "2026-04-04", diaSemana: "SÁBADO", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"2º SGT BM VINICIUS"}, {r:"41", m:"2º SGT BM VINICIUS"}]},
+          { nome: "COV", turnos: [{r:"23", m:"SD BM PEGLOW"}, {r:"41", m:"SD BM PEGLOW"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM ISQUIERDO"}, {r:"41", m:"SD BM ISQUIERDO"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD BM CAMACHO"}, {r:"41", m:"SD BM CAMACHO"}]}
+        ]},
+        { data: "2026-04-05", diaSemana: "DOMINGO", funcoes: [
+          { nome: "CG", turnos: [{r:"23", m:"1º SGT BM BATISTA"}, {r:"41", m:"1º SGT BM BATISTA"}]},
+          { nome: "COV", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
+          { nome: "CLD", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
+          { nome: "COBOM", turnos: [{r:"23", m:"SD BM BATISTA"}, {r:"41", m:"SD BM BATISTA"}]}
+        ]}
+      ]
     };
 
-    let trocaPendente = null;
+    const militaresFull = [
+      "1º SGT BM BATISTA", "1º SGT DIEFERSON", "1º SGT BM VICENTE", "2º SGT BM ANDERSON", 
+      "2º SGT BM LISCANO", "2º SGT BM VINICIUS", "SD BM BORGES", "SD BM CAMACHO", 
+      "SD BM ISQUIERDO", "SD TEMP LARSSON", "SD BM MAX", "SD BM MOTTA", "SD BM PEGLOW", 
+      "SD BM SOARES", "SD BM TOMASCHEWSKI", "SD BM WILLIAM"
+    ].sort();
+
+    let state = { index: 0, db: null };
+    let pendente = null;
 
     function init() {
       const salvo = localStorage.getItem(STORAGE_KEY);
-      if (salvo) {
-        appState = JSON.parse(salvo);
-      } else {
-        // Fallback: carrega os dados iniciais do seu arquivo
-        appState.dados = {
-          tituloSemana: "1ª Semana abril, 2026",
-          observacoes: "Expediente Administrativo - 6 hs",
-          indisponiveis: [{nome: "SD TOMASCHEWSKI", motivo: "FÉRIAS"}],
-          dias: [
-            {
-              data: "2026-03-30", diaSemana: "SEGUNDA-FEIRA",
-              funcoes: [
-                { nome: "CG", turnos: [{ rotulo: "12h Dia", militar: "SD CAMACHO" }, { rotulo: "12h Noite", militar: "SD CAMACHO" }] },
-                { nome: "COV", turnos: [{ rotulo: "12h Dia", militar: "2 SGT LISCANO" }, { rotulo: "12h Noite", militar: "2 SGT LISCANO" }] }
-              ]
-            }
-          ]
-        };
-      }
-
-      // Preenche select de militares
-      const select = document.getElementById('selectSubstituto');
-      listaMilitares.forEach(m => select.add(new Option(m, m)));
-
-      renderApp();
+      state.db = salvo ? JSON.parse(salvo) : escalaOficial;
+      
+      const sel = document.getElementById('selectMilitar');
+      militaresFull.forEach(m => sel.add(new Option(m, m)));
+      
+      irHoje();
     }
 
-    function renderApp() {
-      const dia = appState.dados.dias[appState.indice];
+    function render() {
+      const dia = state.db.dias[state.index];
       const busca = document.getElementById('buscaMilitar').value.toUpperCase();
 
-      document.getElementById('weekTitle').textContent = appState.dados.tituloSemana;
-      document.getElementById('txtDiaSemana').textContent = dia.diaSemana;
-      document.getElementById('txtData').textContent = dia.data.split('-').reverse().join('/');
-      document.getElementById('txtObs').textContent = appState.dados.observacoes;
-      
-      document.getElementById('txtIndisp').innerHTML = appState.dados.indisponiveis
-        .map(i => `• <strong>${i.nome}</strong>: ${i.motivo}`).join('<br>');
+      document.getElementById('labelSemana').textContent = dia.diaSemana;
+      document.getElementById('labelData').textContent = dia.data.split('-').reverse().join('/');
+      document.getElementById('txtObs').textContent = state.db.obs;
 
-      const container = document.getElementById('listaFuncoes');
+      const container = document.getElementById('listaEscala');
       container.innerHTML = "";
 
-      dia.funcoes.forEach((func, fIdx) => {
-        let htmlTurnos = "";
-        let temResultado = false;
+      dia.funcoes.forEach((f, fIdx) => {
+        let turnosHtml = "";
+        let match = false;
 
-        func.turnos.forEach((turno, tIdx) => {
-          if (!busca || turno.militar.includes(busca) || func.nome.includes(busca)) {
-            temResultado = true;
-            htmlTurnos += `
+        f.turnos.forEach((t, tIdx) => {
+          if (!busca || t.m m.includes(busca) || f.nome.includes(busca)) {
+            match = true;
+            turnosHtml += `
               <div class="turno-row">
                 <div>
-                  <span class="turno-tag">${turno.rotulo}</span>
-                  <div class="militar-info">${turno.militar || '---'}</div>
+                  <span class="turno-tag">Turno ${t.r}</span>
+                  <div class="militar-info">${t.m}</div>
                 </div>
                 <button class="btn-swap" onclick="abrirTroca(${fIdx}, ${tIdx})">TROCAR</button>
               </div>
@@ -310,68 +271,45 @@
           }
         });
 
-        if (temResultado) {
+        if (match) {
           container.innerHTML += `
             <div class="card-func">
-              <div class="card-func-header">${func.nome}</div>
-              ${htmlTurnos}
+              <div class="card-func-header">${f.nome}</div>
+              ${turnosHtml}
             </div>
           `;
         }
       });
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.db));
     }
 
-    function navDia(dir) {
-      const novo = appState.indice + dir;
-      if (novo >= 0 && novo < appState.dados.dias.length) {
-        appState.indice = novo;
-        renderApp();
-      }
+    function mudarDia(d) {
+      let n = state.index + d;
+      if (n >= 0 && n < state.db.dias.length) { state.index = n; render(); }
     }
 
-    function irParaHoje() {
+    function irHoje() {
       const hoje = new Date().toISOString().split('T')[0];
-      const idx = appState.dados.dias.findIndex(d => d.data === hoje);
-      appState.indice = idx !== -1 ? idx : 0;
-      renderApp();
+      const idx = state.db.dias.findIndex(d => d.data === hoje);
+      state.index = idx !== -1 ? idx : 0;
+      render();
     }
 
-    function abrirTroca(fIdx, tIdx) {
-      trocaPendente = { fIdx, tIdx };
-      const turno = appState.dados.dias[appState.indice].funcoes[fIdx].turnos[tIdx];
-      document.getElementById('labelTroca').textContent = `Substituindo: ${turno.militar} (${turno.rotulo})`;
+    function abrirTroca(fi, ti) {
+      pendente = { fi, ti };
+      const t = state.db.dias[state.index].funcoes[fi].turnos[ti];
+      document.getElementById('infoTroca').textContent = `Substituir ${t.m} na função ${state.db.dias[state.index].funcoes[fi].nome}`;
       document.getElementById('modalTroca').classList.add('active');
     }
 
-    function executarTroca() {
-      const novo = document.getElementById('selectSubstituto').value;
-      if (trocaPendente) {
-        appState.dados.dias[appState.indice].funcoes[trocaPendente.fIdx].turnos[trocaPendente.tIdx].militar = novo;
-        fecharModais();
-        renderApp();
-      }
+    function confirmarTroca() {
+      const novo = document.getElementById('selectMilitar').value;
+      state.db.dias[state.index].funcoes[pendente.fi].turnos[pendente.ti].m = novo;
+      fecharModal();
+      render();
     }
 
-    function importarDados() {
-      try {
-        const txt = document.getElementById('textoImport').value;
-        const json = JSON.parse(txt);
-        if (json.dias) {
-          appState.dados = json;
-          appState.indice = 0;
-          fecharModais();
-          renderApp();
-        }
-      } catch (e) {
-        alert("Erro no formato. Certifique-se de colar o JSON completo.");
-      }
-    }
-
-    function fecharModais() {
-      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-    }
+    function fecharModal() { document.getElementById('modalTroca').classList.remove('active'); }
 
     window.onload = init;
   </script>
