@@ -17,7 +17,6 @@
       --orange-swap: #f39c12;
       --shadow: 0 4px 15px rgba(0,0,0,0.1);
       --radius: 16px;
-      --transition: all 0.25s ease;
     }
 
     * {
@@ -345,7 +344,7 @@
       <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
       <div class="day-info">
         <span class="week-label">Semana atual</span>
-        <h2 id="diaNome">Domingo</h2>
+        <h2 id="diaNome">Segunda-Feira</h2>
         <span id="diaData">06/04/2026</span>
       </div>
       <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
@@ -355,14 +354,14 @@
 
     <div class="afast-card">
       <strong><i class="fas fa-user-clock"></i> Observações:</strong><br>
-      Semana atual atualizada conforme escalados informados.
+      Semana atual corrigida conforme datas e escalados informados de 06/04/2026 até 12/04/2026.
     </div>
   </div>
 
   <nav class="bottom-nav">
     <button class="nav-btn active" onclick="showView('escala')"><i class="fas fa-calendar-alt"></i>Escala</button>
     <button class="nav-btn" onclick="abrirModal()"><i class="fas fa-exchange-alt"></i>Troca</button>
-    <button class="nav-btn" onclick="limparTrocas()"><i class="fas fa-sync"></i>Reset</button>
+    <button class="nav-btn" onclick="resetAdmin()"><i class="fas fa-user-shield"></i>Reset</button>
   </nav>
 
   <div class="modal" id="modalTroca">
@@ -396,6 +395,8 @@
       // Mantido apenas para compatibilidade com o botão da barra inferior
     }
 
+    const ADMIN_PASSWORD = "193cbmrs";
+
     const milLista = [
       "SD BORGES",
       "2º SGT LISCANO",
@@ -416,7 +417,7 @@
     const escala = [
       {
         d: "06/04/2026",
-        n: "Domingo",
+        n: "Segunda-Feira",
         f: [
           { n: "CG", i: "user-shield", t: ["SD BORGES", "SD BORGES"] },
           { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
@@ -426,7 +427,7 @@
       },
       {
         d: "07/04/2026",
-        n: "Segunda-Feira",
+        n: "Terça-Feira",
         f: [
           { n: "CG", i: "user-shield", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
           { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
@@ -436,7 +437,7 @@
       },
       {
         d: "08/04/2026",
-        n: "Terça-Feira",
+        n: "Quarta-Feira",
         f: [
           { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
           { n: "COV", i: "truck-pickup", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
@@ -446,7 +447,7 @@
       },
       {
         d: "09/04/2026",
-        n: "Quarta-Feira",
+        n: "Quinta-Feira",
         f: [
           { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
           { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
@@ -456,7 +457,7 @@
       },
       {
         d: "10/04/2026",
-        n: "Quinta-Feira",
+        n: "Sexta-Feira",
         f: [
           { n: "CG", i: "user-shield", t: ["2º SGT VINICIUS", "2º SGT VINICIUS"] },
           { n: "COV", i: "truck-pickup", t: ["SD PEGLOW", "SD PEGLOW"] },
@@ -466,7 +467,7 @@
       },
       {
         d: "11/04/2026",
-        n: "Sexta-Feira",
+        n: "Sábado",
         f: [
           { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
           { n: "COV", i: "truck-pickup", t: ["SD MOTTA", "SD MOTTA"] },
@@ -476,7 +477,7 @@
       },
       {
         d: "12/04/2026",
-        n: "Sábado",
+        n: "Domingo",
         f: [
           { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
           { n: "COV", i: "truck-pickup", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
@@ -610,10 +611,19 @@
       document.getElementById('modalTroca').classList.remove('show');
     }
 
-    function limparTrocas() {
-      if (confirm("Limpar todas as trocas desta semana?")) {
+    function resetAdmin() {
+      const senha = prompt("Digite a senha de administrador para resetar as trocas:");
+      if (senha === null) return;
+
+      if (senha !== ADMIN_PASSWORD) {
+        alert("Senha de administrador incorreta.");
+        return;
+      }
+
+      if (confirm("Senha correta. Deseja limpar todas as trocas desta semana?")) {
         localStorage.removeItem('trocas_cbmrs_semana_atual');
         trocas = {};
+        alert("Trocas resetadas com sucesso.");
         render();
       }
     }
