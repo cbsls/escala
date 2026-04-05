@@ -16,24 +16,28 @@
       --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
-      --shadow: 0 4px 12px rgba(0,0,0,0.1);
+      --success: #0f7a45;
+      --danger: #b42318;
+      --shadow: 0 4px 12px rgba(0,0,0,0.10);
       --radius: 16px;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
     }
 
-    /* Interface App */
     .app-header {
-      background: var(--primary);
+      background: linear-gradient(135deg, #1d4f91 0%, #163b69 100%);
       color: white;
-      padding: 15px;
+      padding: 16px 14px;
       text-align: center;
       position: sticky;
       top: 0;
@@ -41,15 +45,31 @@
       box-shadow: var(--shadow);
     }
 
-    .app-header h1 { margin: 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+    .app-header h1 {
+      margin: 0;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-    .container { max-width: 600px; margin: 0 auto; padding: 12px; }
+    .app-header .sub {
+      margin-top: 6px;
+      font-size: 12px;
+      opacity: .95;
+      font-weight: 700;
+    }
 
-    /* Navegação de Datas */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+
     .nav-date {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       background: var(--card);
       padding: 15px;
       border-radius: var(--radius);
@@ -57,24 +77,101 @@
       box-shadow: var(--shadow);
     }
 
-    .date-display { text-align: center; flex: 1; }
-    .date-display h2 { margin: 0; font-size: 20px; color: var(--primary); }
-    .date-display span { font-size: 12px; color: var(--muted); font-weight: bold; }
+    .date-display {
+      text-align: center;
+      flex: 1;
+    }
 
-    button { border: none; border-radius: 12px; padding: 10px 15px; font-weight: 700; cursor: pointer; }
-    .btn-nav { background: #e2e8f0; color: var(--primary); font-size: 18px; }
-    .btn-today { background: var(--accent); color: #000; font-size: 11px; margin-top: 5px; padding: 4px 10px; }
+    .date-display h2 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--primary);
+      line-height: 1.1;
+    }
 
-    .search-input {
+    .date-display span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    button:hover {
+      opacity: .96;
+      transform: translateY(-1px);
+    }
+
+    .btn-nav {
+      background: #e2e8f0;
+      color: var(--primary);
+      font-size: 18px;
+      min-width: 48px;
+    }
+
+    .btn-today {
+      background: var(--accent);
+      color: #000;
+      font-size: 11px;
+      margin-top: 7px;
+      padding: 5px 10px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .search-input, .day-select, .input-field, textarea {
       width: 100%;
       padding: 14px;
       border: 1px solid #d1d5db;
       border-radius: 12px;
-      margin-bottom: 12px;
       font-size: 16px;
+      background: #fff;
+      outline: none;
     }
 
-    /* Cards de Função */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .summary-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .summary-card .n {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .summary-card .t {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
     .card-func {
       background: var(--card);
       border-radius: var(--radius);
@@ -85,12 +182,24 @@
     }
 
     .card-func-header {
-      padding: 10px 15px;
+      padding: 11px 15px;
       background: #f8fafc;
       border-bottom: 1px solid #f1f5f9;
-      font-weight: 800;
+      font-weight: 900;
       color: var(--primary);
-      font-size: 14px;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-func-header .tag-func {
+      font-size: 11px;
+      background: #e8f1fb;
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-weight: 900;
     }
 
     .turno-row {
@@ -98,15 +207,105 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       border-bottom: 1px solid #f8fafc;
+      flex-wrap: wrap;
     }
 
-    .militar-info { font-size: 16px; font-weight: 700; color: #334155; }
-    .turno-tag { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 800; }
+    .turno-row:last-child {
+      border-bottom: none;
+    }
 
-    .btn-swap { background: #fff7ed; color: #c2410c; font-size: 11px; border: 1px solid #fed7aa; }
+    .turno-left {
+      flex: 1;
+      min-width: 180px;
+    }
 
-    /* Modais */
+    .militar-info {
+      font-size: 16px;
+      font-weight: 800;
+      color: #334155;
+      line-height: 1.35;
+    }
+
+    .militar-vazio {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .turno-tag {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 900;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    .turno-horas {
+      font-size: 11px;
+      color: #475569;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .btn-swap {
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 11px;
+      border: 1px solid #fed7aa;
+      white-space: nowrap;
+    }
+
+    .troca-chip {
+      display: inline-block;
+      margin-top: 7px;
+      font-size: 10px;
+      font-weight: 900;
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+
+    .info-box {
+      background: #fff;
+      padding: 14px;
+      border-radius: var(--radius);
+      margin-top: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: var(--shadow);
+    }
+
+    .info-title {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+      text-transform: uppercase;
+    }
+
+    .info-content {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #334155;
+      white-space: pre-wrap;
+    }
+
+    .historico-card {
+      background: #fbfdff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .historico-card strong {
+      color: var(--primary);
+    }
+
     .modal {
       position: fixed;
       inset: 0;
@@ -117,153 +316,446 @@
       padding: 15px;
       z-index: 1000;
     }
-    .modal.active { display: flex; }
-    .modal-content { background: white; padding: 20px; border-radius: var(--radius); width: 100%; max-width: 400px; }
-    .input-field { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
-    .btn-full { width: 100%; padding: 14px; margin-bottom: 8px; font-size: 14px; }
-    .btn-save { background: var(--primary); color: white; }
-    .btn-close { background: #94a3b8; color: white; }
 
-    .info-box { background: #fff; padding: 12px; border-radius: var(--radius); margin-top: 10px; border: 1px solid #e2e8f0; }
-    .info-title { font-size: 11px; font-weight: 800; color: var(--muted); margin-bottom: 4px; display: block; }
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 430px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-content h3 {
+      margin: 0 0 10px 0;
+      color: var(--primary);
+    }
+
+    .btn-full {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .btn-save {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-close {
+      background: #94a3b8;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .empty-state {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 640px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-date {
+        padding: 12px;
+      }
+
+      .date-display h2 {
+        font-size: 19px;
+      }
+
+      .militar-info {
+        font-size: 15px;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header class="app-header">
     <h1 id="appTitle">CBMRS - SÃO LOURENÇO DO SUL</h1>
+    <div class="sub">Escala de Serviço PRO • modelo app • troca de militar • busca • histórico</div>
   </header>
 
   <div class="container">
     <div class="nav-date">
       <button class="btn-nav" onclick="mudarDia(-1)">❮</button>
+
       <div class="date-display">
         <span id="labelSemana">---</span>
-        <h2 id="labelData">--/--/--</h2>
+        <h2 id="labelData">--/--/----</h2>
         <button class="btn-today" onclick="irHoje()">HOJE</button>
       </div>
+
       <button class="btn-nav" onclick="mudarDia(1)">❯</button>
     </div>
 
-    <input type="text" id="buscaMilitar" class="search-input" placeholder="🔍 Buscar militar ou função..." oninput="render()">
+    <div class="toolbar">
+      <input
+        type="text"
+        id="buscaMilitar"
+        class="search-input"
+        placeholder="🔍 Buscar militar ou função..."
+        oninput="render()"
+      />
+
+      <select id="selectDia" class="day-select" onchange="irParaDiaSelecionado()"></select>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="n" id="totalFuncoes">0</div>
+        <div class="t">Funções exibidas</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="n" id="totalMilitares">0</div>
+        <div class="t">Militares únicos no dia</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="n" id="cargaResumo">-</div>
+        <div class="t">Carga horária do quadro</div>
+      </div>
+    </div>
 
     <div id="listaEscala"></div>
 
     <div class="info-box">
-      <span class="info-title">OBSERVAÇÕES / INDISPONÍVEIS</span>
-      <div id="txtObs" style="font-size: 13px;"></div>
+      <span class="info-title">Observações / indisponíveis</span>
+      <div id="txtObs" class="info-content"></div>
+    </div>
+
+    <div class="info-box">
+      <span class="info-title">Histórico de trocas do dia</span>
+      <div id="historicoTrocas" class="info-content"></div>
     </div>
   </div>
 
   <div id="modalTroca" class="modal">
     <div class="modal-content">
-      <h3 style="margin:0 0 10px 0; color:var(--primary)">Trocar Serviço</h3>
-      <p id="infoTroca" style="font-size: 13px; color: var(--muted)"></p>
-      <label style="font-size: 12px; font-weight: bold;">Selecione o Substituto:</label>
+      <h3>Trocar Serviço</h3>
+      <p id="infoTroca" style="font-size: 13px; color: var(--muted); line-height: 1.5;"></p>
+
+      <label style="font-size: 12px; font-weight: 900;">Selecione o substituto</label>
       <select id="selectMilitar" class="input-field"></select>
-      <button class="btn-full btn-save" onclick="confirmarTroca()">Salvar Alteração</button>
+
+      <label style="font-size: 12px; font-weight: 900;">Observação da troca</label>
+      <textarea id="obsTroca" class="input-field" rows="3" placeholder="Ex.: permuta, troca autorizada, necessidade de serviço..."></textarea>
+
+      <button class="btn-full btn-save" onclick="confirmarTroca()">Salvar alteração</button>
       <button class="btn-full btn-close" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-full btn-danger" onclick="restaurarEscalaOriginal()">Restaurar escala original</button>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = "escala_cbmrs_sls_v1";
+    const STORAGE_KEY = "escala_cbmrs_sls_v2";
 
-    // Dados extraídos fielmente do PDF (30/03 a 05/04)
+    function criarTurno(codigo, militar, horas = 12) {
+      return {
+        codigo,
+        militar,
+        horas
+      };
+    }
+
+    function criarFuncao(nome, turnos) {
+      return {
+        nome,
+        turnos
+      };
+    }
+
     const escalaOficial = {
       titulo: "Semana 30/03 a 05/04",
-      obs: "B.I. nº 026/2026. Indisponível: SD BM TOMASCHEWSKI (FÉRIAS).",
+      obs: [
+        "B.I. nº 026/2026.",
+        "Indisponível: SD BM TOMASCHEWSKI (FÉRIAS).",
+        "Modelo de escala com funções CG, COV, CLD, CLE, COBOM e, quando necessário, outras funções."
+      ].join(" "),
       dias: [
-        { data: "2026-03-30", diaSemana: "SEGUNDA-FEIRA", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"SD BM CAMACHO"}, {r:"41", m:"SD BM CAMACHO"}]},
-          { nome: "COV", turnos: [{r:"23", m:"2º SGT BM LISCANO"}, {r:"41", m:"2º SGT BM LISCANO"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM ISQUIERDO"}, {r:"41", m:"SD BM ISQUIERDO"}]},
-          { nome: "CLE", turnos: [{r:"23", m:"SD BM WILLIAM"}, {r:"41", m:"SD BM WILLIAM"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD TEMP LARSSON"}, {r:"41", m:"SD BM MOTTA"}]}
-        ]},
-        { data: "2026-03-31", diaSemana: "TERÇA-FEIRA", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"2º SGT BM ANDERSON"}, {r:"41", m:"2º SGT BM ANDERSON"}]},
-          { nome: "COV", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM TOMASCHEWSKI"}, {r:"41", m:"SD BM TOMASCHEWSKI"}]},
-          { nome: "CLE", turnos: [{r:"23", m:"SD BM SOARES"}, {r:"41", m:"SD BM SOARES"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD BM BORGES"}, {r:"41", m:"SD BM CAMACHO"}]}
-        ]},
-        { data: "2026-04-01", diaSemana: "QUARTA-FEIRA", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"SD BM ISQUIERDO"}, {r:"41", m:"SD BM ISQUIERDO"}]},
-          { nome: "COV", turnos: [{r:"23", m:"2º SGT BM VINICIUS"}, {r:"41", m:"2º SGT BM VINICIUS"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM MOTTA"}, {r:"41", m:"SD BM MOTTA"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]}
-        ]},
-        { data: "2026-04-02", diaSemana: "QUINTA-FEIRA", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"SD BM CAMACHO"}, {r:"41", m:"SD BM CAMACHO"}]},
-          { nome: "COV", turnos: [{r:"23", m:"2º SGT BM LISCANO"}, {r:"41", m:"2º SGT BM LISCANO"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM WILLIAM"}, {r:"41", m:"SD BM WILLIAM"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD BM BATISTA"}, {r:"41", m:"SD BM BATISTA"}]}
-        ]},
-        { data: "2026-04-03", diaSemana: "SEXTA-FEIRA", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"2º SGT BM ANDERSON"}, {r:"41", m:"2º SGT BM ANDERSON"}]},
-          { nome: "COV", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM BORGES"}, {r:"41", m:"SD BM BORGES"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD BM SOARES"}, {r:"41", m:"SD BM SOARES"}]}
-        ]},
-        { data: "2026-04-04", diaSemana: "SÁBADO", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"2º SGT BM VINICIUS"}, {r:"41", m:"2º SGT BM VINICIUS"}]},
-          { nome: "COV", turnos: [{r:"23", m:"SD BM PEGLOW"}, {r:"41", m:"SD BM PEGLOW"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM ISQUIERDO"}, {r:"41", m:"SD BM ISQUIERDO"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD BM CAMACHO"}, {r:"41", m:"SD BM CAMACHO"}]}
-        ]},
-        { data: "2026-04-05", diaSemana: "DOMINGO", funcoes: [
-          { nome: "CG", turnos: [{r:"23", m:"1º SGT BM BATISTA"}, {r:"41", m:"1º SGT BM BATISTA"}]},
-          { nome: "COV", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
-          { nome: "CLD", turnos: [{r:"23", m:"SD BM MAX"}, {r:"41", m:"SD BM MAX"}]},
-          { nome: "COBOM", turnos: [{r:"23", m:"SD BM BATISTA"}, {r:"41", m:"SD BM BATISTA"}]}
-        ]}
+        {
+          data: "2026-03-30",
+          diaSemana: "SEGUNDA-FEIRA",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "SD BM CAMACHO"), criarTurno("41", "SD BM CAMACHO")]),
+            criarFuncao("COV", [criarTurno("23", "2º SGT BM LISCANO"), criarTurno("41", "2º SGT BM LISCANO")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM ISQUIERDO"), criarTurno("41", "SD BM ISQUIERDO")]),
+            criarFuncao("CLE", [criarTurno("23", "SD BM WILLIAM"), criarTurno("41", "SD BM WILLIAM")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD TEMP LARSSON"), criarTurno("41", "SD BM MOTTA")])
+          ],
+          trocas: []
+        },
+        {
+          data: "2026-03-31",
+          diaSemana: "TERÇA-FEIRA",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "2º SGT BM ANDERSON"), criarTurno("41", "2º SGT BM ANDERSON")]),
+            criarFuncao("COV", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM TOMASCHEWSKI"), criarTurno("41", "SD BM TOMASCHEWSKI")]),
+            criarFuncao("CLE", [criarTurno("23", "SD BM SOARES"), criarTurno("41", "SD BM SOARES")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD BM BORGES"), criarTurno("41", "SD BM CAMACHO")])
+          ],
+          trocas: []
+        },
+        {
+          data: "2026-04-01",
+          diaSemana: "QUARTA-FEIRA",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "SD BM ISQUIERDO"), criarTurno("41", "SD BM ISQUIERDO")]),
+            criarFuncao("COV", [criarTurno("23", "2º SGT BM VINICIUS"), criarTurno("41", "2º SGT BM VINICIUS")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM MOTTA"), criarTurno("41", "SD BM MOTTA")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")])
+          ],
+          trocas: []
+        },
+        {
+          data: "2026-04-02",
+          diaSemana: "QUINTA-FEIRA",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "SD BM CAMACHO"), criarTurno("41", "SD BM CAMACHO")]),
+            criarFuncao("COV", [criarTurno("23", "2º SGT BM LISCANO"), criarTurno("41", "2º SGT BM LISCANO")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM WILLIAM"), criarTurno("41", "SD BM WILLIAM")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD BM BATISTA"), criarTurno("41", "SD BM BATISTA")])
+          ],
+          trocas: []
+        },
+        {
+          data: "2026-04-03",
+          diaSemana: "SEXTA-FEIRA",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "2º SGT BM ANDERSON"), criarTurno("41", "2º SGT BM ANDERSON")]),
+            criarFuncao("COV", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM BORGES"), criarTurno("41", "SD BM BORGES")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD BM SOARES"), criarTurno("41", "SD BM SOARES")])
+          ],
+          trocas: []
+        },
+        {
+          data: "2026-04-04",
+          diaSemana: "SÁBADO",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "2º SGT BM VINICIUS"), criarTurno("41", "2º SGT BM VINICIUS")]),
+            criarFuncao("COV", [criarTurno("23", "SD BM PEGLOW"), criarTurno("41", "SD BM PEGLOW")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM ISQUIERDO"), criarTurno("41", "SD BM ISQUIERDO")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD BM CAMACHO"), criarTurno("41", "SD BM CAMACHO")])
+          ],
+          trocas: []
+        },
+        {
+          data: "2026-04-05",
+          diaSemana: "DOMINGO",
+          funcoes: [
+            criarFuncao("CG", [criarTurno("23", "1º SGT BM BATISTA"), criarTurno("41", "1º SGT BM BATISTA")]),
+            criarFuncao("COV", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
+            criarFuncao("CLD", [criarTurno("23", "SD BM MAX"), criarTurno("41", "SD BM MAX")]),
+            criarFuncao("COBOM", [criarTurno("23", "SD BM BATISTA"), criarTurno("41", "SD BM BATISTA")])
+          ],
+          trocas: []
+        }
       ]
     };
 
     const militaresFull = [
-      "1º SGT BM BATISTA", "1º SGT DIEFERSON", "1º SGT BM VICENTE", "2º SGT BM ANDERSON", 
-      "2º SGT BM LISCANO", "2º SGT BM VINICIUS", "SD BM BORGES", "SD BM CAMACHO", 
-      "SD BM ISQUIERDO", "SD TEMP LARSSON", "SD BM MAX", "SD BM MOTTA", "SD BM PEGLOW", 
-      "SD BM SOARES", "SD BM TOMASCHEWSKI", "SD BM WILLIAM"
-    ].sort();
+      "1º SGT BM BATISTA",
+      "1º SGT DIEFERSON",
+      "1º SGT BM VICENTE",
+      "2º SGT BM ANDERSON",
+      "2º SGT BM LISCANO",
+      "2º SGT BM VINICIUS",
+      "SD BM BATISTA",
+      "SD BM BORGES",
+      "SD BM CAMACHO",
+      "SD BM ISQUIERDO",
+      "SD TEMP LARSSON",
+      "SD BM MAX",
+      "SD BM MOTTA",
+      "SD BM PEGLOW",
+      "SD BM SOARES",
+      "SD BM TOMASCHEWSKI",
+      "SD BM WILLIAM"
+    ].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
-    let state = { index: 0, db: null };
+    let state = {
+      index: 0,
+      db: null
+    };
+
     let pendente = null;
 
-    function init() {
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function salvarEstado() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.db));
+    }
+
+    function carregarEstado() {
       const salvo = localStorage.getItem(STORAGE_KEY);
-      state.db = salvo ? JSON.parse(salvo) : escalaOficial;
-      
-      const sel = document.getElementById('selectMilitar');
-      militaresFull.forEach(m => sel.add(new Option(m, m)));
-      
-      irHoje();
+      state.db = salvo ? JSON.parse(salvo) : deepClone(escalaOficial);
+    }
+
+    function preencherSelectMilitares() {
+      const sel = document.getElementById("selectMilitar");
+      sel.innerHTML = '<option value="">Selecione...</option>';
+
+      militaresFull.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m;
+        opt.textContent = m;
+        sel.appendChild(opt);
+      });
+    }
+
+    function preencherSelectDias() {
+      const selectDia = document.getElementById("selectDia");
+      selectDia.innerHTML = "";
+
+      state.db.dias.forEach((dia, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = `${formatarData(dia.data)} • ${dia.diaSemana}`;
+        selectDia.appendChild(opt);
+      });
+
+      selectDia.value = state.index;
+    }
+
+    function formatarData(dataISO) {
+      const [ano, mes, dia] = dataISO.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function obterTurnoLabel(codigo) {
+      if (codigo === "23") return "12h Dia";
+      if (codigo === "41") return "12h Noite";
+      return `Turno ${codigo}`;
+    }
+
+    function contarMilitaresUnicos(dia, busca) {
+      const set = new Set();
+
+      dia.funcoes.forEach(func => {
+        const funcMatch = !busca || func.nome.toUpperCase().includes(busca);
+
+        func.turnos.forEach(turno => {
+          const nome = (turno.militar || "").toUpperCase();
+          const turnoMatch = !busca || nome.includes(busca) || funcMatch;
+          if (turnoMatch && nome) set.add(nome);
+        });
+      });
+
+      return set.size;
+    }
+
+    function calcularCargaResumo(dia, busca) {
+      const mapa = {};
+
+      dia.funcoes.forEach(func => {
+        const funcMatch = !busca || func.nome.toUpperCase().includes(busca);
+
+        func.turnos.forEach(turno => {
+          const nome = (turno.militar || "").trim();
+          const turnoMatch = !busca || nome.toUpperCase().includes(busca) || funcMatch;
+          if (!nome || !turnoMatch) return;
+
+          if (!mapa[nome]) mapa[nome] = 0;
+          mapa[nome] += Number(turno.horas || 12);
+        });
+      });
+
+      const agrupado = {};
+      Object.values(mapa).forEach(h => {
+        agrupado[h] = (agrupado[h] || 0) + 1;
+      });
+
+      const partes = Object.keys(agrupado)
+        .map(Number)
+        .sort((a, b) => b - a)
+        .map(h => `${agrupado[h]} de ${h}h`);
+
+      return partes.length ? partes.join(" • ") : "-";
+    }
+
+    function renderHistoricoTrocas() {
+      const dia = state.db.dias[state.index];
+      const box = document.getElementById("historicoTrocas");
+      const trocas = dia.trocas || [];
+
+      if (!trocas.length) {
+        box.innerHTML = "Nenhuma troca registrada para este dia.";
+        return;
+      }
+
+      box.innerHTML = trocas.map(t => `
+        <div class="historico-card">
+          <strong>${t.funcao}</strong> • ${t.turno}<br>
+          Saiu: ${t.antigo}<br>
+          Entrou: ${t.novo}<br>
+          Obs.: ${t.obs || "-"}<br>
+          Registro: ${t.dataRegistro}
+        </div>
+      `).join("");
     }
 
     function render() {
       const dia = state.db.dias[state.index];
-      const busca = document.getElementById('buscaMilitar').value.toUpperCase();
+      const busca = document.getElementById("buscaMilitar").value.trim().toUpperCase();
 
-      document.getElementById('labelSemana').textContent = dia.diaSemana;
-      document.getElementById('labelData').textContent = dia.data.split('-').reverse().join('/');
-      document.getElementById('txtObs').textContent = state.db.obs;
+      document.getElementById("labelSemana").textContent = `${state.db.titulo} • ${dia.diaSemana}`;
+      document.getElementById("labelData").textContent = formatarData(dia.data);
+      document.getElementById("txtObs").textContent = state.db.obs;
+      document.getElementById("selectDia").value = state.index;
 
-      const container = document.getElementById('listaEscala');
+      const container = document.getElementById("listaEscala");
       container.innerHTML = "";
 
-      dia.funcoes.forEach((f, fIdx) => {
+      let totalFuncoes = 0;
+
+      dia.funcoes.forEach((func, fIdx) => {
+        const funcaoMatch = !busca || func.nome.toUpperCase().includes(busca);
         let turnosHtml = "";
         let match = false;
 
-        f.turnos.forEach((t, tIdx) => {
-          if (!busca || t.m m.includes(busca) || f.nome.includes(busca)) {
+        func.turnos.forEach((turno, tIdx) => {
+          const nomeMilitar = turno.militar || "";
+          const militarMatch = !busca || nomeMilitar.toUpperCase().includes(busca);
+
+          if (funcaoMatch || militarMatch) {
             match = true;
+
+            const houveTroca = (dia.trocas || []).some(
+              tr => tr.funcao === func.nome && tr.turnoCodigo === turno.codigo
+            );
+
             turnosHtml += `
               <div class="turno-row">
-                <div>
-                  <span class="turno-tag">Turno ${t.r}</span>
-                  <div class="militar-info">${t.m}</div>
+                <div class="turno-left">
+                  <span class="turno-tag">${obterTurnoLabel(turno.codigo)} • código ${turno.codigo}</span>
+                  <div class="militar-info ${!nomeMilitar ? 'militar-vazio' : ''}">
+                    ${nomeMilitar || "Sem militar escalado"}
+                  </div>
+                  <div class="turno-horas">${turno.horas || 12}h</div>
+                  ${houveTroca ? `<div class="troca-chip">Troca registrada</div>` : ""}
                 </div>
                 <button class="btn-swap" onclick="abrirTroca(${fIdx}, ${tIdx})">TROCAR</button>
               </div>
@@ -272,44 +764,129 @@
         });
 
         if (match) {
+          totalFuncoes++;
           container.innerHTML += `
             <div class="card-func">
-              <div class="card-func-header">${f.nome}</div>
+              <div class="card-func-header">
+                <span>${func.nome}</span>
+                <span class="tag-func">${func.turnos.length} turno(s)</span>
+              </div>
               ${turnosHtml}
             </div>
           `;
         }
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.db));
+
+      if (!container.innerHTML) {
+        container.innerHTML = `<div class="empty-state">Nenhum resultado encontrado para a busca atual.</div>`;
+      }
+
+      document.getElementById("totalFuncoes").textContent = totalFuncoes;
+      document.getElementById("totalMilitares").textContent = contarMilitaresUnicos(dia, busca);
+      document.getElementById("cargaResumo").textContent = calcularCargaResumo(dia, busca);
+
+      renderHistoricoTrocas();
+      salvarEstado();
     }
 
-    function mudarDia(d) {
-      let n = state.index + d;
-      if (n >= 0 && n < state.db.dias.length) { state.index = n; render(); }
+    function mudarDia(delta) {
+      const novo = state.index + delta;
+      if (novo >= 0 && novo < state.db.dias.length) {
+        state.index = novo;
+        render();
+      }
     }
 
     function irHoje() {
-      const hoje = new Date().toISOString().split('T')[0];
-      const idx = state.db.dias.findIndex(d => d.data === hoje);
+      const hoje = new Date();
+      const yyyy = hoje.getFullYear();
+      const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+      const dd = String(hoje.getDate()).padStart(2, "0");
+      const hojeISO = `${yyyy}-${mm}-${dd}`;
+
+      const idx = state.db.dias.findIndex(d => d.data === hojeISO);
       state.index = idx !== -1 ? idx : 0;
       render();
     }
 
-    function abrirTroca(fi, ti) {
-      pendente = { fi, ti };
-      const t = state.db.dias[state.index].funcoes[fi].turnos[ti];
-      document.getElementById('infoTroca').textContent = `Substituir ${t.m} na função ${state.db.dias[state.index].funcoes[fi].nome}`;
-      document.getElementById('modalTroca').classList.add('active');
-    }
-
-    function confirmarTroca() {
-      const novo = document.getElementById('selectMilitar').value;
-      state.db.dias[state.index].funcoes[pendente.fi].turnos[pendente.ti].m = novo;
-      fecharModal();
+    function irParaDiaSelecionado() {
+      state.index = Number(document.getElementById("selectDia").value);
       render();
     }
 
-    function fecharModal() { document.getElementById('modalTroca').classList.remove('active'); }
+    function abrirTroca(funcIndex, turnoIndex) {
+      pendente = { funcIndex, turnoIndex };
+
+      const dia = state.db.dias[state.index];
+      const func = dia.funcoes[funcIndex];
+      const turno = func.turnos[turnoIndex];
+
+      document.getElementById("infoTroca").textContent =
+        `Substituir ${turno.militar || "militar não informado"} na função ${func.nome}, turno ${obterTurnoLabel(turno.codigo)}.`;
+
+      document.getElementById("selectMilitar").value = turno.militar || "";
+      document.getElementById("obsTroca").value = "";
+      document.getElementById("modalTroca").classList.add("active");
+    }
+
+    function confirmarTroca() {
+      if (!pendente) return;
+
+      const novoMilitar = document.getElementById("selectMilitar").value.trim();
+      const observacao = document.getElementById("obsTroca").value.trim();
+
+      if (!novoMilitar) {
+        alert("Selecione o militar substituto.");
+        return;
+      }
+
+      const dia = state.db.dias[state.index];
+      const func = dia.funcoes[pendente.funcIndex];
+      const turno = func.turnos[pendente.turnoIndex];
+      const militarAnterior = turno.militar || "";
+
+      turno.militar = novoMilitar;
+
+      if (!Array.isArray(dia.trocas)) dia.trocas = [];
+
+      dia.trocas.unshift({
+        funcao: func.nome,
+        turno: obterTurnoLabel(turno.codigo),
+        turnoCodigo: turno.codigo,
+        antigo: militarAnterior,
+        novo: novoMilitar,
+        obs: observacao,
+        dataRegistro: new Date().toLocaleString("pt-BR")
+      });
+
+      fecharModal();
+      render();
+      alert("Troca realizada com sucesso.");
+    }
+
+    function fecharModal() {
+      document.getElementById("modalTroca").classList.remove("active");
+      pendente = null;
+    }
+
+    function restaurarEscalaOriginal() {
+      const ok = confirm("Deseja restaurar toda a escala original desta página?");
+      if (!ok) return;
+
+      state.db = deepClone(escalaOficial);
+      state.index = 0;
+      fecharModal();
+      preencherSelectDias();
+      render();
+      alert("Escala original restaurada com sucesso.");
+    }
+
+    function init() {
+      carregarEstado();
+      preencherSelectMilitares();
+      preencherSelectDias();
+      irHoje();
+    }
 
     window.onload = init;
   </script>
