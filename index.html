@@ -376,7 +376,7 @@
 
     <div class="afast-card">
       <strong><i class="fas fa-user-clock"></i> Observações:</strong><br>
-      Semana atual corrigida conforme datas e escalados informados de 06/04/2026 até 12/04/2026.
+      CLE mantido como <strong>NÃO ESCALADO</strong> em todos os dias da semana de 06/04/2026 até 12/04/2026.
     </div>
   </div>
 
@@ -530,6 +530,17 @@
       render();
     }
 
+    function obterIndiceDiaAtual() {
+      const hoje = new Date();
+      const dd = String(hoje.getDate()).padStart(2, '0');
+      const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+      const yyyy = hoje.getFullYear();
+      const hojeFormatado = `${dd}/${mm}/${yyyy}`;
+
+      const idx = escala.findIndex(item => item.d === hojeFormatado);
+      return idx >= 0 ? idx : 0;
+    }
+
     function render() {
       const dia = escala[diaIdx];
       const search = document.getElementById('searchInput').value.toUpperCase().trim();
@@ -669,6 +680,7 @@
       }
     }
 
+    diaIdx = obterIndiceDiaAtual();
     render();
   </script>
 </body>
