@@ -530,7 +530,7 @@
 
     let trocas = JSON.parse(localStorage.getItem('trocas_CBSLS_semana_atual')) || {};
     let diaIdx = 0;
-    let expandirTodos = false;
+    let expandirTodos = true;
 
     function atualizarBotaoExpandir() {
       const btn = document.getElementById('btnExpandirTodos');
