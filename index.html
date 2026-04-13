@@ -664,11 +664,7 @@
   </div>
 
   <script>
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    } else {
-      console.warn('pdf.js não carregou. A leitura de PDF ficará indisponível até recarregar a página.');
-    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
@@ -678,7 +674,8 @@
       ultimaEscala: 'escala_cbsls_cache_online_v1'
     };
 
-    let supabase = null;
+    window.__supabaseClient = window.__supabaseClient || null;
+    let supabase = window.__supabaseClient;
     let currentSession = null;
     let deferredPrompt = null;
     let diaIdx = 0;
@@ -785,10 +782,17 @@
 
     function initSupabase() {
       try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        if (!window.supabase || !window.supabase.createClient) {
+          console.warn('Biblioteca Supabase não carregou.');
+          return;
+        }
+        if (!window.__supabaseClient) {
+          window.__supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        supabase = window.__supabaseClient;
       } catch (e) {
-        toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
         console.error(e);
+        toast('Erro ao iniciar Supabase. O app seguirá em modo local.');
       }
     }
 
@@ -799,17 +803,6 @@
       clearTimeout(window.__toastTimer);
       window.__toastTimer = setTimeout(() => el.classList.remove('show'), 4200);
     }
-
-    function hideSplash() {
-      const splash = document.getElementById('splashScreen');
-      if (splash) splash.classList.add('hide');
-    }
-
-    window.addEventListener('load', () => {
-      setTimeout(hideSplash, 1800);
-    });
-
-    setTimeout(hideSplash, 3500);
 
     function showView(view) {
       const isEscala = view === 'escala';
@@ -1105,46 +1098,22 @@
     }
 
     async function atualizarPainelAdmin() {
+      const { data } = await supabase.auth.getSession();
+      currentSession = data.session;
       const status = document.getElementById('adminStatus');
       const painel = document.getElementById('adminPanelCard');
       const trocasCard = document.getElementById('trocasAdminCard');
 
-      if (!supabase) {
-        status.textContent = 'Supabase não inicializado.';
+      if (!currentSession) {
+        status.textContent = 'Admin não autenticado.';
         painel.classList.add('hidden');
         trocasCard.classList.add('hidden');
         return;
       }
 
-      try {
-        const { data, error } = await supabase.auth.getSession();
-
-        if (error) {
-          console.error(error);
-          status.textContent = 'Erro ao verificar sessão do admin.';
-          painel.classList.add('hidden');
-          trocasCard.classList.add('hidden');
-          return;
-        }
-
-        currentSession = data.session;
-
-        if (!currentSession) {
-          status.textContent = 'Admin não autenticado.';
-          painel.classList.add('hidden');
-          trocasCard.classList.add('hidden');
-          return;
-        }
-
-        status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
-        painel.classList.remove('hidden');
-        trocasCard.classList.remove('hidden');
-      } catch (e) {
-        console.error('Erro em atualizarPainelAdmin:', e);
-        status.textContent = 'Erro ao carregar painel admin.';
-        painel.classList.add('hidden');
-        trocasCard.classList.add('hidden');
-      }
+      status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
+      painel.classList.remove('hidden');
+      trocasCard.classList.remove('hidden');
     }
 
     function carregarModeloAtual() {
@@ -1226,11 +1195,6 @@
       }
 
       try {
-        if (!window.pdfjsLib) {
-          toast('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
-          return;
-        }
-
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let texto = '';
@@ -1300,19 +1264,27 @@
     }
 
     async function boot() {
+      const splash = document.getElementById('splashScreen');
+      const forceHideSplash = () => {
+        if (splash) splash.classList.add('hide');
+      };
+
+      setTimeout(forceHideSplash, 2500);
+
       try {
         initSupabase();
         setupPWA();
 
         const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
-        document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+        document.getElementById('jsonEscalaEditor').value =
+          rascunho || JSON.stringify(escalaData, null, 2);
 
         const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
         if (cache) {
           try {
             escalaData = JSON.parse(cache);
           } catch (e) {
-            console.error('Erro ao ler cache local da escala:', e);
+            console.error('Erro ao ler cache:', e);
           }
         }
 
@@ -1320,25 +1292,14 @@
         render();
 
         if (supabase) {
-          try {
-            await atualizarPainelAdmin();
-          } catch (e) {
-            console.error('Erro ao atualizar painel admin:', e);
-          }
-
-          try {
-            await carregarEscalaOnline();
-          } catch (e) {
-            console.error('Erro ao carregar escala online:', e);
-          }
-        } else {
-          console.warn('Supabase não inicializado. App seguirá em modo local.');
+          try { await atualizarPainelAdmin(); } catch (e) { console.error(e); }
+          try { await carregarEscalaOnline(); } catch (e) { console.error(e); }
         }
       } catch (e) {
-        console.error('Erro no boot do app:', e);
-        toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
+        console.error('Erro no boot:', e);
+        toast('App iniciou em modo local.');
       } finally {
-        setTimeout(hideSplash, 1200);
+        setTimeout(forceHideSplash, 1200);
       }
     }
 
