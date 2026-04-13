@@ -1,6 +1,17 @@
-const CACHE_NAME = 'escala-cb-sls-v17';
+const CACHE_NAME = 'escala-cb-sls-v18';
+const URLS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './sw.js'
+];
 
-self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE))
+  );
+  self.skipWaiting();
+});
 
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -21,20 +32,24 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        if (
-          response &&
-          response.status === 200 &&
-          response.type === 'basic'
-        ) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, clone);
-          });
-        }
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(event.request)
+        .then(response => {
+          if (
+            response &&
+            response.status === 200 &&
+            (response.type === 'basic' || response.type === 'cors')
+          ) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, clone);
+            });
+          }
+          return response;
+        })
+        .catch(() => caches.match('./index.html'));
+    })
   );
 });
