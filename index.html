@@ -4,7 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Escala CB SLS</title>
+  <meta name="theme-color" content="#c62828" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Escala CB SLS" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     :root {
       --bg: #f4f7f6;
@@ -15,6 +24,9 @@
       --fire-red-dark: #8e0000;
       --mil-blue: #1a237e;
       --orange-swap: #f39c12;
+      --success: #2e7d32;
+      --success-dark: #1b5e20;
+      --warning: #ff9800;
       --shadow: 0 4px 15px rgba(0,0,0,0.1);
       --radius: 16px;
     }
@@ -58,10 +70,49 @@
       font-weight: 600;
     }
 
+    .online-indicator {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.18);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
     .container {
       padding: 15px;
-      max-width: 600px;
+      max-width: 700px;
       margin: 0 auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .install-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+      border: 1px solid #ffe082;
+    }
+
+    .install-banner.show {
+      display: flex;
+    }
+
+    .install-banner h3,
+    .card h3,
+    .card h2 {
+      margin: 0 0 8px 0;
     }
 
     .search-box {
@@ -75,30 +126,78 @@
       box-shadow: var(--shadow);
     }
 
+    .search-box input,
+    textarea,
+    select,
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.96rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
     .search-box input {
       border: none;
-      width: 100%;
-      font-size: 1rem;
-      color: var(--text);
+      padding: 0;
       background: transparent;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
     }
 
     .top-actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 12px;
+      flex-wrap: wrap;
     }
 
-    .btn-expand {
+    .btn-expand,
+    .btn,
+    .btn-nav,
+    .nav-btn,
+    .btn-confirm {
+      cursor: pointer;
       border: none;
+      transition: 0.2s ease;
+    }
+
+    .btn-expand,
+    .btn {
       background: #eef2f7;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 800;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 999px;
-      cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .btn.primary,
+    .btn-confirm,
+    .btn-install {
+      background: var(--fire-red);
+      color: #fff;
+    }
+
+    .btn.success { background: var(--success); color: #fff; }
+    .btn.warning { background: var(--warning); color: #fff; }
+    .btn.ghost { background: #f3f4f6; color: var(--text); }
+
+    .btn:disabled,
+    .btn-confirm:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
     }
 
     .day-nav {
@@ -115,12 +214,10 @@
 
     .btn-nav {
       background: var(--bg);
-      border: none;
       width: 45px;
       height: 45px;
       border-radius: 50%;
       color: var(--mil-blue);
-      cursor: pointer;
       font-size: 1.2rem;
       flex-shrink: 0;
     }
@@ -224,13 +321,8 @@
       line-height: 1.35;
     }
 
-    .militar-name.swapped {
-      color: var(--orange-swap);
-    }
-
-    .militar-name.nao-escalado {
-      color: var(--muted);
-    }
+    .militar-name.swapped { color: var(--orange-swap); }
+    .militar-name.nao-escalado { color: var(--muted); }
 
     .tag-swap {
       font-size: 0.65rem;
@@ -265,7 +357,6 @@
 
     .nav-btn {
       flex: 1;
-      border: none;
       background: none;
       display: flex;
       flex-direction: column;
@@ -275,7 +366,6 @@
       color: var(--muted);
       font-weight: 700;
       font-size: 0.75rem;
-      cursor: pointer;
     }
 
     .nav-btn.active {
@@ -286,21 +376,21 @@
       font-size: 1.4rem;
     }
 
-    .modal {
+    .modal,
+    .splash,
+    .toast {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: flex-end;
+      inset: 0;
       z-index: 200;
     }
 
-    .modal.show {
-      display: flex;
+    .modal {
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: flex-end;
     }
+
+    .modal.show { display: flex; }
 
     .modal-body {
       background: #fff;
@@ -308,12 +398,11 @@
       border-radius: 24px 24px 0 0;
       padding: 25px;
       animation: slideUp 0.3s ease;
+      max-height: 88vh;
+      overflow: auto;
     }
 
-    .form-group {
-      margin-bottom: 15px;
-    }
-
+    .form-group { margin-bottom: 15px; }
     .form-group label {
       display: block;
       font-size: 0.85rem;
@@ -322,99 +411,256 @@
       color: var(--muted);
     }
 
-    .form-control {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-      font-size: 1rem;
-      background: #fff;
-    }
-
     .btn-confirm {
-      background: var(--fire-red);
-      color: #fff;
-      border: none;
       width: 100%;
       padding: 16px;
       border-radius: 12px;
       font-weight: 800;
       margin-top: 10px;
-      cursor: pointer;
+    }
+
+    .hidden { display: none !important; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: #eef2f7;
+      color: var(--muted);
+    }
+
+    .status-box {
+      font-size: 0.86rem;
+      line-height: 1.5;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .splash {
+      background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    .splash.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-box {
+      max-width: 420px;
+    }
+
+    .splash-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      object-fit: cover;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+      margin-bottom: 16px;
+    }
+
+    .toast {
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 16px;
+      pointer-events: none;
+      z-index: 350;
+    }
+
+    .toast.show { display: flex; }
+
+    .toast-inner {
+      pointer-events: auto;
+      margin-top: 20px;
+      background: #111827;
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 14px;
+      max-width: 520px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.82rem;
     }
 
     @keyframes slideUp {
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
     }
+
+    @media (max-width: 560px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .install-banner { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
+  <div class="splash" id="splashScreen">
+    <div class="splash-box">
+      <img src="icon-192.png" alt="Escala CB SLS" class="splash-logo" onerror="this.style.display='none'" />
+      <h1 style="margin:0 0 10px 0;">🚒 Bem-vindo ao Escala CB SLS</h1>
+      <p style="margin:0; opacity:.95; line-height:1.55;">
+        Central de consulta da escala semanal, trocas sincronizadas e atualização online via admin.<br>
+        Carregando o app...
+      </p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><div class="toast-inner" id="toastText"></div></div>
 
   <header class="app-header">
     <h1>ESCALA • CBSLS</h1>
-    <div class="app-subtitle">Escala semanal atualizada • 13/04/2026 a 19/04/2026</div>
+    <div class="app-subtitle" id="appSubtitle">Escala semanal atualizada • 13/04/2026 a 19/04/2026</div>
+    <div class="online-indicator" id="onlineIndicator"><i class="fas fa-cloud"></i> Dados online conectados</div>
   </header>
 
-  <div class="container" id="viewEscala">
-    <div class="search-box">
-      <i class="fas fa-search" style="color: var(--muted)"></i>
-      <input type="text" id="searchInput" placeholder="Buscar militar na escala..." oninput="render()">
-    </div>
-
-    <div class="top-actions">
-      <button class="btn-expand" id="btnExpandirTodos" onclick="toggleExpandirTodos()">Expandir todos</button>
-    </div>
-
-    <nav class="day-nav">
-      <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
-      <div class="day-info">
-        <span class="week-label">Semana atual</span>
-        <h2 id="diaNome">Segunda-Feira</h2>
-        <span id="diaData">13/04/2026</span>
+  <main>
+    <section class="container" id="viewEscala">
+      <div class="card install-banner" id="installBanner">
+        <div>
+          <h3>📲 Instalar App</h3>
+          <div class="muted">Instale o Escala CB SLS na tela inicial para abrir como aplicativo.</div>
+        </div>
+        <button class="btn btn-install primary" id="btnInstallApp">Instalar agora</button>
       </div>
-      <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
-    </nav>
 
-    <div id="funcList"></div>
+      <div class="search-box">
+        <i class="fas fa-search" style="color: var(--muted)"></i>
+        <input type="text" id="searchInput" placeholder="Buscar militar na escala..." oninput="render()" />
+      </div>
 
-    <div class="afast-card">
-  <strong><i class="fas fa-user-clock"></i> Indisponíveis / observações:</strong><br>
-  • LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
-  • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
-  • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
-  • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
-  • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
-  • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.
-</div>
-  </div>
+      <div class="top-actions">
+        <button class="btn-expand" id="btnExpandirTodos" onclick="toggleExpandirTodos()">Expandir todos</button>
+        <span class="badge" id="ultimaAtualizacaoBadge"><i class="fas fa-clock"></i> Aguardando sincronização</span>
+      </div>
+
+      <nav class="day-nav">
+        <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
+        <div class="day-info">
+          <span class="week-label">Semana atual</span>
+          <h2 id="diaNome">Segunda-Feira</h2>
+          <span id="diaData">13/04/2026</span>
+        </div>
+        <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
+      </nav>
+
+      <div id="funcList"></div>
+
+      <div class="afast-card" id="afastCard">
+        <strong><i class="fas fa-user-clock"></i> Indisponíveis / observações:</strong><br>
+        <span id="afastamentosHtml">
+          • LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
+          • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
+          • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
+          • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.
+        </span>
+      </div>
+    </section>
+
+    <section class="container hidden" id="viewAdmin">
+      <div class="card">
+        <h2>🔐 Admin da Escala</h2>
+        <div class="muted">Login conectado ao Supabase. Somente admin cadastrado pode publicar escala nova.</div>
+      </div>
+
+      <div class="card" id="adminLoginCard">
+        <div class="form-group">
+          <label>E-mail do admin</label>
+          <input type="email" id="adminEmail" value="admin@escala.com" />
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="adminSenha" placeholder="Digite a senha do admin" />
+        </div>
+        <div class="grid-2">
+          <button class="btn primary" onclick="loginAdmin()">Entrar como admin</button>
+          <button class="btn ghost" onclick="logoutAdmin()">Sair</button>
+        </div>
+        <div class="status-box" id="adminStatus" style="margin-top:12px;">Admin não autenticado.</div>
+      </div>
+
+      <div class="card hidden" id="adminPanelCard">
+        <h3>📄 Importar PDF e publicar escala</h3>
+        <div class="form-group">
+          <label>Selecionar PDF da escala</label>
+          <input type="file" id="pdfFile" accept="application/pdf" />
+        </div>
+        <div class="grid-2">
+          <button class="btn warning" onclick="lerPdfEscala()">Ler PDF</button>
+          <button class="btn success" onclick="publicarEscalaOnline()">Publicar escala online</button>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>JSON da escala para revisão</label>
+          <textarea id="jsonEscalaEditor"></textarea>
+        </div>
+        <div class="grid-2">
+          <button class="btn ghost" onclick="carregarModeloAtual()">Carregar modelo atual</button>
+          <button class="btn ghost" onclick="salvarJsonLocal()">Salvar rascunho local</button>
+        </div>
+      </div>
+
+      <div class="card hidden" id="trocasAdminCard">
+        <h3>🧹 Trocas</h3>
+        <div class="grid-2">
+          <button class="btn warning" onclick="limparTrocasOnline()">Limpar trocas online</button>
+          <button class="btn ghost" onclick="carregarEscalaOnline(true)">Sincronizar agora</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="showView('escala')"><i class="fas fa-calendar-alt"></i>Escala</button>
-    <button class="nav-btn" onclick="abrirModal()"><i class="fas fa-exchange-alt"></i>Troca</button>
-    <button class="nav-btn" onclick="resetAdmin()"><i class="fas fa-user-shield"></i>Reset</button>
+    <button class="nav-btn active" id="navEscala" onclick="showView('escala')"><i class="fas fa-calendar-alt"></i>Escala</button>
+    <button class="nav-btn" id="navTroca" onclick="abrirModal()"><i class="fas fa-exchange-alt"></i>Troca</button>
+    <button class="nav-btn" id="navAdmin" onclick="showView('admin')"><i class="fas fa-user-shield"></i>Admin</button>
   </nav>
 
   <div class="modal" id="modalTroca">
     <div class="modal-body">
-      <div style="display:flex; justify-content: space-between; margin-bottom: 20px; align-items:center;">
+      <div style="display:flex; justify-content: space-between; margin-bottom: 20px; align-items:center; gap:10px;">
         <h3 style="margin:0">Solicitar Troca</h3>
         <i class="fas fa-times" onclick="fecharModal()" style="font-size: 1.5rem; color: var(--muted); cursor:pointer;"></i>
       </div>
 
       <div class="form-group">
         <label>Selecione a Função / Turno</label>
-        <select id="selectTurno" class="form-control" onchange="updateMilitarOriginal()"></select>
+        <select id="selectTurno" onchange="updateMilitarOriginal()"></select>
       </div>
 
       <div class="form-group">
-        <label>Saindo:</label>
-        <input type="text" id="militarSaindo" class="form-control" readonly style="background:#f8f9fa; font-weight:700; color:var(--fire-red)">
+        <label>Saindo</label>
+        <input type="text" id="militarSaindo" readonly style="background:#f8f9fa; font-weight:700; color:var(--fire-red)" />
       </div>
 
       <div class="form-group">
         <label>Militar Substituto</label>
-        <select id="selectSubstituto" class="form-control"></select>
+        <select id="selectSubstituto"></select>
       </div>
 
       <button class="btn-confirm" onclick="salvarTroca()">CONFIRMAR TROCA</button>
@@ -422,117 +668,146 @@
   </div>
 
   <script>
-    function showView() {
-      // Mantido apenas para compatibilidade com o botão da barra inferior
-    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    const ADMIN_PASSWORD = "123456";
+    const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
+    const ADMIN_EMAIL_PADRAO = 'admin@escala.com';
+    const STORAGE_KEYS = {
+      rascunho: 'escala_cbsls_rascunho_json',
+      ultimaEscala: 'escala_cbsls_cache_online_v1'
+    };
 
-    const milLista = [
-      "1º SGT BATISTA",
-      "1º SGT DIEFERSON",
-      "1º SGT VICENTE",
-      "1º TEN MARCELO",
-      "2º SGT ANDERSON",
-      "2º SGT ANDRE",
-      "2º SGT LISCANO",
-      "2º SGT VINICIUS",
-      "SD BATISTA",
-      "SD BORGES",
-      "SD CAMACHO",
-      "SD ISQUIERDO",
-      "SD MAX",
-      "SD MOTTA",
-      "SD PEGLOW",
-      "SD SOARES",
-      "SD TEMP LARSSON",
-      "SD TOMASCHEWSKI",
-      "SD WILLIAM"
-    ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-
-    const escala = [
-  {
-    d: "13/04/2026",
-    n: "Segunda-Feira",
-    f: [
-      { n: "CG", i: "user-shield", t: ["2º SGT BM VINICIUS", "2º SGT BM VINICIUS"] },
-      { n: "COV", i: "truck", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["SD BM WILLIAM", "SD BM WILLIAM"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD BM SOARES", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM ISQUIERDO", "SD BM ISQUIERDO"] }
-    ]
-  },
-  {
-    d: "14/04/2026",
-    n: "Terça-Feira",
-    f: [
-      { n: "CG", i: "user-shield", t: ["1º SGT BM VICENTE", "1º SGT BM VICENTE"] },
-      { n: "COV", i: "truck", t: ["SD BM PEGLOW", "SD BM PEGLOW"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["SD BM MOTTA", "SD BM MOTTA"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD BM BORGES", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM CAMACHO", "SD BM CAMACHO"] }
-    ]
-  },
-  {
-    d: "15/04/2026",
-    n: "Quarta-Feira",
-    f: [
-      { n: "CG", i: "user-shield", t: ["2º SGT BM ANDERSON", "2º SGT BM ANDERSON"] },
-      { n: "COV", i: "truck", t: ["1º SGT BM BATISTA", "1º SGT BM BATISTA"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["SD BM WILLIAM", "SD BM WILLIAM"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD TEMP LARSSON", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM BATISTA", "SD BM BATISTA"] }
-    ]
-  },
-  {
-    d: "16/04/2026",
-    n: "Quinta-Feira",
-    f: [
-      { n: "CG", i: "user-shield", t: ["SD BM ISQUIERDO", "SD BM ISQUIERDO"] },
-      { n: "COV", i: "truck", t: ["2º SGT BM VINICIUS", "2º SGT BM VINICIUS"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["SD BM MOTTA", "SD BM MOTTA"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD BM CAMACHO", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM BORGES", "SD BM BORGES"] }
-    ]
-  },
-  {
-    d: "17/04/2026",
-    n: "Sexta-Feira",
-    f: [
-      { n: "CG", i: "user-shield", t: ["1º SGT BM VICENTE", "1º SGT BM VICENTE"] },
-      { n: "COV", i: "truck", t: ["SD BM PEGLOW", "SD BM PEGLOW"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["1º SGT BM BATISTA", "SD BM MAX"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD TEMP LARSSON", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM BATISTA", "SD BM BATISTA"] }
-    ]
-  },
-  {
-    d: "18/04/2026",
-    n: "Sábado",
-    f: [
-      { n: "CG", i: "user-shield", t: ["2º SGT BM ANDERSON", "2º SGT BM ANDERSON"] },
-      { n: "COV", i: "truck", t: ["2º SGT BM VINICIUS", "2º SGT BM VINICIUS"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["SD BM TOMASCHEWSKI", "SD BM TOMASCHEWSKI"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD BM ISQUIERDO", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM WILLIAM", "SD BM WILLIAM"] }
-    ]
-  },
-  {
-    d: "19/04/2026",
-    n: "Domingo",
-    f: [
-      { n: "CG", i: "user-shield", t: ["1º SGT BM BATISTA", "SD BM CAMACHO"] },
-      { n: "COV", i: "truck", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
-      { n: "CLD", i: "fire-extinguisher", t: ["SD BM BORGES", "SD BM BARGES"] },
-      { n: "CLE", i: "helmet-safety", t: ["SD BM CAMACHO", "NÃO ESCALADO"] },
-      { n: "COBOM", i: "headset", t: ["SD BM MOTTA", "SD BM MOTTA"] }
-    ]
-  }
-];
-
-    let trocas = JSON.parse(localStorage.getItem('trocas_CBSLS_semana_atual')) || {};
+    let supabase = null;
+    let currentSession = null;
+    let deferredPrompt = null;
     let diaIdx = 0;
     let expandirTodos = true;
+    let trocas = {};
+    let escalaData = {
+      semana_inicio: '2026-04-13',
+      semana_fim: '2026-04-19',
+      atualizado_por: 'Sistema local',
+      atualizado_em: null,
+      afastamentos_html: `• LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
+          • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
+          • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
+          • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.`,
+      escala: [
+        {
+          d: '13/04/2026',
+          n: 'Segunda-Feira',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD BM SOARES', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] }
+          ]
+        },
+        {
+          d: '14/04/2026',
+          n: 'Terça-Feira',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
+            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] }
+          ]
+        },
+        {
+          d: '15/04/2026',
+          n: 'Quarta-Feira',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
+            { n: 'COV', i: 'truck', t: ['1º SGT BM BATISTA', '1º SGT BM BATISTA'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
+          ]
+        },
+        {
+          d: '16/04/2026',
+          n: 'Quinta-Feira',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
+            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM BORGES', 'SD BM BORGES'] }
+          ]
+        },
+        {
+          d: '17/04/2026',
+          n: 'Sexta-Feira',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
+            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['1º SGT BM BATISTA', 'SD BM MAX'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
+          ]
+        },
+        {
+          d: '18/04/2026',
+          n: 'Sábado',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
+            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD BM ISQUIERDO', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] }
+          ]
+        },
+        {
+          d: '19/04/2026',
+          n: 'Domingo',
+          f: [
+            { n: 'CG', i: 'user-shield', t: ['1º SGT BM BATISTA', 'SD BM CAMACHO'] },
+            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
+            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BARGES'] },
+            { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
+            { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] }
+          ]
+        }
+      ]
+    };
+
+    const milLista = [
+      '1º SGT BATISTA', '1º SGT DIEFERSON', '1º SGT VICENTE', '1º TEN MARCELO',
+      '2º SGT ANDERSON', '2º SGT ANDRE', '2º SGT LISCANO', '2º SGT VINICIUS',
+      'SD BATISTA', 'SD BORGES', 'SD CAMACHO', 'SD ISQUIERDO', 'SD MAX',
+      'SD MOTTA', 'SD PEGLOW', 'SD SOARES', 'SD TEMP LARSSON', 'SD TOMASCHEWSKI', 'SD WILLIAM'
+    ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+    function initSupabase() {
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (e) {
+        toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
+        console.error(e);
+      }
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      document.getElementById('toastText').innerHTML = msg;
+      el.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 4200);
+    }
+
+    function showView(view) {
+      const isEscala = view === 'escala';
+      document.getElementById('viewEscala').classList.toggle('hidden', !isEscala);
+      document.getElementById('viewAdmin').classList.toggle('hidden', isEscala);
+      document.getElementById('navEscala').classList.toggle('active', isEscala);
+      document.getElementById('navAdmin').classList.toggle('active', !isEscala);
+      document.getElementById('navTroca').classList.remove('active');
+    }
 
     function atualizarBotaoExpandir() {
       const btn = document.getElementById('btnExpandirTodos');
@@ -550,8 +825,7 @@
       const mm = String(hoje.getMonth() + 1).padStart(2, '0');
       const yyyy = hoje.getFullYear();
       const hojeFormatado = `${dd}/${mm}/${yyyy}`;
-
-      const idx = escala.findIndex(item => item.d === hojeFormatado);
+      const idx = escalaData.escala.findIndex(item => item.d === hojeFormatado);
       return idx >= 0 ? idx : 0;
     }
 
@@ -561,16 +835,34 @@
       return 'militar-name';
     }
 
+    function formatDateBRFromISO(iso) {
+      if (!iso) return '';
+      const [ano, mes, dia] = String(iso).split('-');
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function atualizarCabecalhoSemana() {
+      const inicio = formatDateBRFromISO(escalaData.semana_inicio);
+      const fim = formatDateBRFromISO(escalaData.semana_fim);
+      document.getElementById('appSubtitle').textContent = `Escala semanal atualizada • ${inicio} a ${fim}`;
+      const badge = document.getElementById('ultimaAtualizacaoBadge');
+      const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
+      badge.innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
+      document.getElementById('afastamentosHtml').innerHTML = escalaData.afastamentos_html || 'Sem observações.';
+    }
+
     function render() {
-      const dia = escala[diaIdx];
+      if (!escalaData.escala || !escalaData.escala.length) return;
+      const dia = escalaData.escala[diaIdx];
       const search = document.getElementById('searchInput').value.toUpperCase().trim();
 
       document.getElementById('diaNome').textContent = dia.n;
       document.getElementById('diaData').textContent = dia.d;
       atualizarBotaoExpandir();
+      atualizarCabecalhoSemana();
 
       const list = document.getElementById('funcList');
-      list.innerHTML = "";
+      list.innerHTML = '';
 
       dia.f.forEach((func) => {
         const t0_key = `${dia.d}|${func.n}|0`;
@@ -582,8 +874,8 @@
         if (
           search &&
           !func.n.toUpperCase().includes(search) &&
-          !m0.toUpperCase().includes(search) &&
-          !m1.toUpperCase().includes(search)
+          !String(m0).toUpperCase().includes(search) &&
+          !String(m1).toUpperCase().includes(search)
         ) return;
 
         const card = document.createElement('div');
@@ -623,15 +915,16 @@
     }
 
     function mudarDia(v) {
-      diaIdx = (diaIdx + v + escala.length) % escala.length;
+      diaIdx = (diaIdx + v + escalaData.escala.length) % escalaData.escala.length;
       render();
     }
 
     function abrirModal() {
+      document.getElementById('navTroca').classList.add('active');
       const sT = document.getElementById('selectTurno');
       sT.innerHTML = '<option value="">Selecione...</option>';
 
-      escala[diaIdx].f.forEach((f, fi) => {
+      escalaData.escala[diaIdx].f.forEach((f, fi) => {
         sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
         sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
       });
@@ -654,56 +947,340 @@
       }
 
       const [fi, ti] = val.split('|');
-      const func = escala[diaIdx].f[fi];
-      const key = `${escala[diaIdx].d}|${func.n}|${ti}`;
+      const func = escalaData.escala[diaIdx].f[fi];
+      const key = `${escalaData.escala[diaIdx].d}|${func.n}|${ti}`;
       const atual = trocas[key] || func.t[ti];
-
       document.getElementById('militarSaindo').value = atual;
     }
 
-    function salvarTroca() {
+    async function salvarTroca() {
       const turno = document.getElementById('selectTurno').value;
       const sub = document.getElementById('selectSubstituto').value;
 
       if (!turno || !sub) {
-        alert("Preencha tudo!");
+        toast('Preencha todos os campos da troca.');
         return;
       }
 
       const [fi, ti] = turno.split('|');
-      const func = escala[diaIdx].f[fi];
-      const key = `${escala[diaIdx].d}|${func.n}|${ti}`;
+      const dia = escalaData.escala[diaIdx];
+      const func = dia.f[fi];
+      const key = `${dia.d}|${func.n}|${ti}`;
+      const original = trocas[key] || func.t[ti];
+      const turnoNome = ti === '0' ? 'Dia' : 'Noite';
+
+      if (!supabase) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
+      const { error } = await supabase.from('trocas_escala').insert({
+        data_escala: toISODate(dia.d),
+        funcao: func.n,
+        turno: turnoNome,
+        militar_original: original,
+        militar_substituto: sub
+      });
+
+      if (error) {
+        console.error(error);
+        toast('Erro ao salvar troca online. Confira as policies e a tabela trocas_escala.');
+        return;
+      }
 
       trocas[key] = sub;
-      localStorage.setItem('trocas_CBSLS_semana_atual', JSON.stringify(trocas));
-
       fecharModal();
       render();
+      toast('Troca salva online com sucesso. Agora ela aparece em qualquer dispositivo.');
     }
 
     function fecharModal() {
       document.getElementById('modalTroca').classList.remove('show');
+      document.getElementById('navTroca').classList.remove('active');
     }
 
-    function resetAdmin() {
-      const senha = prompt("Digite a senha de administrador para resetar as trocas:");
-      if (senha === null) return;
+    function toISODate(br) {
+      const [dia, mes, ano] = br.split('/');
+      return `${ano}-${mes}-${dia}`;
+    }
 
-      if (senha !== ADMIN_PASSWORD) {
-        alert("Senha de administrador incorreta.");
+    async function carregarTrocasOnline() {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from('trocas_escala')
+        .select('*')
+        .order('criado_em', { ascending: true });
+
+      if (error) {
+        console.error(error);
         return;
       }
 
-      if (confirm("Senha correta. Deseja limpar todas as trocas desta semana?")) {
-        localStorage.removeItem('trocas_CBSLS_semana_atual');
-        trocas = {};
-        alert("Trocas resetadas com sucesso.");
-        render();
+      trocas = {};
+      (data || []).forEach(item => {
+        const d = new Date(item.data_escala + 'T00:00:00');
+        const br = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+        const idx = String(item.turno).toLowerCase().includes('dia') ? '0' : '1';
+        const key = `${br}|${item.funcao}|${idx}`;
+        trocas[key] = item.militar_substituto;
+      });
+    }
+
+    async function carregarEscalaOnline(showMessage = false) {
+      if (!supabase) return;
+
+      const { data, error } = await supabase
+        .from('escala_atual')
+        .select('*')
+        .order('atualizado_em', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error(error);
+        document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-slash"></i> Sem leitura online';
+        if (showMessage) toast('Não foi possível ler a escala online.');
+        return;
+      }
+
+      if (data && data.escala_json) {
+        escalaData = {
+          semana_inicio: data.semana_inicio,
+          semana_fim: data.semana_fim,
+          atualizado_em: data.atualizado_em,
+          atualizado_por: data.atualizado_por,
+          ...data.escala_json
+        };
+        localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
+        document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+        if (showMessage) toast('Escala online sincronizada com sucesso.');
+      } else {
+        const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+        if (cache) {
+          try { escalaData = JSON.parse(cache); } catch {}
+        }
+      }
+
+      await carregarTrocasOnline();
+      diaIdx = Math.min(obterIndiceDiaAtual(), Math.max((escalaData.escala || []).length - 1, 0));
+      render();
+    }
+
+    async function loginAdmin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminSenha').value;
+      if (!email || !password) {
+        toast('Preencha e-mail e senha do admin.');
+        return;
+      }
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        console.error(error);
+        document.getElementById('adminStatus').textContent = 'Falha no login do admin.';
+        toast('Falha no login. Verifique e-mail, senha e cadastro do admin na tabela app_admins.');
+        return;
+      }
+      currentSession = data.session;
+      atualizarPainelAdmin();
+      toast('Admin autenticado com sucesso.');
+    }
+
+    async function logoutAdmin() {
+      if (!supabase) return;
+      await supabase.auth.signOut();
+      currentSession = null;
+      atualizarPainelAdmin();
+      toast('Sessão do admin encerrada.');
+    }
+
+    async function atualizarPainelAdmin() {
+      const { data } = await supabase.auth.getSession();
+      currentSession = data.session;
+      const status = document.getElementById('adminStatus');
+      const painel = document.getElementById('adminPanelCard');
+      const trocasCard = document.getElementById('trocasAdminCard');
+
+      if (!currentSession) {
+        status.textContent = 'Admin não autenticado.';
+        painel.classList.add('hidden');
+        trocasCard.classList.add('hidden');
+        return;
+      }
+
+      status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
+      painel.classList.remove('hidden');
+      trocasCard.classList.remove('hidden');
+    }
+
+    function carregarModeloAtual() {
+      document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+      toast('Modelo atual carregado no editor JSON.');
+    }
+
+    function salvarJsonLocal() {
+      const txt = document.getElementById('jsonEscalaEditor').value;
+      localStorage.setItem(STORAGE_KEYS.rascunho, txt);
+      toast('Rascunho salvo neste navegador.');
+    }
+
+    async function publicarEscalaOnline() {
+      if (!currentSession) {
+        toast('Faça login como admin antes de publicar a escala.');
+        return;
+      }
+
+      let obj;
+      try {
+        obj = JSON.parse(document.getElementById('jsonEscalaEditor').value);
+      } catch (e) {
+        toast('O JSON da escala está inválido.');
+        return;
+      }
+
+      const semanaInicio = obj.semana_inicio || escalaData.semana_inicio;
+      const semanaFim = obj.semana_fim || escalaData.semana_fim;
+
+      const { error } = await supabase.from('escala_atual').insert({
+        semana_inicio: semanaInicio,
+        semana_fim: semanaFim,
+        escala_json: obj,
+        atualizado_por: currentSession.user.email
+      });
+
+      if (error) {
+        console.error(error);
+        toast('Erro ao publicar escala online. Verifique RLS e estrutura da tabela escala_atual.');
+        return;
+      }
+
+      escalaData = {
+        ...obj,
+        semana_inicio: semanaInicio,
+        semana_fim: semanaFim,
+        atualizado_por: currentSession.user.email,
+        atualizado_em: new Date().toISOString()
+      };
+      render();
+      toast('Escala publicada online com sucesso.');
+      await carregarEscalaOnline();
+    }
+
+    async function limparTrocasOnline() {
+      if (!currentSession) {
+        toast('Faça login admin para limpar trocas.');
+        return;
+      }
+      if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
+      const { error } = await supabase.from('trocas_escala').delete().gte('criado_em', '1900-01-01T00:00:00');
+      if (error) {
+        console.error(error);
+        toast('Erro ao limpar trocas online.');
+        return;
+      }
+      trocas = {};
+      render();
+      toast('Trocas online removidas com sucesso.');
+    }
+
+    async function lerPdfEscala() {
+      const input = document.getElementById('pdfFile');
+      const file = input.files?.[0];
+      if (!file) {
+        toast('Selecione um PDF primeiro.');
+        return;
+      }
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let texto = '';
+        for (let p = 1; p <= pdf.numPages; p++) {
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          texto += content.items.map(i => i.str).join(' ') + '\n';
+        }
+        const json = parseEscalaText(texto);
+        document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
+        toast('PDF lido. Revise o JSON antes de publicar.');
+      } catch (e) {
+        console.error(e);
+        toast('Não consegui interpretar o PDF automaticamente. Use o modelo atual como base no editor JSON.');
       }
     }
 
-    diaIdx = obterIndiceDiaAtual();
-    render();
+    function parseEscalaText(texto) {
+      const base = JSON.parse(JSON.stringify(escalaData));
+      const semanaMatch = texto.match(/(\d{1,2}\/\d{1,2}\/\d{4}).*?(\d{1,2}\/\d{1,2}\/\d{4})/);
+      if (semanaMatch) {
+        base.semana_inicio = toISODate(semanaMatch[1]);
+        base.semana_fim = toISODate(semanaMatch[2]);
+      }
+      base.texto_extraido_pdf = texto.slice(0, 12000);
+      return base;
+    }
+
+    function handleInstalled() {
+      document.getElementById('installBanner').classList.remove('show');
+      toast('✅ App instalado com sucesso. Agora você pode abrir o Escala CB SLS direto da tela inicial.');
+    }
+
+    function setupPWA() {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBanner').classList.add('show');
+      });
+
+      document.getElementById('btnInstallApp').addEventListener('click', async () => {
+        if (!deferredPrompt) {
+          toast('A opção de instalação ainda não está disponível neste navegador.');
+          return;
+        }
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          toast('Instalação iniciada.');
+        }
+        deferredPrompt = null;
+        document.getElementById('installBanner').classList.remove('show');
+      });
+
+      window.addEventListener('appinstalled', handleInstalled);
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            await navigator.serviceWorker.register('./sw.js');
+            console.log('Service Worker registrado com sucesso.');
+          } catch (erro) {
+            console.error('Erro ao registrar SW:', erro);
+          }
+        });
+      }
+    }
+
+    async function boot() {
+      initSupabase();
+      setupPWA();
+      document.getElementById('adminEmail').value = ADMIN_EMAIL_PADRAO;
+
+      const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
+      document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+
+      const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+      if (cache) {
+        try { escalaData = JSON.parse(cache); } catch {}
+      }
+
+      diaIdx = obterIndiceDiaAtual();
+      render();
+      await atualizarPainelAdmin();
+      await carregarEscalaOnline();
+
+      setTimeout(() => document.getElementById('splashScreen').classList.add('hide'), 1400);
+    }
+
+    boot();
   </script>
 </body>
 </html>
