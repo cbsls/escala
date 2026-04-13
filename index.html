@@ -353,7 +353,7 @@
 
   <header class="app-header">
     <h1>ESCALA • CBSLS</h1>
-    <div class="app-subtitle">Escala semanal atualizada • 06/04/2026 a 12/04/2026</div>
+    <div class="app-subtitle">Escala semanal atualizada • 13/04/2026 a 19/04/2026</div>
   </header>
 
   <div class="container" id="viewEscala">
@@ -371,7 +371,7 @@
       <div class="day-info">
         <span class="week-label">Semana atual</span>
         <h2 id="diaNome">Segunda-Feira</h2>
-        <span id="diaData">06/04/2026</span>
+        <span id="diaData">13/04/2026</span>
       </div>
       <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
     </nav>
@@ -379,12 +379,14 @@
     <div id="funcList"></div>
 
     <div class="afast-card">
-      <strong><i class="fas fa-user-clock"></i> Indisponíveis / observações:</strong><br>
-      • LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
-      • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
-      • Férias: <strong>1º SGT DIEFERSON</strong> - 06/04/2026 a 20/04/2026<br>
-      • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.
-    </div>
+  <strong><i class="fas fa-user-clock"></i> Indisponíveis / observações:</strong><br>
+  • LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
+  • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
+  • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
+  • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
+  • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
+  • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.
+</div>
   </div>
 
   <nav class="bottom-nav">
@@ -449,84 +451,84 @@
     ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
     const escala = [
-      {
-        d: "06/04/2026",
-        n: "Segunda-Feira",
-        f: [
-          { n: "CG", i: "user-shield", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COV", i: "truck", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
-          { n: "CLE", i: "helmet-safety", t: ["SD SOARES", "SD SOARES"] },
-          { n: "COBOM", i: "headset", t: ["SD WILLIAM", "SD WILLIAM"] }
-        ]
-      },
-      {
-        d: "07/04/2026",
-        n: "Terça-Feira",
-        f: [
-          { n: "CG", i: "user-shield", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COV", i: "truck", t: ["SD PEGLOW", "SD PEGLOW"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD ISQUIERDO", "SD ISQUIERDO"] },
-          { n: "CLE", i: "helmet-safety", t: ["SD MOTTA", "SD MOTTA"] },
-          { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
-        ]
-      },
-      {
-        d: "08/04/2026",
-        n: "Quarta-Feira",
-        f: [
-          { n: "CG", i: "user-shield", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
-          { n: "COV", i: "truck", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD CAMACHO", "SD CAMACHO"] },
-          { n: "CLE", i: "helmet-safety", t: ["SD SOARES", "SD SOARES"] },
-          { n: "COBOM", i: "headset", t: ["SD SOARES", "SD SOARES"] }
-        ]
-      },
-      {
-        d: "09/04/2026",
-        n: "Quinta-Feira",
-        f: [
-          { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
-          { n: "COV", i: "truck", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
-          { n: "CLE", i: "helmet-safety", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COBOM", i: "headset", t: ["SD MAX", "SD MAX"] }
-        ]
-      },
-      {
-        d: "10/04/2026",
-        n: "Sexta-Feira",
-        f: [
-          { n: "CG", i: "user-shield", t: ["1º SGT VICENTE", "1º SGT VICENTE"] },
-          { n: "COV", i: "truck", t: ["2º SGT VINICIUS", "2º SGT VINICIUS"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD WILLIAM", "SD WILLIAM"] },
-          { n: "CLE", i: "helmet-safety", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COBOM", i: "headset", t: ["SD PEGLOW", "SD PEGLOW"] }
-        ]
-      },
-      {
-        d: "11/04/2026",
-        n: "Sábado",
-        f: [
-          { n: "CG", i: "user-shield", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COV", i: "truck", t: ["1º SGT BATISTA", "1º SGT BATISTA"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD BORGES", "SD BORGES"] },
-          { n: "CLE", i: "helmet-safety", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COBOM", i: "headset", t: ["SD MOTTA", "SD MOTTA"] }
-        ]
-      },
-      {
-        d: "12/04/2026",
-        n: "Domingo",
-        f: [
-          { n: "CG", i: "user-shield", t: ["2º SGT ANDERSON", "2º SGT ANDERSON"] },
-          { n: "COV", i: "truck", t: ["2º SGT LISCANO", "2º SGT LISCANO"] },
-          { n: "CLD", i: "fire-extinguisher", t: ["SD MAX", "SD MAX"] },
-          { n: "CLE", i: "helmet-safety", t: ["NÃO ESCALADO", "NÃO ESCALADO"] },
-          { n: "COBOM", i: "headset", t: ["SD BATISTA", "SD BATISTA"] }
-        ]
-      }
-    ];
+  {
+    d: "13/04/2026",
+    n: "Segunda-Feira",
+    f: [
+      { n: "CG", i: "user-shield", t: ["2º SGT BM VINICIUS", "2º SGT BM VINICIUS"] },
+      { n: "COV", i: "truck", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["SD BM WILLIAM", "SD BM WILLIAM"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD BM SOARES", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM ISQUIERDO", "SD BM ISQUIERDO"] }
+    ]
+  },
+  {
+    d: "14/04/2026",
+    n: "Terça-Feira",
+    f: [
+      { n: "CG", i: "user-shield", t: ["1º SGT BM VICENTE", "1º SGT BM VICENTE"] },
+      { n: "COV", i: "truck", t: ["SD BM PEGLOW", "SD BM PEGLOW"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["SD BM MOTTA", "SD BM MOTTA"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD BM BORGES", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM CAMACHO", "SD BM CAMACHO"] }
+    ]
+  },
+  {
+    d: "15/04/2026",
+    n: "Quarta-Feira",
+    f: [
+      { n: "CG", i: "user-shield", t: ["2º SGT BM ANDERSON", "2º SGT BM ANDERSON"] },
+      { n: "COV", i: "truck", t: ["1º SGT BM BATISTA", "1º SGT BM BATISTA"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["SD BM WILLIAM", "SD BM WILLIAM"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD TEMP LARSSON", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM BATISTA", "SD BM BATISTA"] }
+    ]
+  },
+  {
+    d: "16/04/2026",
+    n: "Quinta-Feira",
+    f: [
+      { n: "CG", i: "user-shield", t: ["SD BM ISQUIERDO", "SD BM ISQUIERDO"] },
+      { n: "COV", i: "truck", t: ["2º SGT BM VINICIUS", "2º SGT BM VINICIUS"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["SD BM MOTTA", "SD BM MOTTA"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD BM CAMACHO", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM BORGES", "SD BM BORGES"] }
+    ]
+  },
+  {
+    d: "17/04/2026",
+    n: "Sexta-Feira",
+    f: [
+      { n: "CG", i: "user-shield", t: ["1º SGT BM VICENTE", "1º SGT BM VICENTE"] },
+      { n: "COV", i: "truck", t: ["SD BM PEGLOW", "SD BM PEGLOW"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["1º SGT BM BATISTA", "SD BM MAX"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD TEMP LARSSON", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM BATISTA", "SD BM BATISTA"] }
+    ]
+  },
+  {
+    d: "18/04/2026",
+    n: "Sábado",
+    f: [
+      { n: "CG", i: "user-shield", t: ["2º SGT BM ANDERSON", "2º SGT BM ANDERSON"] },
+      { n: "COV", i: "truck", t: ["2º SGT BM VINICIUS", "2º SGT BM VINICIUS"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["SD BM TOMASCHEWSKI", "SD BM TOMASCHEWSKI"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD BM ISQUIERDO", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM WILLIAM", "SD BM WILLIAM"] }
+    ]
+  },
+  {
+    d: "19/04/2026",
+    n: "Domingo",
+    f: [
+      { n: "CG", i: "user-shield", t: ["1º SGT BM BATISTA", "SD BM CAMACHO"] },
+      { n: "COV", i: "truck", t: ["SD TEMP LARSSON", "SD TEMP LARSSON"] },
+      { n: "CLD", i: "fire-extinguisher", t: ["SD BM BORGES", "SD BM BARGES"] },
+      { n: "CLE", i: "helmet-safety", t: ["SD BM CAMACHO", "NÃO ESCALADO"] },
+      { n: "COBOM", i: "headset", t: ["SD BM MOTTA", "SD BM MOTTA"] }
+    ]
+  }
+];
 
     let trocas = JSON.parse(localStorage.getItem('trocas_CBSLS_semana_atual')) || {};
     let diaIdx = 0;
