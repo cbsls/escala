@@ -1090,22 +1090,46 @@
     }
 
     async function atualizarPainelAdmin() {
-      const { data } = await supabase.auth.getSession();
-      currentSession = data.session;
       const status = document.getElementById('adminStatus');
       const painel = document.getElementById('adminPanelCard');
       const trocasCard = document.getElementById('trocasAdminCard');
 
-      if (!currentSession) {
-        status.textContent = 'Admin não autenticado.';
+      if (!supabase) {
+        status.textContent = 'Supabase não inicializado.';
         painel.classList.add('hidden');
         trocasCard.classList.add('hidden');
         return;
       }
 
-      status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
-      painel.classList.remove('hidden');
-      trocasCard.classList.remove('hidden');
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error(error);
+          status.textContent = 'Erro ao verificar sessão do admin.';
+          painel.classList.add('hidden');
+          trocasCard.classList.add('hidden');
+          return;
+        }
+
+        currentSession = data.session;
+
+        if (!currentSession) {
+          status.textContent = 'Admin não autenticado.';
+          painel.classList.add('hidden');
+          trocasCard.classList.add('hidden');
+          return;
+        }
+
+        status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
+        painel.classList.remove('hidden');
+        trocasCard.classList.remove('hidden');
+      } catch (e) {
+        console.error('Erro em atualizarPainelAdmin:', e);
+        status.textContent = 'Erro ao carregar painel admin.';
+        painel.classList.add('hidden');
+        trocasCard.classList.add('hidden');
+      }
     }
 
     function carregarModeloAtual() {
@@ -1256,23 +1280,49 @@
     }
 
     async function boot() {
-      initSupabase();
-      setupPWA();
+      try {
+        initSupabase();
+        setupPWA();
 
-      const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
-      document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+        const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
+        document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
 
-      const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
-      if (cache) {
-        try { escalaData = JSON.parse(cache); } catch {}
+        const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+        if (cache) {
+          try {
+            escalaData = JSON.parse(cache);
+          } catch (e) {
+            console.error('Erro ao ler cache local da escala:', e);
+          }
+        }
+
+        diaIdx = obterIndiceDiaAtual();
+        render();
+
+        if (supabase) {
+          try {
+            await atualizarPainelAdmin();
+          } catch (e) {
+            console.error('Erro ao atualizar painel admin:', e);
+          }
+
+          try {
+            await carregarEscalaOnline();
+          } catch (e) {
+            console.error('Erro ao carregar escala online:', e);
+          }
+        } else {
+          console.warn('Supabase não inicializado. App seguirá em modo local.');
+        }
+      } catch (e) {
+        console.error('Erro no boot do app:', e);
+        toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
+      } finally {
+        setTimeout(() => {
+          const splash = document.getElementById('splashScreen');
+          if (splash) splash.classList.add('hide');
+        }, 1200);
       }
-
-      diaIdx = obterIndiceDiaAtual();
-      render();
-      await atualizarPainelAdmin();
-      await carregarEscalaOnline();
-
-      setTimeout(() => document.getElementById('splashScreen').classList.add('hide'), 1400);
     }
 
     boot();
