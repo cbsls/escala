@@ -1022,22 +1022,27 @@
         .maybeSingle();
 
       if (error) {
-        console.error(error);
+        console.error('Erro ao ler escala online:', error);
         document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-slash"></i> Sem leitura online';
-        if (showMessage) toast('Não foi possível ler a escala online.');
+        if (showMessage) {
+          const detalhe = [error.message, error.details, error.hint, error.code].filter(Boolean).join(' | ');
+          toast('Não foi possível ler a escala online: ' + (detalhe || 'falha desconhecida'));
+        }
         return;
       }
 
       if (data && data.escala_json) {
         escalaData = {
-          semana_inicio: data.semana_inicio,
-          semana_fim: data.semana_fim,
-          atualizado_em: data.atualizado_em,
-          atualizado_por: data.atualizado_por,
-          ...data.escala_json
+          ...data.escala_json,
+          semana_inicio: data.semana_inicio || data.escala_json?.semana_inicio || null,
+          semana_fim: data.semana_fim || data.escala_json?.semana_fim || null,
+          atualizado_em: data.atualizado_em || data.escala_json?.atualizado_em || null,
+          atualizado_por: data.atualizado_por || data.escala_json?.atualizado_por || null,
+          afastamentos_html: data.afastamentos_html || data.escala_json?.afastamentos_html || ''
         };
         localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
         document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+        document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-check"></i> Escala online sincronizada';
         if (showMessage) toast('Escala online sincronizada com sucesso.');
       } else {
         const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
@@ -1151,39 +1156,40 @@
         return;
       }
 
-      const sb = getSupabase();      if (!sb) {
+      const sb = getSupabase();
+      if (!sb) {
         toast('Supabase não inicializado.');
         return;
       }
 
+      const editor = document.getElementById('jsonEscalaEditor');
       let obj;
+
       try {
-        obj = JSON.parse(document.getElementById('jsonEscalaEditor').value);
-      } catch {
+        obj = JSON.parse(String(editor?.value || '').trim());
+      } catch (e) {
+        console.error('JSON inválido:', e);
         toast('O JSON da escala está inválido.');
         return;
       }
 
+      const payload = {
+        chave: 'escala_publicada',
+        semana_inicio: obj.semana_inicio || escalaData.semana_inicio || null,
+        semana_fim: obj.semana_fim || escalaData.semana_fim || null,
+        escala_json: obj,
+        atualizado_por: currentSession?.user?.email || obj.atualizado_por || 'admin@escala.com',
+        atualizado_em: new Date().toISOString(),
+        afastamentos_html: obj.afastamentos_html || ''
+      };
+
       try {
-        const payload = {
-          chave: 'escala_publicada',
-          semana_inicio: obj.semana_inicio || escalaData.semana_inicio || null,
-          semana_fim: obj.semana_fim || escalaData.semana_fim || null,
-          atualizado_por: currentSession?.user?.email || obj.atualizado_por || 'Sistema local',
-          atualizado_em: new Date().toISOString(),
-          afastamentos_html: obj.afastamentos_html || '',
-          escala_json: obj
-        };
-
-        const { error } = await sb
+        const { data, error } = await sb
           .from('escala_atual')
-          .upsert([payload], { onConflict: 'chave' });
+          .upsert([payload], { onConflict: 'chave' })
+          .select();
 
-        if (error) {
-          console.error('Erro Supabase ao publicar escala:', error);
-          toast('Erro ao publicar escala: ' + (error.message || 'falha no banco'));
-          return;
-        }
+        if (error) throw error;
 
         escalaData = {
           ...obj,
@@ -1196,14 +1202,23 @@
 
         localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
         document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+        document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Escala publicada online';
 
+        console.log('Retorno publicação escala_atual:', data);
         render();
         toast('✅ Escala publicada online com sucesso.');
-        await carregarEscalaOnline(false);
 
+        try {
+          await carregarEscalaOnline(false);
+        } catch (syncError) {
+          console.error('Escala publicou, mas falhou ao recarregar:', syncError);
+          const detalheSync = [syncError?.message, syncError?.details, syncError?.hint, syncError?.code].filter(Boolean).join(' | ');
+          toast('Escala publicada, mas houve falha ao recarregar: ' + (detalheSync || 'erro desconhecido'));
+        }
       } catch (e) {
-        console.error('Erro inesperado ao publicar escala:', e);
-        toast('Erro inesperado ao publicar escala: ' + (e?.message || String(e)));
+        console.error('Falha detalhada ao publicar escala:', e);
+        const detalhe = [e?.message, e?.details, e?.hint, e?.code].filter(Boolean).join(' | ');
+        toast('Erro ao publicar escala: ' + (detalhe || JSON.stringify(e) || 'erro desconhecido'));
       }
     }
 
