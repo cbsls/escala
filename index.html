@@ -1152,8 +1152,7 @@
         return;
       }
 
-      const sb = getSupabase();
-      if (!sb) {
+      const sb = getSupabase();      if (!sb) {
         toast('Supabase não inicializado.');
         return;
       }
@@ -1166,32 +1165,46 @@
         return;
       }
 
-      const semanaInicio = obj.semana_inicio || escalaData.semana_inicio;
-      const semanaFim = obj.semana_fim || escalaData.semana_fim;
+      try {
+        const payload = {
+          chave: 'escala_publicada',
+          semana_inicio: obj.semana_inicio || escalaData.semana_inicio || null,
+          semana_fim: obj.semana_fim || escalaData.semana_fim || null,
+          escala_json: obj,
+          atualizado_por: currentSession.user.email,
+          atualizado_em: new Date().toISOString(),
+          afastamentos_html: obj.afastamentos_html || ''
+        };
 
-      const { error } = await sb.from('escala_atual').insert({
-        semana_inicio: semanaInicio,
-        semana_fim: semanaFim,
-        escala_json: obj,
-        atualizado_por: currentSession.user.email
-      });
+        const { error } = await sb
+          .from('escala_atual')
+          .upsert(payload, { onConflict: 'chave' });
 
-      if (error) {
-        console.error(error);
-        toast('Erro ao publicar escala online. Verifique RLS e estrutura da tabela escala_atual.');
-        return;
+        if (error) {
+          console.error('Erro Supabase:', error);
+          toast('Erro ao publicar escala: ' + (error.message || 'falha no banco'));
+          return;
+        }
+
+        escalaData = {
+          ...obj,
+          semana_inicio: payload.semana_inicio,
+          semana_fim: payload.semana_fim,
+          atualizado_por: payload.atualizado_por,
+          atualizado_em: payload.atualizado_em,
+          afastamentos_html: payload.afastamentos_html
+        };
+
+        localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
+
+        render();
+        toast('✅ Escala publicada online com sucesso.');
+        await carregarEscalaOnline();
+
+      } catch (e) {
+        console.error(e);
+        toast('Erro inesperado ao publicar escala.');
       }
-
-      escalaData = {
-        ...obj,
-        semana_inicio: semanaInicio,
-        semana_fim: semanaFim,
-        atualizado_por: currentSession.user.email,
-        atualizado_em: new Date().toISOString()
-      };
-      render();
-      toast('Escala publicada online com sucesso.');
-      await carregarEscalaOnline();
     }
 
     async function limparTrocasOnline() {
