@@ -739,7 +739,7 @@
         { d: '19/04/2026', n: 'Domingo', f: [
           { n: 'CG', i: 'user-shield', t: ['1º SGT BM BATISTA', 'SD BM CAMACHO'] },
           { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BARGES'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BORGES'] },
           { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
           { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] }
         ]}
@@ -1018,8 +1018,7 @@
       const { data, error } = await sb
         .from('escala_atual')
         .select('*')
-        .order('atualizado_em', { ascending: false })
-        .limit(1)
+        .eq('chave', 'escala_publicada')
         .maybeSingle();
 
       if (error) {
@@ -1170,18 +1169,18 @@
           chave: 'escala_publicada',
           semana_inicio: obj.semana_inicio || escalaData.semana_inicio || null,
           semana_fim: obj.semana_fim || escalaData.semana_fim || null,
-          escala_json: obj,
-          atualizado_por: currentSession.user.email,
+          atualizado_por: currentSession?.user?.email || obj.atualizado_por || 'Sistema local',
           atualizado_em: new Date().toISOString(),
-          afastamentos_html: obj.afastamentos_html || ''
+          afastamentos_html: obj.afastamentos_html || '',
+          escala_json: obj
         };
 
         const { error } = await sb
           .from('escala_atual')
-          .upsert(payload, { onConflict: 'chave' });
+          .upsert([payload], { onConflict: 'chave' });
 
         if (error) {
-          console.error('Erro Supabase:', error);
+          console.error('Erro Supabase ao publicar escala:', error);
           toast('Erro ao publicar escala: ' + (error.message || 'falha no banco'));
           return;
         }
@@ -1196,14 +1195,15 @@
         };
 
         localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
+        document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
 
         render();
         toast('✅ Escala publicada online com sucesso.');
-        await carregarEscalaOnline();
+        await carregarEscalaOnline(false);
 
       } catch (e) {
-        console.error(e);
-        toast('Erro inesperado ao publicar escala.');
+        console.error('Erro inesperado ao publicar escala:', e);
+        toast('Erro inesperado ao publicar escala: ' + (e?.message || String(e)));
       }
     }
 
