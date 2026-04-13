@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ESCALA • CBSLS</title>
   <meta name="theme-color" content="#b71c1c" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
@@ -138,9 +141,9 @@
     // =============================
     // CONFIGURAÇÃO SUPABASE
     // =============================
-    const SUPABASE_URL = "COLE_AQUI_SUA_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "COLE_AQUI_SUA_SUPABASE_ANON_KEY";
-
+    const SUPABASE_URL = "https://azltlpjyyqecurmebffm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO";
+const REGISTRO_SLUG = "principal";
     const supabase = window.supabase?.createClient
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
       : null;
@@ -151,9 +154,9 @@
     const ADMIN_EMAIL_PADRAO = "admin@escala.com";
     const ADMIN_SENHA_PADRAO = "123456"; // troque no seu sistema
     const STORAGE_KEYS = {
-      escala: "escala_cache_v2",
-      versao: "escala_cache_version_v2",
-      ultimaAtualizacao: "escala_ultima_atualizacao_v2"
+      escala: "escala_cache_v3",
+      versao: "escala_cache_version_v3",
+      ultimaAtualizacao: "escala_ultima_atualizacao_v3"
     };
 
     let adminLogado = false;
@@ -208,6 +211,15 @@
       return String(valor);
     }
 
+    function tentarParseJSON(texto, fallback = []) {
+      try {
+        const dado = JSON.parse(texto);
+        return Array.isArray(dado) ? dado : fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
+
     function gerarVersaoEscala(payload) {
       const base = JSON.stringify({
         semana_inicio: payload?.semana_inicio || "",
@@ -238,10 +250,12 @@
     async function limparCachesManualmente() {
       try {
         limparCacheLocal();
+
         if ("caches" in window) {
           const keys = await caches.keys();
           await Promise.all(keys.map(k => caches.delete(k)));
         }
+
         atualizarStatusSync("Cache local limpo neste aparelho.");
         alert("✅ Cache local limpo com sucesso.");
       } catch (e) {
@@ -267,13 +281,19 @@
     }
 
     function normalizarEscalaImportada(obj) {
+      const escalaArray = Array.isArray(obj?.escala)
+        ? obj.escala
+        : Array.isArray(obj?.dias)
+          ? obj.dias
+          : [];
+
       return {
         semana_inicio: normalizarDataISO(obj?.semana_inicio || ""),
         semana_fim: normalizarDataISO(obj?.semana_fim || ""),
         atualizado_por: obj?.atualizado_por || ADMIN_EMAIL_PADRAO,
         atualizado_em: new Date().toISOString(),
         afastamentos_html: obj?.afastamentos_html || "",
-        escala: Array.isArray(obj?.escala) ? obj.escala : []
+        escala: escalaArray
       };
     }
 
@@ -421,19 +441,21 @@
         }
 
         const versao = gerarVersaoEscala(payload);
+        const escalaJsonTexto = JSON.stringify(payload.escala);
 
         const { error } = await supabase
           .from("escala_atual")
           .upsert({
-            id: 1,
-            semana_inicio: payload.semana_inicio,
-            semana_fim: payload.semana_fim,
+            slug: REGISTRO_SLUG,
+            semana_inicio: payload.semana_inicio || null,
+            semana_fim: payload.semana_fim || null,
             atualizado_por: payload.atualizado_por,
             atualizado_em: payload.atualizado_em,
-            afastamentos_html: payload.afastamentos_html,
+            afastamentos_html: payload.afastamentos_html || "",
             escala: payload.escala,
+            escala_json: escalaJsonTexto,
             versao: versao
-          }, { onConflict: "id" });
+          }, { onConflict: "slug" });
 
         if (error) throw error;
 
@@ -443,7 +465,6 @@
         renderEscala();
         atualizarStatusSync("Escala online sincronizada");
 
-        // dispara atualização imediata em abas/dispositivos
         notificarAtualizacaoGlobal({
           type: "ESCALA_ATUALIZADA",
           versao,
@@ -469,12 +490,11 @@
           timestamp: Date.now()
         });
 
-        // também grava um marcador no Supabase
         if (supabase) {
           await supabase
             .from("escala_atual")
             .update({ atualizado_em: new Date().toISOString() })
-            .eq("id", 1);
+            .eq("slug", REGISTRO_SLUG);
         }
 
         alert("✅ Sinal de atualização enviado.");
@@ -497,7 +517,7 @@
         const { data, error } = await supabase
           .from("escala_atual")
           .select("*")
-          .eq("id", 1)
+          .eq("slug", REGISTRO_SLUG)
           .single();
 
         if (error) throw error;
@@ -507,13 +527,17 @@
           return;
         }
 
+        const escalaArray = Array.isArray(data.escala)
+          ? data.escala
+          : (data.escala_json ? tentarParseJSON(data.escala_json, []) : []);
+
         const payload = {
           semana_inicio: data.semana_inicio || "",
           semana_fim: data.semana_fim || "",
           atualizado_por: data.atualizado_por || ADMIN_EMAIL_PADRAO,
           atualizado_em: data.atualizado_em || new Date().toISOString(),
           afastamentos_html: data.afastamentos_html || "",
-          escala: Array.isArray(data.escala) ? data.escala : []
+          escala: escalaArray
         };
 
         const versaoNova = data.versao || gerarVersaoEscala(payload);
@@ -553,6 +577,7 @@
         semana_fim: "",
         atualizado_por: "-",
         atualizado_em: null,
+        afastamentos_html: "",
         escala: []
       };
       renderEscala();
@@ -567,10 +592,7 @@
         canalSync = new BroadcastChannel("escala_sync_channel");
         canalSync.onmessage = async (event) => {
           const msg = event?.data || {};
-          if (msg.type === "ESCALA_ATUALIZADA") {
-            await carregarEscalaOnline(true);
-          }
-          if (msg.type === "FORCAR_RELOAD") {
+          if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
             await carregarEscalaOnline(true);
           }
         };
@@ -630,6 +652,14 @@
       iniciarBroadcastChannel();
       iniciarRealtime();
       await carregarEscalaOnline(false);
+    }
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .then(() => console.log("Service Worker registrado com sucesso."))
+          .catch(err => console.error("Erro ao registrar Service Worker:", err));
+      });
     }
 
     init();
