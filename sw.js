@@ -1,4 +1,4 @@
-const CACHE_NAME = 'escala-cb-sls-v8';
+const CACHE_NAME = 'escala-cb-sls-v9';
 
 self.addEventListener('install', () => self.skipWaiting());
 
