@@ -586,14 +586,10 @@
     <section class="container hidden" id="viewAdmin">
       <div class="card">
         <h2>🔐 Admin da Escala</h2>
-        <div class="muted">Login conectado ao Supabase. Somente admin cadastrado pode publicar escala nova.</div>
+        <div class="muted">Acesso do admin somente por senha. O sistema usa a conta padrão configurada no app.</div>
       </div>
 
       <div class="card" id="adminLoginCard">
-        <div class="form-group">
-          <label>E-mail do admin</label>
-          <input type="email" id="adminEmail" value="admin@escala.com" />
-        </div>
         <div class="form-group">
           <label>Senha</label>
           <input type="password" id="adminSenha" placeholder="Digite a senha do admin" />
@@ -1067,17 +1063,17 @@
     }
 
     async function loginAdmin() {
-      const email = document.getElementById('adminEmail').value.trim();
+      const email = ADMIN_EMAIL_PADRAO;
       const password = document.getElementById('adminSenha').value;
-      if (!email || !password) {
-        toast('Preencha e-mail e senha do admin.');
+      if (!password) {
+        toast('Digite a senha do admin.');
         return;
       }
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         console.error(error);
         document.getElementById('adminStatus').textContent = 'Falha no login do admin.';
-        toast('Falha no login. Verifique e-mail, senha e cadastro do admin na tabela app_admins.');
+        toast('Senha incorreta ou admin não cadastrado.');
         return;
       }
       currentSession = data.session;
@@ -1262,7 +1258,6 @@
     async function boot() {
       initSupabase();
       setupPWA();
-      document.getElementById('adminEmail').value = ADMIN_EMAIL_PADRAO;
 
       const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
       document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
