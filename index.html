@@ -601,13 +601,13 @@
       </div>
 
       <div class="card hidden" id="adminPanelCard">
-        <h3>📄 Importar PDF e publicar escala</h3>
+        <h3>📄 Importar PDF/TXT e publicar escala</h3>
         <div class="form-group">
-          <label>Selecionar PDF da escala</label>
-          <input type="file" id="pdfFile" accept="application/pdf" />
+          <label>Selecionar arquivo da escala (.pdf ou .txt)</label>
+          <input type="file" id="pdfFile" accept=".pdf,.txt,text/plain,application/pdf" />
         </div>
         <div class="grid-2">
-          <button class="btn warning" onclick="lerPdfEscala()">Ler PDF</button>
+          <button class="btn warning" onclick="lerArquivoEscala()">Ler arquivo</button>
           <button class="btn success" onclick="publicarEscalaOnline()">Publicar escala online</button>
         </div>
         <div class="form-group" style="margin-top:14px;">
@@ -1224,15 +1224,35 @@
       toast('Trocas online removidas com sucesso.');
     }
 
-    async function lerPdfEscala() {
-      if (!window.pdfjsLib) {
-        toast('PDF.js não carregou. Atualize a página e tente novamente.');
+    async function lerArquivoEscala() {
+      const file = document.getElementById('pdfFile').files?.[0];
+      if (!file) {
+        toast('Selecione um arquivo PDF ou TXT primeiro.');
         return;
       }
 
-      const file = document.getElementById('pdfFile').files?.[0];
-      if (!file) {
-        toast('Selecione um PDF primeiro.');
+      const nome = String(file.name || '').toLowerCase();
+
+      if (nome.endsWith('.txt')) {
+        try {
+          const texto = await file.text();
+          const json = parseEscalaText(texto);
+          document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
+          toast('TXT lido com sucesso. Revise o JSON antes de publicar.');
+        } catch (e) {
+          console.error(e);
+          toast('Não consegui ler o TXT automaticamente.');
+        }
+        return;
+      }
+
+      if (!nome.endsWith('.pdf')) {
+        toast('Formato inválido. Use arquivo .pdf ou .txt.');
+        return;
+      }
+
+      if (!window.pdfjsLib) {
+        toast('PDF.js não carregou. Atualize a página e tente novamente.');
         return;
       }
 
@@ -1249,10 +1269,10 @@
 
         const json = parseEscalaText(texto);
         document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
-        toast('PDF lido. Revise o JSON antes de publicar.');
+        toast('PDF lido com sucesso. Revise o JSON antes de publicar.');
       } catch (e) {
         console.error(e);
-        toast('Não consegui interpretar o PDF automaticamente. Use o modelo atual como base no editor JSON.');
+        toast('Não consegui interpretar o PDF automaticamente. Tente converter para TXT e importar novamente.');
       }
     }
 
