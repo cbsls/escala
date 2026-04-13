@@ -804,13 +804,48 @@
       render();
     }
 
+    function normalizeEscalaData(data) {
+      const fallback = JSON.parse(JSON.stringify(escalaData));
+
+      const normalizada = {
+        ...fallback,
+        ...(data && typeof data === 'object' ? data : {})
+      };
+
+      if (!Array.isArray(normalizada.escala)) {
+        normalizada.escala = Array.isArray(fallback.escala) ? JSON.parse(JSON.stringify(fallback.escala)) : [];
+      }
+
+      normalizada.escala = normalizada.escala.map((dia, index) => {
+        const diaFallback = fallback.escala?.[index] || {};
+        return {
+          n: dia?.n || diaFallback.n || '',
+          d: dia?.d || diaFallback.d || '',
+          f: Array.isArray(dia?.f) ? dia.f : (Array.isArray(diaFallback.f) ? diaFallback.f : [])
+        };
+      });
+
+      if (!normalizada.semana_inicio) normalizada.semana_inicio = fallback.semana_inicio || null;
+      if (!normalizada.semana_fim) normalizada.semana_fim = fallback.semana_fim || null;
+      if (typeof normalizada.afastamentos_html !== 'string') {
+        normalizada.afastamentos_html = fallback.afastamentos_html || '';
+      }
+
+      return normalizada;
+    }
+
     function obterIndiceDiaAtual() {
       const hoje = new Date();
       const dd = String(hoje.getDate()).padStart(2, '0');
       const mm = String(hoje.getMonth() + 1).padStart(2, '0');
       const yyyy = hoje.getFullYear();
       const hojeFormatado = `${dd}/${mm}/${yyyy}`;
-      const idx = escalaData.escala.findIndex(item => item.d === hojeFormatado);
+
+      if (!escalaData || !Array.isArray(escalaData.escala)) {
+        return 0;
+      }
+
+      const idx = escalaData.escala.findIndex(item => item?.d === hojeFormatado);
       return idx >= 0 ? idx : 0;
     }
 
@@ -822,42 +857,76 @@
 
     function formatDateBRFromISO(iso) {
       if (!iso) return '';
-      const [ano, mes, dia] = String(iso).split('-');
+      const partes = String(iso).split('-');
+      if (partes.length !== 3) return iso;
+      const [ano, mes, dia] = partes;
       return `${dia}/${mes}/${ano}`;
     }
 
     function atualizarCabecalhoSemana() {
-      const inicio = formatDateBRFromISO(escalaData.semana_inicio);
-      const fim = formatDateBRFromISO(escalaData.semana_fim);
+      const inicio = formatDateBRFromISO(escalaData?.semana_inicio) || '--/--/----';
+      const fim = formatDateBRFromISO(escalaData?.semana_fim) || '--/--/----';
       document.getElementById('appSubtitle').textContent = `Escala semanal atualizada • ${inicio} a ${fim}`;
-      const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
-      document.getElementById('ultimaAtualizacaoBadge').innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
-      document.getElementById('afastamentosHtml').innerHTML = escalaData.afastamentos_html || 'Sem observações.';
+
+      const textoData = escalaData?.atualizado_em
+        ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR')
+        : 'sem data online';
+
+      document.getElementById('ultimaAtualizacaoBadge').innerHTML =
+        `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
+
+      document.getElementById('afastamentosHtml').innerHTML =
+        escalaData?.afastamentos_html || 'Sem observações.';
     }
 
     function render() {
-      if (!escalaData.escala || !escalaData.escala.length) return;
-      const dia = escalaData.escala[diaIdx];
-      const search = document.getElementById('searchInput').value.toUpperCase().trim();
+      escalaData = normalizeEscalaData(escalaData);
 
-      document.getElementById('diaNome').textContent = dia.n;
-      document.getElementById('diaData').textContent = dia.d;
-      atualizarBotaoExpandir();
-      atualizarCabecalhoSemana();
-
+      const listaDias = Array.isArray(escalaData.escala) ? escalaData.escala : [];
       const list = document.getElementById('funcList');
       list.innerHTML = '';
 
-      dia.f.forEach((func) => {
-        const t0_key = `${dia.d}|${func.n}|0`;
-        const t1_key = `${dia.d}|${func.n}|1`;
+      atualizarBotaoExpandir();
+      atualizarCabecalhoSemana();
 
-        const m0 = trocas[t0_key] || func.t[0];
-        const m1 = trocas[t1_key] || func.t[1];
+      if (!listaDias.length) {
+        document.getElementById('diaNome').textContent = 'Sem escala';
+        document.getElementById('diaData').textContent = '--/--/----';
+        list.innerHTML = `
+          <div class="func-card">
+            <div class="func-header">
+              <div class="func-title"><i class="fas fa-calendar-times"></i> Nenhuma escala carregada</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (diaIdx < 0) diaIdx = 0;
+      if (diaIdx > listaDias.length - 1) diaIdx = listaDias.length - 1;
+
+      const dia = listaDias[diaIdx] || { n: 'Sem escala', d: '--/--/----', f: [] };
+      const search = String(document.getElementById('searchInput')?.value || '').toUpperCase().trim();
+
+      document.getElementById('diaNome').textContent = dia?.n || 'Sem escala';
+      document.getElementById('diaData').textContent = dia?.d || '--/--/----';
+
+      const funcoes = Array.isArray(dia?.f) ? dia.f : [];
+
+      funcoes.forEach((func) => {
+        const turnos = Array.isArray(func?.t) ? func.t : [];
+        const nomeFuncao = func?.n || 'Função';
+        const iconeFuncao = func?.i || 'users';
+
+        const t0_key = `${dia.d}|${nomeFuncao}|0`;
+        const t1_key = `${dia.d}|${nomeFuncao}|1`;
+
+        const m0 = trocas[t0_key] || turnos[0] || 'NÃO ESCALADO';
+        const m1 = trocas[t1_key] || turnos[1] || 'NÃO ESCALADO';
 
         if (
           search &&
-          !func.n.toUpperCase().includes(search) &&
+          !nomeFuncao.toUpperCase().includes(search) &&
           !String(m0).toUpperCase().includes(search) &&
           !String(m1).toUpperCase().includes(search)
         ) return;
@@ -866,7 +935,7 @@
         card.className = `func-card ${expandirTodos ? 'expanded' : ''}`;
         card.innerHTML = `
           <div class="func-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <div class="func-title"><i class="fas fa-${func.i}"></i> ${func.n}</div>
+            <div class="func-title"><i class="fas fa-${iconeFuncao}"></i> ${nomeFuncao}</div>
             <i class="fas fa-chevron-down chevron" style="color:var(--muted)"></i>
           </div>
           <div class="func-content">
@@ -899,18 +968,34 @@
     }
 
     function mudarDia(v) {
-      diaIdx = (diaIdx + v + escalaData.escala.length) % escalaData.escala.length;
+      const total = Array.isArray(escalaData?.escala) ? escalaData.escala.length : 0;
+      if (!total) {
+        diaIdx = 0;
+        render();
+        return;
+      }
+
+      diaIdx = (diaIdx + v + total) % total;
       render();
     }
 
     function abrirModal() {
+      const dias = Array.isArray(escalaData?.escala) ? escalaData.escala : [];
+      const dia = dias[diaIdx];
+
+      if (!dia || !Array.isArray(dia.f) || !dia.f.length) {
+        toast('Não há escala carregada para solicitar troca.');
+        return;
+      }
+
       document.getElementById('navTroca').classList.add('active');
       const sT = document.getElementById('selectTurno');
       sT.innerHTML = '<option value="">Selecione...</option>';
 
-      escalaData.escala[diaIdx].f.forEach((f, fi) => {
-        sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
-        sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
+      dia.f.forEach((f, fi) => {
+        const nomeFuncao = f?.n || `Função ${fi + 1}`;
+        sT.innerHTML += `<option value="${fi}|0">${nomeFuncao} - Dia</option>`;
+        sT.innerHTML += `<option value="${fi}|1">${nomeFuncao} - Noite</option>`;
       });
 
       const sS = document.getElementById('selectSubstituto');
@@ -930,10 +1015,24 @@
         return;
       }
 
+      const dias = Array.isArray(escalaData?.escala) ? escalaData.escala : [];
+      const dia = dias[diaIdx];
+
+      if (!dia || !Array.isArray(dia.f)) {
+        document.getElementById('militarSaindo').value = '';
+        return;
+      }
+
       const [fi, ti] = val.split('|');
-      const func = escalaData.escala[diaIdx].f[fi];
-      const key = `${escalaData.escala[diaIdx].d}|${func.n}|${ti}`;
-      document.getElementById('militarSaindo').value = trocas[key] || func.t[ti];
+      const func = dia.f[Number(fi)];
+      if (!func) {
+        document.getElementById('militarSaindo').value = '';
+        return;
+      }
+
+      const turnos = Array.isArray(func.t) ? func.t : [];
+      const key = `${dia.d}|${func.n}|${ti}`;
+      document.getElementById('militarSaindo').value = trocas[key] || turnos[Number(ti)] || 'NÃO ESCALADO';
     }
 
     function fecharModal() {
@@ -942,7 +1041,8 @@
     }
 
     function toISODate(br) {
-      const [dia, mes, ano] = br.split('/');
+      if (!br || !String(br).includes('/')) return br || '';
+      const [dia, mes, ano] = String(br).split('/');
       return `${ano}-${mes}-${dia}`;
     }
 
@@ -955,6 +1055,13 @@
         return;
       }
 
+      const dias = Array.isArray(escalaData?.escala) ? escalaData.escala : [];
+      const dia = dias[diaIdx];
+      if (!dia || !Array.isArray(dia.f)) {
+        toast('Não há escala válida para registrar a troca.');
+        return;
+      }
+
       const sb = getSupabase();
       if (!sb) {
         toast('Supabase não inicializado.');
@@ -962,10 +1069,15 @@
       }
 
       const [fi, ti] = turno.split('|');
-      const dia = escalaData.escala[diaIdx];
-      const func = dia.f[fi];
+      const func = dia.f[Number(fi)];
+      if (!func) {
+        toast('Função da troca não localizada.');
+        return;
+      }
+
+      const turnos = Array.isArray(func.t) ? func.t : [];
       const key = `${dia.d}|${func.n}|${ti}`;
-      const original = trocas[key] || func.t[ti];
+      const original = trocas[key] || turnos[Number(ti)] || 'NÃO ESCALADO';
       const turnoNome = ti === '0' ? 'Dia' : 'Noite';
 
       const { error } = await sb.from('trocas_escala').insert({
@@ -1032,14 +1144,15 @@
       }
 
       if (data && data.escala_json) {
-        escalaData = {
+        escalaData = normalizeEscalaData({
           ...data.escala_json,
           semana_inicio: data.semana_inicio || data.escala_json?.semana_inicio || null,
           semana_fim: data.semana_fim || data.escala_json?.semana_fim || null,
           atualizado_em: data.atualizado_em || data.escala_json?.atualizado_em || null,
           atualizado_por: data.atualizado_por || data.escala_json?.atualizado_por || null,
           afastamentos_html: data.afastamentos_html || data.escala_json?.afastamentos_html || ''
-        };
+        });
+
         localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
         document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
         document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-check"></i> Escala online sincronizada';
@@ -1047,7 +1160,11 @@
       } else {
         const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
         if (cache) {
-          try { escalaData = JSON.parse(cache); } catch {}
+          try {
+            escalaData = normalizeEscalaData(JSON.parse(cache));
+          } catch (e) {
+            console.error('Erro ao ler cache da escala:', e);
+          }
         }
       }
 
@@ -1173,10 +1290,17 @@
         return;
       }
 
+      if (!obj || typeof obj !== 'object') {
+        toast('Estrutura da escala inválida.');
+        return;
+      }
+
+      obj = normalizeEscalaData(obj);
+
       const payload = {
         chave: 'escala_publicada',
-        semana_inicio: obj.semana_inicio || escalaData.semana_inicio || null,
-        semana_fim: obj.semana_fim || escalaData.semana_fim || null,
+        semana_inicio: obj.semana_inicio || escalaData?.semana_inicio || null,
+        semana_fim: obj.semana_fim || escalaData?.semana_fim || null,
         escala_json: obj,
         atualizado_por: currentSession?.user?.email || obj.atualizado_por || 'admin@escala.com',
         atualizado_em: new Date().toISOString(),
@@ -1191,20 +1315,29 @@
 
         if (error) throw error;
 
-        escalaData = {
+        escalaData = normalizeEscalaData({
           ...obj,
           semana_inicio: payload.semana_inicio,
           semana_fim: payload.semana_fim,
           atualizado_por: payload.atualizado_por,
           atualizado_em: payload.atualizado_em,
           afastamentos_html: payload.afastamentos_html
-        };
+        });
 
         localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
-        document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
-        document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Escala publicada online';
+
+        if (document.getElementById('jsonEscalaEditor')) {
+          document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+        }
+
+        if (document.getElementById('onlineIndicator')) {
+          document.getElementById('onlineIndicator').innerHTML =
+            '<i class="fas fa-cloud-upload-alt"></i> Escala publicada online';
+        }
 
         console.log('Retorno publicação escala_atual:', data);
+
+        diaIdx = Math.min(obterIndiceDiaAtual(), Math.max((escalaData.escala || []).length - 1, 0));
         render();
         toast('✅ Escala publicada online com sucesso.');
 
@@ -1212,7 +1345,12 @@
           await carregarEscalaOnline(false);
         } catch (syncError) {
           console.error('Escala publicou, mas falhou ao recarregar:', syncError);
-          const detalheSync = [syncError?.message, syncError?.details, syncError?.hint, syncError?.code].filter(Boolean).join(' | ');
+          const detalheSync = [
+            syncError?.message,
+            syncError?.details,
+            syncError?.hint,
+            syncError?.code
+          ].filter(Boolean).join(' | ');
           toast('Escala publicada, mas houve falha ao recarregar: ' + (detalheSync || 'erro desconhecido'));
         }
       } catch (e) {
@@ -1305,14 +1443,16 @@
     }
 
     function parseEscalaText(texto) {
-      const base = JSON.parse(JSON.stringify(escalaData));
+      const base = normalizeEscalaData(JSON.parse(JSON.stringify(escalaData)));
       const semanaMatch = texto.match(/(\d{1,2}\/\d{1,2}\/\d{4}).*?(\d{1,2}\/\d{1,2}\/\d{4})/);
+
       if (semanaMatch) {
         base.semana_inicio = toISODate(semanaMatch[1]);
         base.semana_fim = toISODate(semanaMatch[2]);
       }
-      base.texto_extraido_pdf = texto.slice(0, 12000);
-      return base;
+
+      base.texto_extraido_pdf = String(texto || '').slice(0, 12000);
+      return normalizeEscalaData(base);
     }
 
     function handleInstalled() {
@@ -1372,10 +1512,12 @@
         const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
         if (cache) {
           try {
-            escalaData = JSON.parse(cache);
+            escalaData = normalizeEscalaData(JSON.parse(cache));
           } catch (e) {
             console.error('Erro ao ler cache:', e);
           }
+        } else {
+          escalaData = normalizeEscalaData(escalaData);
         }
 
         diaIdx = obterIndiceDiaAtual();
