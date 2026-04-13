@@ -138,9 +138,9 @@
     // =============================
     // CONFIGURAÇÃO SUPABASE
     // =============================
-    const SUPABASE_URL = "https://azltlpjyyqecurmebffm.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO";
-const REGISTRO_SLUG = "principal";
+    const SUPABASE_URL = "COLE_AQUI_SUA_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "COLE_AQUI_SUA_SUPABASE_ANON_KEY";
+
     const supabase = window.supabase?.createClient
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
       : null;
@@ -151,9 +151,9 @@ const REGISTRO_SLUG = "principal";
     const ADMIN_EMAIL_PADRAO = "admin@escala.com";
     const ADMIN_SENHA_PADRAO = "123456"; // troque no seu sistema
     const STORAGE_KEYS = {
-      escala: "escala_cache_v3",
-      versao: "escala_cache_version_v3",
-      ultimaAtualizacao: "escala_ultima_atualizacao_v3"
+      escala: "escala_cache_v2",
+      versao: "escala_cache_version_v2",
+      ultimaAtualizacao: "escala_ultima_atualizacao_v2"
     };
 
     let adminLogado = false;
@@ -208,15 +208,6 @@ const REGISTRO_SLUG = "principal";
       return String(valor);
     }
 
-    function tentarParseJSON(texto, fallback = []) {
-      try {
-        const dado = JSON.parse(texto);
-        return Array.isArray(dado) ? dado : fallback;
-      } catch (_) {
-        return fallback;
-      }
-    }
-
     function gerarVersaoEscala(payload) {
       const base = JSON.stringify({
         semana_inicio: payload?.semana_inicio || "",
@@ -247,12 +238,10 @@ const REGISTRO_SLUG = "principal";
     async function limparCachesManualmente() {
       try {
         limparCacheLocal();
-
         if ("caches" in window) {
           const keys = await caches.keys();
           await Promise.all(keys.map(k => caches.delete(k)));
         }
-
         atualizarStatusSync("Cache local limpo neste aparelho.");
         alert("✅ Cache local limpo com sucesso.");
       } catch (e) {
@@ -278,19 +267,13 @@ const REGISTRO_SLUG = "principal";
     }
 
     function normalizarEscalaImportada(obj) {
-      const escalaArray = Array.isArray(obj?.escala)
-        ? obj.escala
-        : Array.isArray(obj?.dias)
-          ? obj.dias
-          : [];
-
       return {
         semana_inicio: normalizarDataISO(obj?.semana_inicio || ""),
         semana_fim: normalizarDataISO(obj?.semana_fim || ""),
         atualizado_por: obj?.atualizado_por || ADMIN_EMAIL_PADRAO,
         atualizado_em: new Date().toISOString(),
         afastamentos_html: obj?.afastamentos_html || "",
-        escala: escalaArray
+        escala: Array.isArray(obj?.escala) ? obj.escala : []
       };
     }
 
@@ -438,21 +421,19 @@ const REGISTRO_SLUG = "principal";
         }
 
         const versao = gerarVersaoEscala(payload);
-        const escalaJsonTexto = JSON.stringify(payload.escala);
 
         const { error } = await supabase
           .from("escala_atual")
           .upsert({
-            slug: REGISTRO_SLUG,
-            semana_inicio: payload.semana_inicio || null,
-            semana_fim: payload.semana_fim || null,
+            id: 1,
+            semana_inicio: payload.semana_inicio,
+            semana_fim: payload.semana_fim,
             atualizado_por: payload.atualizado_por,
             atualizado_em: payload.atualizado_em,
-            afastamentos_html: payload.afastamentos_html || "",
+            afastamentos_html: payload.afastamentos_html,
             escala: payload.escala,
-            escala_json: escalaJsonTexto,
             versao: versao
-          }, { onConflict: "slug" });
+          }, { onConflict: "id" });
 
         if (error) throw error;
 
@@ -462,6 +443,7 @@ const REGISTRO_SLUG = "principal";
         renderEscala();
         atualizarStatusSync("Escala online sincronizada");
 
+        // dispara atualização imediata em abas/dispositivos
         notificarAtualizacaoGlobal({
           type: "ESCALA_ATUALIZADA",
           versao,
@@ -487,11 +469,12 @@ const REGISTRO_SLUG = "principal";
           timestamp: Date.now()
         });
 
+        // também grava um marcador no Supabase
         if (supabase) {
           await supabase
             .from("escala_atual")
             .update({ atualizado_em: new Date().toISOString() })
-            .eq("slug", REGISTRO_SLUG);
+            .eq("id", 1);
         }
 
         alert("✅ Sinal de atualização enviado.");
@@ -514,7 +497,7 @@ const REGISTRO_SLUG = "principal";
         const { data, error } = await supabase
           .from("escala_atual")
           .select("*")
-          .eq("slug", REGISTRO_SLUG)
+          .eq("id", 1)
           .single();
 
         if (error) throw error;
@@ -524,17 +507,13 @@ const REGISTRO_SLUG = "principal";
           return;
         }
 
-        const escalaArray = Array.isArray(data.escala)
-          ? data.escala
-          : (data.escala_json ? tentarParseJSON(data.escala_json, []) : []);
-
         const payload = {
           semana_inicio: data.semana_inicio || "",
           semana_fim: data.semana_fim || "",
           atualizado_por: data.atualizado_por || ADMIN_EMAIL_PADRAO,
           atualizado_em: data.atualizado_em || new Date().toISOString(),
           afastamentos_html: data.afastamentos_html || "",
-          escala: escalaArray
+          escala: Array.isArray(data.escala) ? data.escala : []
         };
 
         const versaoNova = data.versao || gerarVersaoEscala(payload);
@@ -574,7 +553,6 @@ const REGISTRO_SLUG = "principal";
         semana_fim: "",
         atualizado_por: "-",
         atualizado_em: null,
-        afastamentos_html: "",
         escala: []
       };
       renderEscala();
@@ -589,7 +567,10 @@ const REGISTRO_SLUG = "principal";
         canalSync = new BroadcastChannel("escala_sync_channel");
         canalSync.onmessage = async (event) => {
           const msg = event?.data || {};
-          if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
+          if (msg.type === "ESCALA_ATUALIZADA") {
+            await carregarEscalaOnline(true);
+          }
+          if (msg.type === "FORCAR_RELOAD") {
             await carregarEscalaOnline(true);
           }
         };
