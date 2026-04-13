@@ -138,531 +138,523 @@
   </main>
 
   <script>
-    // =============================
-    // CONFIGURAÇÃO SUPABASE
-    // =============================
-    const SUPABASE_URL = "https://azltlpjyyqecurmebffm.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO";
-const REGISTRO_SLUG = "principal";
-    const supabase = window.supabase?.createClient
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
-
-    // =============================
-    // CONFIG LOCAL
-    // =============================
-    const ADMIN_EMAIL_PADRAO = "admin@escala.com";
-    const ADMIN_SENHA_PADRAO = "123456"; // troque no seu sistema
-    const STORAGE_KEYS = {
-      escala: "escala_cache_v3",
-      versao: "escala_cache_version_v3",
-      ultimaAtualizacao: "escala_ultima_atualizacao_v3"
-    };
-
-    let adminLogado = false;
-    let escalaData = null;
-    let canalSync = null;
-
-    // =============================
-    // UTILIDADES
-    // =============================
-    function escapeHtml(valor) {
-      return String(valor ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function pad2(n) {
-      return String(n).padStart(2, "0");
-    }
-
-    function formatarDataBR(valor) {
-      if (!valor) return "--/--/----";
-
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) return valor;
-
-      const m = String(valor).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-      if (m) {
-        const [, ano, mes, dia] = m;
-        return `${pad2(dia)}/${pad2(mes)}/${ano}`;
+    (() => {
+      if (window.__ESCALA_APP_INICIADO__) {
+        console.warn("ESCALA app já inicializado. Inicialização duplicada ignorada.");
+        return;
       }
+      window.__ESCALA_APP_INICIADO__ = true;
 
-      const d = new Date(valor);
-      if (!isNaN(d.getTime())) {
-        return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
-      }
+      // =============================
+      // CONFIGURAÇÃO SUPABASE
+      // =============================
+      const SUPABASE_URL = "https://azltlpjyyqecurmebffm.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO";
+      const REGISTRO_SLUG = "principal";
 
-      return String(valor);
-    }
+      const sbClient = window.supabase?.createClient
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null;
 
-    function normalizarDataISO(valor) {
-      if (!valor) return "";
-      if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
-
-      let m = String(valor).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-      if (m) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
-
-      m = String(valor).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-      return String(valor);
-    }
-
-    function tentarParseJSON(texto, fallback = []) {
-      try {
-        const dado = JSON.parse(texto);
-        return Array.isArray(dado) ? dado : fallback;
-      } catch (_) {
-        return fallback;
-      }
-    }
-
-    function gerarVersaoEscala(payload) {
-      const base = JSON.stringify({
-        semana_inicio: payload?.semana_inicio || "",
-        semana_fim: payload?.semana_fim || "",
-        atualizado_em: payload?.atualizado_em || "",
-        escala: payload?.escala || []
-      });
-      let hash = 0;
-      for (let i = 0; i < base.length; i++) {
-        hash = ((hash << 5) - hash) + base.charCodeAt(i);
-        hash |= 0;
-      }
-      return String(hash);
-    }
-
-    function salvarCacheLocal(payload) {
-      localStorage.setItem(STORAGE_KEYS.escala, JSON.stringify(payload));
-      localStorage.setItem(STORAGE_KEYS.versao, gerarVersaoEscala(payload));
-      localStorage.setItem(STORAGE_KEYS.ultimaAtualizacao, String(Date.now()));
-    }
-
-    function limparCacheLocal() {
-      localStorage.removeItem(STORAGE_KEYS.escala);
-      localStorage.removeItem(STORAGE_KEYS.versao);
-      localStorage.removeItem(STORAGE_KEYS.ultimaAtualizacao);
-    }
-
-    async function limparCachesManualmente() {
-      try {
-        limparCacheLocal();
-
-        if ("caches" in window) {
-          const keys = await caches.keys();
-          await Promise.all(keys.map(k => caches.delete(k)));
-        }
-
-        atualizarStatusSync("Cache local limpo neste aparelho.");
-        alert("✅ Cache local limpo com sucesso.");
-      } catch (e) {
-        console.error(e);
-        alert("Erro ao limpar cache: " + e.message);
-      }
-    }
-
-    function atualizarStatusSync(texto) {
-      document.getElementById("statusSync").textContent = texto;
-    }
-
-    function atualizarResumo(payload) {
-      document.getElementById("periodoEscala").textContent =
-        `Escala semanal atualizada • ${formatarDataBR(payload?.semana_inicio)} a ${formatarDataBR(payload?.semana_fim)}`;
-
-      const atualizacao = payload?.atualizado_em
-        ? new Date(payload.atualizado_em).toLocaleString("pt-BR")
-        : "--";
-
-      document.getElementById("resumoAtualizacao").textContent =
-        `Atualizado por ${payload?.atualizado_por || "-"} em ${atualizacao}`;
-    }
-
-    function normalizarEscalaImportada(obj) {
-      const escalaArray = Array.isArray(obj?.escala)
-        ? obj.escala
-        : Array.isArray(obj?.dias)
-          ? obj.dias
-          : [];
-
-      return {
-        semana_inicio: normalizarDataISO(obj?.semana_inicio || ""),
-        semana_fim: normalizarDataISO(obj?.semana_fim || ""),
-        atualizado_por: obj?.atualizado_por || ADMIN_EMAIL_PADRAO,
-        atualizado_em: new Date().toISOString(),
-        afastamentos_html: obj?.afastamentos_html || "",
-        escala: escalaArray
+      // =============================
+      // CONFIG LOCAL
+      // =============================
+      const ADMIN_EMAIL_PADRAO = "admin@escala.com";
+      const ADMIN_SENHA_PADRAO = "123456"; // troque no seu sistema
+      const STORAGE_KEYS = {
+        escala: "escala_cache_v3",
+        versao: "escala_cache_version_v3",
+        ultimaAtualizacao: "escala_ultima_atualizacao_v3"
       };
-    }
 
-    function renderEscala() {
-      const box = document.getElementById("escalaContainer");
-      box.innerHTML = "";
+      let adminLogado = false;
+      let escalaData = null;
+      let canalSync = null;
 
-      if (!escalaData || !Array.isArray(escalaData.escala) || escalaData.escala.length === 0) {
-        box.innerHTML = '<div class="muted">Nenhum dia disponível na escala.</div>';
-        atualizarResumo({
-          semana_inicio: "",
-          semana_fim: "",
-          atualizado_por: "-",
-          atualizado_em: null
-        });
-        return;
+      function escapeHtml(valor) {
+        return String(valor ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       }
 
-      atualizarResumo(escalaData);
-
-      escalaData.escala.forEach((dia) => {
-        const card = document.createElement("div");
-        card.className = "day-card";
-
-        const funcsHtml = Array.isArray(dia?.f)
-          ? dia.f.map(item => {
-              const posto = escapeHtml(item?.p || item?.posto || "");
-              const nome = escapeHtml(item?.n || item?.nome || "");
-              const obs = escapeHtml(item?.o || item?.obs || "");
-              return `
-                <div class="func-row">
-                  <div><strong>${posto}</strong> ${nome}</div>
-                  ${obs ? `<div class="muted">${obs}</div>` : ""}
-                </div>
-              `;
-            }).join("")
-          : '<div class="muted">Sem militares cadastrados.</div>';
-
-        card.innerHTML = `
-          <div class="day-title">${escapeHtml(dia?.n || "Dia")} • ${escapeHtml(dia?.d || "")}</div>
-          ${funcsHtml}
-        `;
-        box.appendChild(card);
-      });
-    }
-
-    // =============================
-    // ADMIN
-    // =============================
-    function entrarAdmin() {
-      const email = document.getElementById("adminEmail").value.trim();
-      const senha = document.getElementById("adminSenha").value.trim();
-
-      if (email !== ADMIN_EMAIL_PADRAO || senha !== ADMIN_SENHA_PADRAO) {
-        alert("Credenciais de admin inválidas.");
-        return;
+      function pad2(n) {
+        return String(n).padStart(2, "0");
       }
 
-      adminLogado = true;
-      document.getElementById("adminPanelCard").classList.remove("hidden");
-      document.getElementById("statusAdmin").textContent = "Modo admin ativo e pronto para publicar.";
-      alert("✅ Modo admin liberado.");
-    }
+      function formatarDataBR(valor) {
+        if (!valor) return "--/--/----";
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) return valor;
 
-    // =============================
-    // LEITURA DE ARQUIVO
-    // =============================
-    async function lerArquivoEscala() {
-      const fileInput = document.getElementById("pdfFile");
-      const file = fileInput.files?.[0];
+        const m = String(valor).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (m) {
+          const [, ano, mes, dia] = m;
+          return `${pad2(dia)}/${pad2(mes)}/${ano}`;
+        }
 
-      if (!file) {
-        alert("Selecione um arquivo .txt ou .pdf.");
-        return;
+        const d = new Date(valor);
+        if (!isNaN(d.getTime())) {
+          return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+        }
+
+        return String(valor);
       }
 
-      const nome = file.name.toLowerCase();
+      function normalizarDataISO(valor) {
+        if (!valor) return "";
+        if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
 
-      try {
-        if (nome.endsWith(".txt")) {
-          const texto = await file.text();
-          document.getElementById("jsonEscalaEditor").value = texto.trim();
-          alert("✅ TXT carregado. Revise o JSON antes de publicar.");
-          return;
-        }
+        let m = String(valor).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (m) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
 
-        if (nome.endsWith(".pdf")) {
-          alert("Para PDF, converta antes para TXT/JSON estruturado. O leitor atual está pronto para publicar TXT/JSON.");
-          return;
-        }
+        m = String(valor).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (m) return `${m[3]}-${m[2]}-${m[1]}`;
 
-        alert("Formato não suportado.");
-      } catch (e) {
-        console.error(e);
-        alert("Erro ao ler arquivo: " + e.message);
+        return String(valor);
       }
-    }
 
-    function carregarModeloAtual() {
-      const modelo = escalaData || {
-        semana_inicio: "",
-        semana_fim: "",
-        atualizado_por: ADMIN_EMAIL_PADRAO,
-        atualizado_em: new Date().toISOString(),
-        afastamentos_html: "",
-        escala: []
-      };
-      document.getElementById("jsonEscalaEditor").value = JSON.stringify(modelo, null, 2);
-    }
-
-    // =============================
-    // PUBLICAÇÃO ONLINE
-    // =============================
-    async function publicarEscalaOnline() {
-      try {
-        if (!adminLogado) {
-          alert("Entre no modo admin primeiro.");
-          return;
-        }
-
-        if (!supabase) {
-          alert("Biblioteca Supabase não disponível ou configuração ausente.");
-          return;
-        }
-
-        const texto = document.getElementById("jsonEscalaEditor").value.trim();
-        if (!texto) {
-          alert("Nenhum JSON carregado.");
-          return;
-        }
-
-        let bruto;
+      function tentarParseJSON(texto, fallback = []) {
         try {
-          bruto = JSON.parse(texto);
-        } catch (e) {
-          alert("JSON inválido.");
-          return;
+          const dado = JSON.parse(texto);
+          return Array.isArray(dado) ? dado : fallback;
+        } catch (_) {
+          return fallback;
         }
-
-        const payload = normalizarEscalaImportada(bruto);
-
-        if (!Array.isArray(payload.escala)) {
-          alert("A estrutura da escala é inválida.");
-          return;
-        }
-
-        const versao = gerarVersaoEscala(payload);
-        const escalaJsonTexto = JSON.stringify(payload.escala);
-
-        const { error } = await supabase
-          .from("escala_atual")
-          .upsert({
-            slug: REGISTRO_SLUG,
-            semana_inicio: payload.semana_inicio || null,
-            semana_fim: payload.semana_fim || null,
-            atualizado_por: payload.atualizado_por,
-            atualizado_em: payload.atualizado_em,
-            afastamentos_html: payload.afastamentos_html || "",
-            escala: payload.escala,
-            escala_json: escalaJsonTexto,
-            versao: versao
-          }, { onConflict: "slug" });
-
-        if (error) throw error;
-
-        escalaData = payload;
-        limparCacheLocal();
-        salvarCacheLocal(payload);
-        renderEscala();
-        atualizarStatusSync("Escala online sincronizada");
-
-        notificarAtualizacaoGlobal({
-          type: "ESCALA_ATUALIZADA",
-          versao,
-          atualizado_em: payload.atualizado_em
-        });
-
-        document.getElementById("statusAdmin").textContent = "✅ Escala publicada com sucesso.";
-        alert("✅ Escala publicada com sucesso.");
-      } catch (erro) {
-        console.error("Erro ao publicar escala:", erro);
-        alert("Erro ao publicar escala: " + erro.message);
       }
-    }
 
-    async function recarregarEscalaAgora() {
-      await carregarEscalaOnline(true);
-    }
-
-    async function forcarAtualizacaoTodosDispositivos() {
-      try {
-        notificarAtualizacaoGlobal({
-          type: "FORCAR_RELOAD",
-          timestamp: Date.now()
+      function gerarVersaoEscala(payload) {
+        const base = JSON.stringify({
+          semana_inicio: payload?.semana_inicio || "",
+          semana_fim: payload?.semana_fim || "",
+          atualizado_em: payload?.atualizado_em || "",
+          escala: payload?.escala || []
         });
-
-        if (supabase) {
-          await supabase
-            .from("escala_atual")
-            .update({ atualizado_em: new Date().toISOString() })
-            .eq("slug", REGISTRO_SLUG);
+        let hash = 0;
+        for (let i = 0; i < base.length; i++) {
+          hash = ((hash << 5) - hash) + base.charCodeAt(i);
+          hash |= 0;
         }
-
-        alert("✅ Sinal de atualização enviado.");
-      } catch (e) {
-        console.error(e);
-        alert("Erro ao forçar atualização: " + e.message);
+        return String(hash);
       }
-    }
 
-    // =============================
-    // CARGA ONLINE
-    // =============================
-    async function carregarEscalaOnline(forcar = false) {
-      try {
-        if (!supabase) {
-          carregarEscalaDoCache();
-          return;
-        }
+      function salvarCacheLocal(payload) {
+        localStorage.setItem(STORAGE_KEYS.escala, JSON.stringify(payload));
+        localStorage.setItem(STORAGE_KEYS.versao, gerarVersaoEscala(payload));
+        localStorage.setItem(STORAGE_KEYS.ultimaAtualizacao, String(Date.now()));
+      }
 
-        const { data, error } = await supabase
-          .from("escala_atual")
-          .select("*")
-          .eq("slug", REGISTRO_SLUG)
-          .single();
+      function limparCacheLocal() {
+        localStorage.removeItem(STORAGE_KEYS.escala);
+        localStorage.removeItem(STORAGE_KEYS.versao);
+        localStorage.removeItem(STORAGE_KEYS.ultimaAtualizacao);
+      }
 
-        if (error) throw error;
+      function atualizarStatusSync(texto) {
+        document.getElementById("statusSync").textContent = texto;
+      }
 
-        if (!data) {
-          carregarEscalaDoCache();
-          return;
-        }
+      function atualizarResumo(payload) {
+        document.getElementById("periodoEscala").textContent =
+          `Escala semanal atualizada • ${formatarDataBR(payload?.semana_inicio)} a ${formatarDataBR(payload?.semana_fim)}`;
 
-        const escalaArray = Array.isArray(data.escala)
-          ? data.escala
-          : (data.escala_json ? tentarParseJSON(data.escala_json, []) : []);
+        const atualizacao = payload?.atualizado_em
+          ? new Date(payload.atualizado_em).toLocaleString("pt-BR")
+          : "--";
 
-        const payload = {
-          semana_inicio: data.semana_inicio || "",
-          semana_fim: data.semana_fim || "",
-          atualizado_por: data.atualizado_por || ADMIN_EMAIL_PADRAO,
-          atualizado_em: data.atualizado_em || new Date().toISOString(),
-          afastamentos_html: data.afastamentos_html || "",
+        document.getElementById("resumoAtualizacao").textContent =
+          `Atualizado por ${payload?.atualizado_por || "-"} em ${atualizacao}`;
+      }
+
+      function normalizarEscalaImportada(obj) {
+        const escalaArray = Array.isArray(obj?.escala)
+          ? obj.escala
+          : Array.isArray(obj?.dias)
+            ? obj.dias
+            : [];
+
+        return {
+          semana_inicio: normalizarDataISO(obj?.semana_inicio || ""),
+          semana_fim: normalizarDataISO(obj?.semana_fim || ""),
+          atualizado_por: obj?.atualizado_por || ADMIN_EMAIL_PADRAO,
+          atualizado_em: new Date().toISOString(),
+          afastamentos_html: obj?.afastamentos_html || "",
           escala: escalaArray
         };
+      }
 
-        const versaoNova = data.versao || gerarVersaoEscala(payload);
-        const versaoLocal = localStorage.getItem(STORAGE_KEYS.versao);
+      function renderEscala() {
+        const box = document.getElementById("escalaContainer");
+        box.innerHTML = "";
 
-        if (forcar || versaoLocal !== versaoNova) {
+        if (!escalaData || !Array.isArray(escalaData.escala) || escalaData.escala.length === 0) {
+          box.innerHTML = '<div class="muted">Nenhum dia disponível na escala.</div>';
+          atualizarResumo({
+            semana_inicio: "",
+            semana_fim: "",
+            atualizado_por: "-",
+            atualizado_em: null
+          });
+          return;
+        }
+
+        atualizarResumo(escalaData);
+
+        escalaData.escala.forEach((dia) => {
+          const card = document.createElement("div");
+          card.className = "day-card";
+
+          const funcsHtml = Array.isArray(dia?.f)
+            ? dia.f.map(item => {
+                const posto = escapeHtml(item?.p || item?.posto || "");
+                const nome = escapeHtml(item?.n || item?.nome || "");
+                const obs = escapeHtml(item?.o || item?.obs || "");
+                return `
+                  <div class="func-row">
+                    <div><strong>${posto}</strong> ${nome}</div>
+                    ${obs ? `<div class="muted">${obs}</div>` : ""}
+                  </div>
+                `;
+              }).join("")
+            : '<div class="muted">Sem militares cadastrados.</div>';
+
+          card.innerHTML = `
+            <div class="day-title">${escapeHtml(dia?.n || "Dia")} • ${escapeHtml(dia?.d || "")}</div>
+            ${funcsHtml}
+          `;
+          box.appendChild(card);
+        });
+      }
+
+      async function limparCachesManualmente() {
+        try {
+          limparCacheLocal();
+
+          if ("caches" in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+
+          atualizarStatusSync("Cache local limpo neste aparelho.");
+          alert("✅ Cache local limpo com sucesso.");
+        } catch (e) {
+          console.error(e);
+          alert("Erro ao limpar cache: " + e.message);
+        }
+      }
+
+      async function lerArquivoEscala() {
+        const fileInput = document.getElementById("pdfFile");
+        const file = fileInput.files?.[0];
+
+        if (!file) {
+          alert("Selecione um arquivo .txt ou .pdf.");
+          return;
+        }
+
+        const nome = file.name.toLowerCase();
+
+        try {
+          if (nome.endsWith(".txt")) {
+            const texto = await file.text();
+            document.getElementById("jsonEscalaEditor").value = texto.trim();
+            alert("✅ TXT carregado. Revise o JSON antes de publicar.");
+            return;
+          }
+
+          if (nome.endsWith(".pdf")) {
+            alert("Para PDF, converta antes para TXT/JSON estruturado. O leitor atual está pronto para publicar TXT/JSON.");
+            return;
+          }
+
+          alert("Formato não suportado.");
+        } catch (e) {
+          console.error(e);
+          alert("Erro ao ler arquivo: " + e.message);
+        }
+      }
+
+      function carregarModeloAtual() {
+        const modelo = escalaData || {
+          semana_inicio: "",
+          semana_fim: "",
+          atualizado_por: ADMIN_EMAIL_PADRAO,
+          atualizado_em: new Date().toISOString(),
+          afastamentos_html: "",
+          escala: []
+        };
+        document.getElementById("jsonEscalaEditor").value = JSON.stringify(modelo, null, 2);
+      }
+
+      function entrarAdmin() {
+        const email = document.getElementById("adminEmail").value.trim();
+        const senha = document.getElementById("adminSenha").value.trim();
+
+        if (email !== ADMIN_EMAIL_PADRAO || senha !== ADMIN_SENHA_PADRAO) {
+          alert("Credenciais de admin inválidas.");
+          return;
+        }
+
+        adminLogado = true;
+        document.getElementById("adminPanelCard").classList.remove("hidden");
+        document.getElementById("statusAdmin").textContent = "Modo admin ativo e pronto para publicar.";
+        alert("✅ Modo admin liberado.");
+      }
+
+      async function publicarEscalaOnline() {
+        try {
+          if (!adminLogado) {
+            alert("Entre no modo admin primeiro.");
+            return;
+          }
+
+          if (!sbClient) {
+            alert("Biblioteca Supabase não disponível ou configuração ausente.");
+            return;
+          }
+
+          const texto = document.getElementById("jsonEscalaEditor").value.trim();
+          if (!texto) {
+            alert("Nenhum JSON carregado.");
+            return;
+          }
+
+          let bruto;
+          try {
+            bruto = JSON.parse(texto);
+          } catch (e) {
+            alert("JSON inválido.");
+            return;
+          }
+
+          const payload = normalizarEscalaImportada(bruto);
+
+          if (!Array.isArray(payload.escala)) {
+            alert("A estrutura da escala é inválida.");
+            return;
+          }
+
+          const versao = gerarVersaoEscala(payload);
+          const escalaJsonTexto = JSON.stringify(payload.escala);
+
+          const { error } = await sbClient
+            .from("escala_atual")
+            .upsert({
+              slug: REGISTRO_SLUG,
+              semana_inicio: payload.semana_inicio || null,
+              semana_fim: payload.semana_fim || null,
+              atualizado_por: payload.atualizado_por,
+              atualizado_em: payload.atualizado_em,
+              afastamentos_html: payload.afastamentos_html || "",
+              escala: payload.escala,
+              escala_json: escalaJsonTexto,
+              versao: versao
+            }, { onConflict: "slug" });
+
+          if (error) throw error;
+
           escalaData = payload;
           limparCacheLocal();
           salvarCacheLocal(payload);
           renderEscala();
           atualizarStatusSync("Escala online sincronizada");
-        } else {
-          carregarEscalaDoCache();
-          atualizarStatusSync("Escala local atualizada");
+
+          notificarAtualizacaoGlobal({
+            type: "ESCALA_ATUALIZADA",
+            versao,
+            atualizado_em: payload.atualizado_em
+          });
+
+          document.getElementById("statusAdmin").textContent = "✅ Escala publicada com sucesso.";
+          alert("✅ Escala publicada com sucesso.");
+        } catch (erro) {
+          console.error("Erro ao publicar escala:", erro);
+          alert("Erro ao publicar escala: " + erro.message);
         }
-      } catch (e) {
-        console.error("Erro ao carregar online:", e);
-        carregarEscalaDoCache();
-      }
-    }
-
-    function carregarEscalaDoCache() {
-      try {
-        const salvo = localStorage.getItem(STORAGE_KEYS.escala);
-        if (salvo) {
-          escalaData = JSON.parse(salvo);
-          renderEscala();
-          atualizarStatusSync("Escala carregada do cache local");
-          return;
-        }
-      } catch (e) {
-        console.error("Erro cache:", e);
       }
 
-      escalaData = {
-        semana_inicio: "",
-        semana_fim: "",
-        atualizado_por: "-",
-        atualizado_em: null,
-        afastamentos_html: "",
-        escala: []
-      };
-      renderEscala();
-      atualizarStatusSync("Sem dados locais");
-    }
-
-    // =============================
-    // SINCRONIZAÇÃO ENTRE DISPOSITIVOS / ABAS
-    // =============================
-    function iniciarBroadcastChannel() {
-      if ("BroadcastChannel" in window) {
-        canalSync = new BroadcastChannel("escala_sync_channel");
-        canalSync.onmessage = async (event) => {
-          const msg = event?.data || {};
-          if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
-            await carregarEscalaOnline(true);
-          }
-        };
+      async function recarregarEscalaAgora() {
+        await carregarEscalaOnline(true);
       }
-    }
 
-    function notificarAtualizacaoGlobal(msg) {
-      try {
-        localStorage.setItem("escala_sync_ping", JSON.stringify({
-          ...msg,
-          timestamp: Date.now()
-        }));
-      } catch (_) {}
-
-      if (canalSync) {
-        canalSync.postMessage(msg);
-      }
-    }
-
-    window.addEventListener("storage", async (event) => {
-      if (event.key === "escala_sync_ping" && event.newValue) {
+      async function forcarAtualizacaoTodosDispositivos() {
         try {
-          const msg = JSON.parse(event.newValue);
-          if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
-            await carregarEscalaOnline(true);
+          notificarAtualizacaoGlobal({
+            type: "FORCAR_RELOAD",
+            timestamp: Date.now()
+          });
+
+          if (sbClient) {
+            await sbClient
+              .from("escala_atual")
+              .update({ atualizado_em: new Date().toISOString() })
+              .eq("slug", REGISTRO_SLUG);
+          }
+
+          alert("✅ Sinal de atualização enviado.");
+        } catch (e) {
+          console.error(e);
+          alert("Erro ao forçar atualização: " + e.message);
+        }
+      }
+
+      async function carregarEscalaOnline(forcar = false) {
+        try {
+          if (!sbClient) {
+            carregarEscalaDoCache();
+            return;
+          }
+
+          const { data, error } = await sbClient
+            .from("escala_atual")
+            .select("*")
+            .eq("slug", REGISTRO_SLUG)
+            .single();
+
+          if (error) throw error;
+
+          if (!data) {
+            carregarEscalaDoCache();
+            return;
+          }
+
+          const escalaArray = Array.isArray(data.escala)
+            ? data.escala
+            : (data.escala_json ? tentarParseJSON(data.escala_json, []) : []);
+
+          const payload = {
+            semana_inicio: data.semana_inicio || "",
+            semana_fim: data.semana_fim || "",
+            atualizado_por: data.atualizado_por || ADMIN_EMAIL_PADRAO,
+            atualizado_em: data.atualizado_em || new Date().toISOString(),
+            afastamentos_html: data.afastamentos_html || "",
+            escala: escalaArray
+          };
+
+          const versaoNova = data.versao || gerarVersaoEscala(payload);
+          const versaoLocal = localStorage.getItem(STORAGE_KEYS.versao);
+
+          if (forcar || versaoLocal !== versaoNova) {
+            escalaData = payload;
+            limparCacheLocal();
+            salvarCacheLocal(payload);
+            renderEscala();
+            atualizarStatusSync("Escala online sincronizada");
+          } else {
+            carregarEscalaDoCache();
+            atualizarStatusSync("Escala local atualizada");
           }
         } catch (e) {
-          console.error("Erro sync storage:", e);
+          console.error("Erro ao carregar online:", e);
+          carregarEscalaDoCache();
         }
       }
-    });
 
-    // =============================
-    // REALTIME SUPABASE
-    // =============================
-    function iniciarRealtime() {
-      if (!supabase) return;
-
-      supabase
-        .channel("public:escala_atual")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "escala_atual" },
-          async () => {
-            await carregarEscalaOnline(true);
+      function carregarEscalaDoCache() {
+        try {
+          const salvo = localStorage.getItem(STORAGE_KEYS.escala);
+          if (salvo) {
+            escalaData = JSON.parse(salvo);
+            renderEscala();
+            atualizarStatusSync("Escala carregada do cache local");
+            return;
           }
-        )
-        .subscribe((status) => {
-          console.log("Realtime status:", status);
-        });
-    }
+        } catch (e) {
+          console.error("Erro cache:", e);
+        }
 
-    // =============================
-    // INICIALIZAÇÃO
-    // =============================
-    async function init() {
-      iniciarBroadcastChannel();
-      iniciarRealtime();
-      await carregarEscalaOnline(false);
-    }
+        escalaData = {
+          semana_inicio: "",
+          semana_fim: "",
+          atualizado_por: "-",
+          atualizado_em: null,
+          afastamentos_html: "",
+          escala: []
+        };
+        renderEscala();
+        atualizarStatusSync("Sem dados locais");
+      }
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js")
-          .then(() => console.log("Service Worker registrado com sucesso."))
-          .catch(err => console.error("Erro ao registrar Service Worker:", err));
+      function iniciarBroadcastChannel() {
+        if ("BroadcastChannel" in window) {
+          canalSync = new BroadcastChannel("escala_sync_channel");
+          canalSync.onmessage = async (event) => {
+            const msg = event?.data || {};
+            if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
+              await carregarEscalaOnline(true);
+            }
+          };
+        }
+      }
+
+      function notificarAtualizacaoGlobal(msg) {
+        try {
+          localStorage.setItem("escala_sync_ping", JSON.stringify({
+            ...msg,
+            timestamp: Date.now()
+          }));
+        } catch (_) {}
+
+        if (canalSync) {
+          canalSync.postMessage(msg);
+        }
+      }
+
+      window.addEventListener("storage", async (event) => {
+        if (event.key === "escala_sync_ping" && event.newValue) {
+          try {
+            const msg = JSON.parse(event.newValue);
+            if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
+              await carregarEscalaOnline(true);
+            }
+          } catch (e) {
+            console.error("Erro sync storage:", e);
+          }
+        }
       });
-    }
 
-    init();
+      function iniciarRealtime() {
+        if (!sbClient) return;
+
+        sbClient
+          .channel("public:escala_atual")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "escala_atual" },
+            async () => {
+              await carregarEscalaOnline(true);
+            }
+          )
+          .subscribe((status) => {
+            console.log("Realtime status:", status);
+          });
+      }
+
+      async function init() {
+        iniciarBroadcastChannel();
+        iniciarRealtime();
+        await carregarEscalaOnline(false);
+      }
+
+      window.entrarAdmin = entrarAdmin;
+      window.lerArquivoEscala = lerArquivoEscala;
+      window.publicarEscalaOnline = publicarEscalaOnline;
+      window.carregarModeloAtual = carregarModeloAtual;
+      window.limparCachesManualmente = limparCachesManualmente;
+      window.forcarAtualizacaoTodosDispositivos = forcarAtualizacaoTodosDispositivos;
+      window.recarregarEscalaAgora = recarregarEscalaAgora;
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js")
+            .then(() => console.log("Service Worker registrado com sucesso."))
+            .catch(err => console.error("Erro ao registrar Service Worker:", err));
+        });
+      }
+
+      init();
+    })();
   </script>
 </body>
 </html>
