@@ -1,4 +1,4 @@
-const CACHE_NAME = 'escala-cb-sls-v18';
+const CACHE_NAME = 'escala-cb-sls-v19';
 const URLS_TO_CACHE = [
   './',
   './index.html',
