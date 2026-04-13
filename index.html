@@ -664,7 +664,11 @@
   </div>
 
   <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    } else {
+      console.warn('pdf.js não carregou. A leitura de PDF ficará indisponível até recarregar a página.');
+    }
 
     const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
@@ -795,6 +799,17 @@
       clearTimeout(window.__toastTimer);
       window.__toastTimer = setTimeout(() => el.classList.remove('show'), 4200);
     }
+
+    function hideSplash() {
+      const splash = document.getElementById('splashScreen');
+      if (splash) splash.classList.add('hide');
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(hideSplash, 1800);
+    });
+
+    setTimeout(hideSplash, 3500);
 
     function showView(view) {
       const isEscala = view === 'escala';
@@ -1211,6 +1226,11 @@
       }
 
       try {
+        if (!window.pdfjsLib) {
+          toast('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
+          return;
+        }
+
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let texto = '';
@@ -1318,10 +1338,7 @@
         console.error('Erro no boot do app:', e);
         toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
       } finally {
-        setTimeout(() => {
-          const splash = document.getElementById('splashScreen');
-          if (splash) splash.classList.add('hide');
-        }, 1200);
+        setTimeout(hideSplash, 1200);
       }
     }
 
