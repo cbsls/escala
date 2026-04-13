@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Escala CB SLS" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -25,7 +25,6 @@
       --mil-blue: #1a237e;
       --orange-swap: #f39c12;
       --success: #2e7d32;
-      --success-dark: #1b5e20;
       --warning: #ff9800;
       --shadow: 0 4px 15px rgba(0,0,0,0.1);
       --radius: 16px;
@@ -129,9 +128,9 @@
     .search-box input,
     textarea,
     select,
-    input[type="email"],
     input[type="password"],
-    input[type="text"] {
+    input[type="text"],
+    input[type="file"] {
       width: 100%;
       border: 1px solid #ddd;
       border-radius: 12px;
@@ -664,7 +663,9 @@
   </div>
 
   <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
 
     const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
@@ -674,13 +675,13 @@
       ultimaEscala: 'escala_cbsls_cache_online_v1'
     };
 
-    window.__supabaseClient = window.__supabaseClient || null;
-    let supabase = window.__supabaseClient;
+    let supabaseClient = null;
     let currentSession = null;
     let deferredPrompt = null;
     let diaIdx = 0;
     let expandirTodos = true;
     let trocas = {};
+
     let escalaData = {
       semana_inicio: '2026-04-13',
       semana_fim: '2026-04-19',
@@ -693,83 +694,55 @@
           • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
           • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.`,
       escala: [
-        {
-          d: '13/04/2026',
-          n: 'Segunda-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM SOARES', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] }
-          ]
-        },
-        {
-          d: '14/04/2026',
-          n: 'Terça-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
-            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] }
-          ]
-        },
-        {
-          d: '15/04/2026',
-          n: 'Quarta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
-            { n: 'COV', i: 'truck', t: ['1º SGT BM BATISTA', '1º SGT BM BATISTA'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
-          ]
-        },
-        {
-          d: '16/04/2026',
-          n: 'Quinta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
-            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BORGES', 'SD BM BORGES'] }
-          ]
-        },
-        {
-          d: '17/04/2026',
-          n: 'Sexta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
-            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['1º SGT BM BATISTA', 'SD BM MAX'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
-          ]
-        },
-        {
-          d: '18/04/2026',
-          n: 'Sábado',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
-            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM ISQUIERDO', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] }
-          ]
-        },
-        {
-          d: '19/04/2026',
-          n: 'Domingo',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM BATISTA', 'SD BM CAMACHO'] },
-            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BARGES'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] }
-          ]
-        }
+        { d: '13/04/2026', n: 'Segunda-Feira', f: [
+          { n: 'CG', i: 'user-shield', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+          { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD BM SOARES', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] }
+        ]},
+        { d: '14/04/2026', n: 'Terça-Feira', f: [
+          { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
+          { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] }
+        ]},
+        { d: '15/04/2026', n: 'Quarta-Feira', f: [
+          { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
+          { n: 'COV', i: 'truck', t: ['1º SGT BM BATISTA', '1º SGT BM BATISTA'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
+        ]},
+        { d: '16/04/2026', n: 'Quinta-Feira', f: [
+          { n: 'CG', i: 'user-shield', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
+          { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM BORGES', 'SD BM BORGES'] }
+        ]},
+        { d: '17/04/2026', n: 'Sexta-Feira', f: [
+          { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
+          { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['1º SGT BM BATISTA', 'SD BM MAX'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
+        ]},
+        { d: '18/04/2026', n: 'Sábado', f: [
+          { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
+          { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD BM ISQUIERDO', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] }
+        ]},
+        { d: '19/04/2026', n: 'Domingo', f: [
+          { n: 'CG', i: 'user-shield', t: ['1º SGT BM BATISTA', 'SD BM CAMACHO'] },
+          { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
+          { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BARGES'] },
+          { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
+          { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] }
+        ]}
       ]
     };
 
@@ -780,19 +753,28 @@
       'SD MOTTA', 'SD PEGLOW', 'SD SOARES', 'SD TEMP LARSSON', 'SD TOMASCHEWSKI', 'SD WILLIAM'
     ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
+    function getSupabase() {
+      return supabaseClient;
+    }
+
     function initSupabase() {
       try {
         if (!window.supabase || !window.supabase.createClient) {
           console.warn('Biblioteca Supabase não carregou.');
-          return;
+          return null;
         }
-        if (!window.__supabaseClient) {
-          window.__supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        if (!window.__ESCALA_SUPABASE_CLIENT__) {
+          window.__ESCALA_SUPABASE_CLIENT__ = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+          );
         }
-        supabase = window.__supabaseClient;
+        supabaseClient = window.__ESCALA_SUPABASE_CLIENT__;
+        return supabaseClient;
       } catch (e) {
-        console.error(e);
+        console.error('Erro ao iniciar Supabase:', e);
         toast('Erro ao iniciar Supabase. O app seguirá em modo local.');
+        return null;
       }
     }
 
@@ -814,8 +796,7 @@
     }
 
     function atualizarBotaoExpandir() {
-      const btn = document.getElementById('btnExpandirTodos');
-      btn.textContent = expandirTodos ? 'Recolher todos' : 'Expandir todos';
+      document.getElementById('btnExpandirTodos').textContent = expandirTodos ? 'Recolher todos' : 'Expandir todos';
     }
 
     function toggleExpandirTodos() {
@@ -849,9 +830,8 @@
       const inicio = formatDateBRFromISO(escalaData.semana_inicio);
       const fim = formatDateBRFromISO(escalaData.semana_fim);
       document.getElementById('appSubtitle').textContent = `Escala semanal atualizada • ${inicio} a ${fim}`;
-      const badge = document.getElementById('ultimaAtualizacaoBadge');
       const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
-      badge.innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
+      document.getElementById('ultimaAtualizacaoBadge').innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
       document.getElementById('afastamentosHtml').innerHTML = escalaData.afastamentos_html || 'Sem observações.';
     }
 
@@ -953,8 +933,17 @@
       const [fi, ti] = val.split('|');
       const func = escalaData.escala[diaIdx].f[fi];
       const key = `${escalaData.escala[diaIdx].d}|${func.n}|${ti}`;
-      const atual = trocas[key] || func.t[ti];
-      document.getElementById('militarSaindo').value = atual;
+      document.getElementById('militarSaindo').value = trocas[key] || func.t[ti];
+    }
+
+    function fecharModal() {
+      document.getElementById('modalTroca').classList.remove('show');
+      document.getElementById('navTroca').classList.remove('active');
+    }
+
+    function toISODate(br) {
+      const [dia, mes, ano] = br.split('/');
+      return `${ano}-${mes}-${dia}`;
     }
 
     async function salvarTroca() {
@@ -966,6 +955,12 @@
         return;
       }
 
+      const sb = getSupabase();
+      if (!sb) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
       const [fi, ti] = turno.split('|');
       const dia = escalaData.escala[diaIdx];
       const func = dia.f[fi];
@@ -973,12 +968,7 @@
       const original = trocas[key] || func.t[ti];
       const turnoNome = ti === '0' ? 'Dia' : 'Noite';
 
-      if (!supabase) {
-        toast('Supabase não inicializado.');
-        return;
-      }
-
-      const { error } = await supabase.from('trocas_escala').insert({
+      const { error } = await sb.from('trocas_escala').insert({
         data_escala: toISODate(dia.d),
         funcao: func.n,
         turno: turnoNome,
@@ -998,19 +988,11 @@
       toast('Troca salva online com sucesso. Agora ela aparece em qualquer dispositivo.');
     }
 
-    function fecharModal() {
-      document.getElementById('modalTroca').classList.remove('show');
-      document.getElementById('navTroca').classList.remove('active');
-    }
-
-    function toISODate(br) {
-      const [dia, mes, ano] = br.split('/');
-      return `${ano}-${mes}-${dia}`;
-    }
-
     async function carregarTrocasOnline() {
-      if (!supabase) return;
-      const { data, error } = await supabase
+      const sb = getSupabase();
+      if (!sb) return;
+
+      const { data, error } = await sb
         .from('trocas_escala')
         .select('*')
         .order('criado_em', { ascending: true });
@@ -1023,17 +1005,17 @@
       trocas = {};
       (data || []).forEach(item => {
         const d = new Date(item.data_escala + 'T00:00:00');
-        const br = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+        const br = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
         const idx = String(item.turno).toLowerCase().includes('dia') ? '0' : '1';
-        const key = `${br}|${item.funcao}|${idx}`;
-        trocas[key] = item.militar_substituto;
+        trocas[`${br}|${item.funcao}|${idx}`] = item.militar_substituto;
       });
     }
 
     async function carregarEscalaOnline(showMessage = false) {
-      if (!supabase) return;
+      const sb = getSupabase();
+      if (!sb) return;
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('escala_atual')
         .select('*')
         .order('atualizado_em', { ascending: false })
@@ -1071,49 +1053,87 @@
     }
 
     async function loginAdmin() {
-      const email = ADMIN_EMAIL_PADRAO;
+      const sb = getSupabase();
+      if (!sb) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
       const password = document.getElementById('adminSenha').value;
       if (!password) {
         toast('Digite a senha do admin.');
         return;
       }
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: ADMIN_EMAIL_PADRAO,
+        password
+      });
+
       if (error) {
         console.error(error);
         document.getElementById('adminStatus').textContent = 'Falha no login do admin.';
         toast('Senha incorreta ou admin não cadastrado.');
         return;
       }
+
       currentSession = data.session;
-      atualizarPainelAdmin();
+      await atualizarPainelAdmin();
       toast('Admin autenticado com sucesso.');
     }
 
     async function logoutAdmin() {
-      if (!supabase) return;
-      await supabase.auth.signOut();
+      const sb = getSupabase();
+      if (!sb) return;
+
+      await sb.auth.signOut();
       currentSession = null;
-      atualizarPainelAdmin();
+      await atualizarPainelAdmin();
       toast('Sessão do admin encerrada.');
     }
 
     async function atualizarPainelAdmin() {
-      const { data } = await supabase.auth.getSession();
-      currentSession = data.session;
       const status = document.getElementById('adminStatus');
       const painel = document.getElementById('adminPanelCard');
       const trocasCard = document.getElementById('trocasAdminCard');
+      const sb = getSupabase();
 
-      if (!currentSession) {
-        status.textContent = 'Admin não autenticado.';
+      if (!sb) {
+        status.textContent = 'Supabase não inicializado.';
         painel.classList.add('hidden');
         trocasCard.classList.add('hidden');
         return;
       }
 
-      status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
-      painel.classList.remove('hidden');
-      trocasCard.classList.remove('hidden');
+      try {
+        const { data, error } = await sb.auth.getSession();
+
+        if (error) {
+          console.error(error);
+          status.textContent = 'Erro ao verificar sessão do admin.';
+          painel.classList.add('hidden');
+          trocasCard.classList.add('hidden');
+          return;
+        }
+
+        currentSession = data.session;
+
+        if (!currentSession) {
+          status.textContent = 'Admin não autenticado.';
+          painel.classList.add('hidden');
+          trocasCard.classList.add('hidden');
+          return;
+        }
+
+        status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
+        painel.classList.remove('hidden');
+        trocasCard.classList.remove('hidden');
+      } catch (e) {
+        console.error('Erro em atualizarPainelAdmin:', e);
+        status.textContent = 'Erro ao carregar painel admin.';
+        painel.classList.add('hidden');
+        trocasCard.classList.add('hidden');
+      }
     }
 
     function carregarModeloAtual() {
@@ -1122,8 +1142,7 @@
     }
 
     function salvarJsonLocal() {
-      const txt = document.getElementById('jsonEscalaEditor').value;
-      localStorage.setItem(STORAGE_KEYS.rascunho, txt);
+      localStorage.setItem(STORAGE_KEYS.rascunho, document.getElementById('jsonEscalaEditor').value);
       toast('Rascunho salvo neste navegador.');
     }
 
@@ -1133,10 +1152,16 @@
         return;
       }
 
+      const sb = getSupabase();
+      if (!sb) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
       let obj;
       try {
         obj = JSON.parse(document.getElementById('jsonEscalaEditor').value);
-      } catch (e) {
+      } catch {
         toast('O JSON da escala está inválido.');
         return;
       }
@@ -1144,7 +1169,7 @@
       const semanaInicio = obj.semana_inicio || escalaData.semana_inicio;
       const semanaFim = obj.semana_fim || escalaData.semana_fim;
 
-      const { error } = await supabase.from('escala_atual').insert({
+      const { error } = await sb.from('escala_atual').insert({
         semana_inicio: semanaInicio,
         semana_fim: semanaFim,
         escala_json: obj,
@@ -1174,21 +1199,38 @@
         toast('Faça login admin para limpar trocas.');
         return;
       }
+
+      const sb = getSupabase();
+      if (!sb) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
       if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
-      const { error } = await supabase.from('trocas_escala').delete().gte('criado_em', '1900-01-01T00:00:00');
+
+      const { error } = await sb
+        .from('trocas_escala')
+        .delete()
+        .gte('criado_em', '1900-01-01T00:00:00');
+
       if (error) {
         console.error(error);
         toast('Erro ao limpar trocas online.');
         return;
       }
+
       trocas = {};
       render();
       toast('Trocas online removidas com sucesso.');
     }
 
     async function lerPdfEscala() {
-      const input = document.getElementById('pdfFile');
-      const file = input.files?.[0];
+      if (!window.pdfjsLib) {
+        toast('PDF.js não carregou. Atualize a página e tente novamente.');
+        return;
+      }
+
+      const file = document.getElementById('pdfFile').files?.[0];
       if (!file) {
         toast('Selecione um PDF primeiro.');
         return;
@@ -1198,11 +1240,13 @@
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let texto = '';
+
         for (let p = 1; p <= pdf.numPages; p++) {
           const page = await pdf.getPage(p);
           const content = await page.getTextContent();
           texto += content.items.map(i => i.str).join(' ') + '\n';
         }
+
         const json = parseEscalaText(texto);
         document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
         toast('PDF lido. Revise o JSON antes de publicar.');
@@ -1240,11 +1284,9 @@
           toast('A opção de instalação ainda não está disponível neste navegador.');
           return;
         }
+
         deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        if (choice.outcome === 'accepted') {
-          toast('Instalação iniciada.');
-        }
+        await deferredPrompt.userChoice;
         deferredPrompt = null;
         document.getElementById('installBanner').classList.remove('show');
       });
@@ -1291,9 +1333,11 @@
         diaIdx = obterIndiceDiaAtual();
         render();
 
-        if (supabase) {
+        if (getSupabase()) {
           try { await atualizarPainelAdmin(); } catch (e) { console.error(e); }
           try { await carregarEscalaOnline(); } catch (e) { console.error(e); }
+        } else {
+          document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-slash"></i> Modo local';
         }
       } catch (e) {
         console.error('Erro no boot:', e);
