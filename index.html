@@ -3,658 +3,1462 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ESCALA • CBSLS</title>
-  <meta name="theme-color" content="#b71c1c" />
+  <title>Escala CB SLS</title>
+  <meta name="theme-color" content="#c62828" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Escala CB SLS" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
-    :root{
-      --bg:#f2f4f7;
-      --card:#ffffff;
-      --text:#243447;
-      --muted:#7f8c8d;
-      --primary:#b71c1c;
-      --primary-dark:#8e0000;
-      --green:#2e7d32;
-      --orange:#ff9800;
-      --gray:#dfe6e9;
-      --shadow:0 10px 28px rgba(0,0,0,.10);
-      --radius:22px;
+    :root {
+      --bg: #f4f7f6;
+      --card: #ffffff;
+      --text: #2c3e50;
+      --muted: #7f8c8d;
+      --fire-red: #c62828;
+      --fire-red-dark: #8e0000;
+      --mil-blue: #1a237e;
+      --orange-swap: #f39c12;
+      --success: #2e7d32;
+      --success-dark: #1b5e20;
+      --warning: #ff9800;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --radius: 16px;
     }
-    *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-    body{margin:0;background:var(--bg);color:var(--text)}
-    .topbar{
-      background:linear-gradient(135deg,var(--primary),#d50000);
-      color:#fff;padding:26px 18px 30px;text-align:center;
-      box-shadow:var(--shadow)
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
     }
-    .topbar h1{margin:0;font-size:2rem}
-    .topbar .sub{margin-top:8px;font-size:1.1rem;font-weight:700}
-    .pill{
-      display:inline-block;margin-top:14px;padding:12px 22px;border-radius:999px;
-      background:rgba(255,255,255,.16);font-weight:700
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 90px;
     }
-    .wrap{max-width:980px;margin:0 auto;padding:18px}
-    .card{
-      background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
-      padding:22px;margin-bottom:18px
+
+    .app-header {
+      background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
+      color: #fff;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    h2,h3{margin:0 0 14px}
-    label{display:block;font-weight:700;color:var(--muted);margin-bottom:8px}
-    input[type="file"], textarea, input[type="text"], input[type="password"]{
-      width:100%;padding:14px;border:1px solid #d8dee4;border-radius:18px;font-size:1rem
+
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
     }
-    textarea{min-height:280px;resize:vertical}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .btn{
-      width:100%;border:none;border-radius:999px;padding:16px 20px;font-size:1.05rem;
-      font-weight:700;color:#fff;cursor:pointer
+
+    .app-subtitle {
+      margin-top: 5px;
+      font-size: 0.8rem;
+      opacity: 0.95;
+      font-weight: 600;
     }
-    .btn.orange{background:var(--orange)}
-    .btn.green{background:var(--green)}
-    .btn.gray{background:#ecf0f1;color:#2c3e50}
-    .btn.red{background:var(--primary)}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .status{
-      padding:12px 14px;border-radius:16px;background:#f8f9fa;border:1px solid #ebeef2;
-      font-weight:700;margin:12px 0
+
+    .online-indicator {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.18);
+      padding: 6px 10px;
+      border-radius: 999px;
     }
-    .day-card{
-      border:1px solid #ecf0f1;border-radius:18px;padding:14px;margin-bottom:12px;background:#fcfcfc
+
+    .container {
+      padding: 15px;
+      max-width: 700px;
+      margin: 0 auto;
     }
-    .day-title{font-size:1.08rem;font-weight:700;margin-bottom:8px;color:var(--primary-dark)}
-    .func-row{
-      padding:10px 12px;border-radius:14px;background:#f4f6f8;margin:8px 0
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
     }
-    .muted{color:var(--muted)}
-    .hidden{display:none !important}
-    .footer-space{height:40px}
-    @media (max-width:700px){.grid-2{grid-template-columns:1fr}}
+
+    .install-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+      border: 1px solid #ffe082;
+    }
+
+    .install-banner.show {
+      display: flex;
+    }
+
+    .install-banner h3,
+    .card h3,
+    .card h2 {
+      margin: 0 0 8px 0;
+    }
+
+    .search-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-box input,
+    textarea,
+    select,
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.96rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .search-box input {
+      border: none;
+      padding: 0;
+      background: transparent;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-expand,
+    .btn,
+    .btn-nav,
+    .nav-btn,
+    .btn-confirm {
+      cursor: pointer;
+      border: none;
+      transition: 0.2s ease;
+    }
+
+    .btn-expand,
+    .btn {
+      background: #eef2f7;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 10px 14px;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .btn.primary,
+    .btn-confirm,
+    .btn-install {
+      background: var(--fire-red);
+      color: #fff;
+    }
+
+    .btn.success { background: var(--success); color: #fff; }
+    .btn.warning { background: var(--warning); color: #fff; }
+    .btn.ghost { background: #f3f4f6; color: var(--text); }
+
+    .btn:disabled,
+    .btn-confirm:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .day-nav {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+      gap: 10px;
+    }
+
+    .btn-nav {
+      background: var(--bg);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      color: var(--mil-blue);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .day-info {
+      text-align: center;
+      flex: 1;
+    }
+
+    .day-info h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--mil-blue);
+    }
+
+    .day-info span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: block;
+    }
+
+    .day-info .week-label {
+      font-size: 0.75rem;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .func-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid #edf2f7;
+      overflow: hidden;
+    }
+
+    .func-header {
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .func-title {
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--mil-blue);
+    }
+
+    .func-title i {
+      color: var(--fire-red);
+      width: 20px;
+      text-align: center;
+    }
+
+    .func-content {
+      display: none;
+      padding: 15px;
+      background: #fcfcfc;
+      border-top: 1px solid #f1f1f1;
+    }
+
+    .func-card.expanded .func-content {
+      display: block;
+    }
+
+    .func-card.expanded .chevron {
+      transform: rotate(180deg);
+    }
+
+    .turno-box {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .turno-box:last-child {
+      margin-bottom: 0;
+    }
+
+    .turno-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .militar-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--fire-red);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .militar-name.swapped { color: var(--orange-swap); }
+    .militar-name.nao-escalado { color: var(--muted); }
+
+    .tag-swap {
+      font-size: 0.65rem;
+      background: var(--orange-swap);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+
+    .afast-card {
+      background: #fff3e0;
+      border-left: 5px solid var(--orange-swap);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 75px;
+      background: #fff;
+      display: flex;
+      border-top: 1px solid #eee;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+
+    .nav-btn.active {
+      color: var(--fire-red);
+    }
+
+    .nav-btn i {
+      font-size: 1.4rem;
+    }
+
+    .modal,
+    .splash,
+    .toast {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+    }
+
+    .modal {
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: flex-end;
+    }
+
+    .modal.show { display: flex; }
+
+    .modal-body {
+      background: #fff;
+      width: 100%;
+      border-radius: 24px 24px 0 0;
+      padding: 25px;
+      animation: slideUp 0.3s ease;
+      max-height: 88vh;
+      overflow: auto;
+    }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--muted);
+    }
+
+    .btn-confirm {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      margin-top: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: #eef2f7;
+      color: var(--muted);
+    }
+
+    .status-box {
+      font-size: 0.86rem;
+      line-height: 1.5;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .splash {
+      background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    .splash.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-box {
+      max-width: 420px;
+    }
+
+    .splash-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      object-fit: cover;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+      margin-bottom: 16px;
+    }
+
+    .toast {
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 16px;
+      pointer-events: none;
+      z-index: 350;
+    }
+
+    .toast.show { display: flex; }
+
+    .toast-inner {
+      pointer-events: auto;
+      margin-top: 20px;
+      background: #111827;
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 14px;
+      max-width: 520px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    @media (max-width: 560px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .install-banner { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
-  <header class="topbar">
+  <div class="splash" id="splashScreen">
+    <div class="splash-box">
+      <img src="icon-192.png" alt="Escala CB SLS" class="splash-logo" onerror="this.style.display='none'" />
+      <h1 style="margin:0 0 10px 0;">🚒 Bem-vindo ao Escala CB SLS</h1>
+      <p style="margin:0; opacity:.95; line-height:1.55;">
+        Central de consulta da escala semanal, trocas sincronizadas e atualização online via admin.<br>
+        Carregando o app...
+      </p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><div class="toast-inner" id="toastText"></div></div>
+
+  <header class="app-header">
     <h1>ESCALA • CBSLS</h1>
-    <div class="sub" id="periodoEscala">Escala semanal atualizada • --/--/---- a --/--/----</div>
-    <div class="pill" id="statusSync">Aguardando sincronização</div>
+    <div class="app-subtitle" id="appSubtitle">Escala semanal atualizada • 13/04/2026 a 19/04/2026</div>
+    <div class="online-indicator" id="onlineIndicator"><i class="fas fa-cloud"></i> Dados online conectados</div>
   </header>
 
-  <main class="wrap">
-    <section class="card" id="escalaCard">
-      <h2>📅 Escala atual</h2>
-      <div class="status" id="resumoAtualizacao">Nenhuma escala carregada.</div>
-      <div id="escalaContainer"></div>
+  <main>
+    <section class="container" id="viewEscala">
+      <div class="card install-banner" id="installBanner">
+        <div>
+          <h3>📲 Instalar App</h3>
+          <div class="muted">Instale o Escala CB SLS na tela inicial para abrir como aplicativo.</div>
+        </div>
+        <button class="btn btn-install primary" id="btnInstallApp">Instalar agora</button>
+      </div>
+
+      <div class="search-box">
+        <i class="fas fa-search" style="color: var(--muted)"></i>
+        <input type="text" id="searchInput" placeholder="Buscar militar na escala..." oninput="render()" />
+      </div>
+
+      <div class="top-actions">
+        <button class="btn-expand" id="btnExpandirTodos" onclick="toggleExpandirTodos()">Expandir todos</button>
+        <span class="badge" id="ultimaAtualizacaoBadge"><i class="fas fa-clock"></i> Aguardando sincronização</span>
+      </div>
+
+      <nav class="day-nav">
+        <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
+        <div class="day-info">
+          <span class="week-label">Semana atual</span>
+          <h2 id="diaNome">Segunda-Feira</h2>
+          <span id="diaData">13/04/2026</span>
+        </div>
+        <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
+      </nav>
+
+      <div id="funcList"></div>
+
+      <div class="afast-card" id="afastCard">
+        <strong><i class="fas fa-user-clock"></i> Indisponíveis / observações:</strong><br>
+        <span id="afastamentosHtml">
+          • LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
+          • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
+          • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
+          • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.
+        </span>
+      </div>
     </section>
 
-    <section class="card" id="adminLoginCard">
-      <h2>🔐 Admin</h2>
-      <div class="grid-2">
-        <div>
-          <label for="adminEmail">E-mail</label>
-          <input type="text" id="adminEmail" placeholder="admin@escala.com" value="admin@escala.com" />
-        </div>
-        <div>
-          <label for="adminSenha">Senha</label>
+    <section class="container hidden" id="viewAdmin">
+      <div class="card">
+        <h2>🔐 Admin da Escala</h2>
+        <div class="muted">Acesso do admin somente por senha. O sistema usa a conta padrão configurada no app.</div>
+      </div>
+
+      <div class="card" id="adminLoginCard">
+        <div class="form-group">
+          <label>Senha</label>
           <input type="password" id="adminSenha" placeholder="Digite a senha do admin" />
         </div>
+        <div class="grid-2">
+          <button class="btn primary" onclick="loginAdmin()">Entrar como admin</button>
+          <button class="btn ghost" onclick="logoutAdmin()">Sair</button>
+        </div>
+        <div class="status-box" id="adminStatus" style="margin-top:12px;">Admin não autenticado.</div>
       </div>
-      <div style="margin-top:12px">
-        <button class="btn red" onclick="entrarAdmin()">Entrar no modo admin</button>
+
+      <div class="card hidden" id="adminPanelCard">
+        <h3>📄 Importar PDF e publicar escala</h3>
+        <div class="form-group">
+          <label>Selecionar PDF da escala</label>
+          <input type="file" id="pdfFile" accept="application/pdf" />
+        </div>
+        <div class="grid-2">
+          <button class="btn warning" onclick="lerPdfEscala()">Ler PDF</button>
+          <button class="btn success" onclick="publicarEscalaOnline()">Publicar escala online</button>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>JSON da escala para revisão</label>
+          <textarea id="jsonEscalaEditor"></textarea>
+        </div>
+        <div class="grid-2">
+          <button class="btn ghost" onclick="carregarModeloAtual()">Carregar modelo atual</button>
+          <button class="btn ghost" onclick="salvarJsonLocal()">Salvar rascunho local</button>
+        </div>
+      </div>
+
+      <div class="card hidden" id="trocasAdminCard">
+        <h3>🧹 Trocas</h3>
+        <div class="grid-2">
+          <button class="btn warning" onclick="limparTrocasOnline()">Limpar trocas online</button>
+          <button class="btn ghost" onclick="carregarEscalaOnline(true)">Sincronizar agora</button>
+        </div>
       </div>
     </section>
-
-    <section class="card hidden" id="adminPanelCard">
-      <h2>📄 Importar PDF/TXT e publicar escala</h2>
-
-      <label for="pdfFile">Selecionar arquivo da escala (.pdf ou .txt)</label>
-      <input type="file" id="pdfFile" accept=".pdf,.txt,text/plain,application/pdf" />
-
-      <div class="grid-2" style="margin-top:14px">
-        <button class="btn orange" onclick="lerArquivoEscala()">Ler arquivo</button>
-        <button class="btn green" onclick="publicarEscalaOnline()">Publicar escala online</button>
-      </div>
-
-      <div style="margin-top:16px">
-        <label for="jsonEscalaEditor">JSON da escala para revisão</label>
-        <textarea id="jsonEscalaEditor" placeholder='Cole aqui o JSON completo da escala'></textarea>
-      </div>
-
-      <div class="grid-2" style="margin-top:14px">
-        <button class="btn gray" onclick="carregarModeloAtual()">Carregar modelo atual</button>
-        <button class="btn gray" onclick="limparCachesManualmente()">Limpar cache deste aparelho</button>
-      </div>
-
-      <div class="grid-2" style="margin-top:14px">
-        <button class="btn gray" onclick="forcarAtualizacaoTodosDispositivos()">Forçar atualização em todos dispositivos</button>
-        <button class="btn gray" onclick="recarregarEscalaAgora()">Recarregar escala online agora</button>
-      </div>
-
-      <div class="status" id="statusAdmin">Modo admin ativo.</div>
-    </section>
-
-    <div class="footer-space"></div>
   </main>
 
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navEscala" onclick="showView('escala')"><i class="fas fa-calendar-alt"></i>Escala</button>
+    <button class="nav-btn" id="navTroca" onclick="abrirModal()"><i class="fas fa-exchange-alt"></i>Troca</button>
+    <button class="nav-btn" id="navAdmin" onclick="showView('admin')"><i class="fas fa-user-shield"></i>Admin</button>
+  </nav>
+
+  <div class="modal" id="modalTroca">
+    <div class="modal-body">
+      <div style="display:flex; justify-content: space-between; margin-bottom: 20px; align-items:center; gap:10px;">
+        <h3 style="margin:0">Solicitar Troca</h3>
+        <i class="fas fa-times" onclick="fecharModal()" style="font-size: 1.5rem; color: var(--muted); cursor:pointer;"></i>
+      </div>
+
+      <div class="form-group">
+        <label>Selecione a Função / Turno</label>
+        <select id="selectTurno" onchange="updateMilitarOriginal()"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Saindo</label>
+        <input type="text" id="militarSaindo" readonly style="background:#f8f9fa; font-weight:700; color:var(--fire-red)" />
+      </div>
+
+      <div class="form-group">
+        <label>Militar Substituto</label>
+        <select id="selectSubstituto"></select>
+      </div>
+
+      <button class="btn-confirm" onclick="salvarTroca()">CONFIRMAR TROCA</button>
+    </div>
+  </div>
+
   <script>
-    (() => {
-      if (window.__ESCALA_APP_INICIADO__) {
-        console.warn("ESCALA app já inicializado. Inicialização duplicada ignorada.");
-        return;
-      }
-      window.__ESCALA_APP_INICIADO__ = true;
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    } else {
+      console.warn('pdf.js não carregou. A leitura de PDF ficará indisponível até recarregar a página.');
+    }
 
-      // =============================
-      // CONFIGURAÇÃO SUPABASE
-      // =============================
-      const SUPABASE_URL = "https://azltlpjyyqecurmebffm.supabase.co";
-      const SUPABASE_ANON_KEY = "sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO";
-      const REGISTRO_SLUG = "principal";
+    const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
+    const ADMIN_EMAIL_PADRAO = 'admin@escala.com';
 
-      const sbClient = window.supabase?.createClient
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-        : null;
+    const STORAGE_KEYS = {
+      rascunho: 'escala_cbsls_rascunho_json',
+      ultimaEscala: 'escala_cbsls_cache_online_v1'
+    };
 
-      // =============================
-      // CONFIG LOCAL
-      // =============================
-      const ADMIN_EMAIL_PADRAO = "admin@escala.com";
-      const ADMIN_SENHA_PADRAO = "123456"; // troque no seu sistema
-      const STORAGE_KEYS = {
-        escala: "escala_cache_v3",
-        versao: "escala_cache_version_v3",
-        ultimaAtualizacao: "escala_ultima_atualizacao_v3"
+    let supabase = null;
+    let currentSession = null;
+    let deferredPrompt = null;
+    let diaIdx = 0;
+    let expandirTodos = true;
+    let trocas = {};
+
+    function getEscalaPadrao() {
+      return {
+        semana_inicio: '2026-04-13',
+        semana_fim: '2026-04-19',
+        atualizado_por: 'Sistema local',
+        atualizado_em: null,
+        afastamentos_html: `• LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
+          • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
+          • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
+          • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
+          • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.`,
+        escala: [
+          {
+            d: '13/04/2026',
+            n: 'Segunda-Feira',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+              { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD BM SOARES', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] }
+            ]
+          },
+          {
+            d: '14/04/2026',
+            n: 'Terça-Feira',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
+              { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] }
+            ]
+          },
+          {
+            d: '15/04/2026',
+            n: 'Quarta-Feira',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
+              { n: 'COV', i: 'truck', t: ['1º SGT BM BATISTA', '1º SGT BM BATISTA'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
+            ]
+          },
+          {
+            d: '16/04/2026',
+            n: 'Quinta-Feira',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
+              { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM BORGES', 'SD BM BORGES'] }
+            ]
+          },
+          {
+            d: '17/04/2026',
+            n: 'Sexta-Feira',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
+              { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['1º SGT BM BATISTA', 'SD BM MAX'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] }
+            ]
+          },
+          {
+            d: '18/04/2026',
+            n: 'Sábado',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
+              { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD BM ISQUIERDO', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] }
+            ]
+          },
+          {
+            d: '19/04/2026',
+            n: 'Domingo',
+            f: [
+              { n: 'CG', i: 'user-shield', t: ['1º SGT BM BATISTA', 'SD BM CAMACHO'] },
+              { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
+              { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BORGES'] },
+              { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
+              { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] }
+            ]
+          }
+        ]
       };
+    }
 
-      let adminLogado = false;
-      let escalaData = null;
-      let canalSync = null;
+    let escalaData = getEscalaPadrao();
 
-      function escapeHtml(valor) {
-        return String(valor ?? "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+    const milLista = [
+      '1º SGT BATISTA', '1º SGT DIEFERSON', '1º SGT VICENTE', '1º TEN MARCELO',
+      '2º SGT ANDERSON', '2º SGT ANDRE', '2º SGT LISCANO', '2º SGT VINICIUS',
+      'SD BATISTA', 'SD BORGES', 'SD CAMACHO', 'SD ISQUIERDO', 'SD MAX',
+      'SD MOTTA', 'SD PEGLOW', 'SD SOARES', 'SD TEMP LARSSON', 'SD TOMASCHEWSKI', 'SD WILLIAM'
+    ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+    function initSupabase() {
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (e) {
+        toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
+        console.error(e);
       }
-
-      function pad2(n) {
-        return String(n).padStart(2, "0");
-      }
-
-      function formatarDataBR(valor) {
-        if (!valor) return "--/--/----";
-        if (/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) return valor;
-
-        const m = String(valor).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-        if (m) {
-          const [, ano, mes, dia] = m;
-          return `${pad2(dia)}/${pad2(mes)}/${ano}`;
-        }
-
-        const d = new Date(valor);
-        if (!isNaN(d.getTime())) {
-          return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
-        }
-
-        return String(valor);
-      }
-
-      function normalizarDataISO(valor) {
-        if (!valor) return "";
-        if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor;
-
-        let m = String(valor).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-        if (m) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
-
-        m = String(valor).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-        if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-        return String(valor);
-      }
-
-      function tentarParseJSON(texto, fallback = []) {
-        try {
-          const dado = JSON.parse(texto);
-          return Array.isArray(dado) ? dado : fallback;
-        } catch (_) {
-          return fallback;
-        }
-      }
-
-      function gerarVersaoEscala(payload) {
-        const base = JSON.stringify({
-          semana_inicio: payload?.semana_inicio || "",
-          semana_fim: payload?.semana_fim || "",
-          atualizado_em: payload?.atualizado_em || "",
-          escala: payload?.escala || []
-        });
-        let hash = 0;
-        for (let i = 0; i < base.length; i++) {
-          hash = ((hash << 5) - hash) + base.charCodeAt(i);
-          hash |= 0;
-        }
-        return String(hash);
-      }
-
-      function salvarCacheLocal(payload) {
-        localStorage.setItem(STORAGE_KEYS.escala, JSON.stringify(payload));
-        localStorage.setItem(STORAGE_KEYS.versao, gerarVersaoEscala(payload));
-        localStorage.setItem(STORAGE_KEYS.ultimaAtualizacao, String(Date.now()));
-      }
-
-      function limparCacheLocal() {
-        localStorage.removeItem(STORAGE_KEYS.escala);
-        localStorage.removeItem(STORAGE_KEYS.versao);
-        localStorage.removeItem(STORAGE_KEYS.ultimaAtualizacao);
-      }
-
-      function atualizarStatusSync(texto) {
-        document.getElementById("statusSync").textContent = texto;
-      }
-
-      function atualizarResumo(payload) {
-        document.getElementById("periodoEscala").textContent =
-          `Escala semanal atualizada • ${formatarDataBR(payload?.semana_inicio)} a ${formatarDataBR(payload?.semana_fim)}`;
-
-        const atualizacao = payload?.atualizado_em
-          ? new Date(payload.atualizado_em).toLocaleString("pt-BR")
-          : "--";
-
-        document.getElementById("resumoAtualizacao").textContent =
-          `Atualizado por ${payload?.atualizado_por || "-"} em ${atualizacao}`;
-      }
-
-      function normalizarEscalaImportada(obj) {
-        const escalaArray = Array.isArray(obj?.escala)
-          ? obj.escala
-          : Array.isArray(obj?.dias)
-            ? obj.dias
-            : [];
-
-        return {
-          semana_inicio: normalizarDataISO(obj?.semana_inicio || ""),
-          semana_fim: normalizarDataISO(obj?.semana_fim || ""),
-          atualizado_por: obj?.atualizado_por || ADMIN_EMAIL_PADRAO,
-          atualizado_em: new Date().toISOString(),
-          afastamentos_html: obj?.afastamentos_html || "",
-          escala: escalaArray
-        };
-      }
-
-      function renderEscala() {
-        const box = document.getElementById("escalaContainer");
-        box.innerHTML = "";
-
-        if (!escalaData || !Array.isArray(escalaData.escala) || escalaData.escala.length === 0) {
-          box.innerHTML = '<div class="muted">Nenhum dia disponível na escala.</div>';
-          atualizarResumo({
-            semana_inicio: "",
-            semana_fim: "",
-            atualizado_por: "-",
-            atualizado_em: null
-          });
-          return;
-        }
-
-        atualizarResumo(escalaData);
-
-        escalaData.escala.forEach((dia) => {
-          const card = document.createElement("div");
-          card.className = "day-card";
-
-          const funcsHtml = Array.isArray(dia?.f)
-            ? dia.f.map(item => {
-                const posto = escapeHtml(item?.p || item?.posto || "");
-                const nome = escapeHtml(item?.n || item?.nome || "");
-                const obs = escapeHtml(item?.o || item?.obs || "");
-                return `
-                  <div class="func-row">
-                    <div><strong>${posto}</strong> ${nome}</div>
-                    ${obs ? `<div class="muted">${obs}</div>` : ""}
-                  </div>
-                `;
-              }).join("")
-            : '<div class="muted">Sem militares cadastrados.</div>';
-
-          card.innerHTML = `
-            <div class="day-title">${escapeHtml(dia?.n || "Dia")} • ${escapeHtml(dia?.d || "")}</div>
-            ${funcsHtml}
-          `;
-          box.appendChild(card);
-        });
-      }
-
-      async function limparCachesManualmente() {
-        try {
-          limparCacheLocal();
-
-          if ("caches" in window) {
-            const keys = await caches.keys();
-            await Promise.all(keys.map(k => caches.delete(k)));
-          }
-
-          atualizarStatusSync("Cache local limpo neste aparelho.");
-          alert("✅ Cache local limpo com sucesso.");
-        } catch (e) {
-          console.error(e);
-          alert("Erro ao limpar cache: " + e.message);
-        }
-      }
-
-      async function lerArquivoEscala() {
-        const fileInput = document.getElementById("pdfFile");
-        const file = fileInput.files?.[0];
-
-        if (!file) {
-          alert("Selecione um arquivo .txt ou .pdf.");
-          return;
-        }
-
-        const nome = file.name.toLowerCase();
-
-        try {
-          if (nome.endsWith(".txt")) {
-            const texto = await file.text();
-            document.getElementById("jsonEscalaEditor").value = texto.trim();
-            alert("✅ TXT carregado. Revise o JSON antes de publicar.");
-            return;
-          }
-
-          if (nome.endsWith(".pdf")) {
-            alert("Para PDF, converta antes para TXT/JSON estruturado. O leitor atual está pronto para publicar TXT/JSON.");
-            return;
-          }
-
-          alert("Formato não suportado.");
-        } catch (e) {
-          console.error(e);
-          alert("Erro ao ler arquivo: " + e.message);
-        }
-      }
-
-      function carregarModeloAtual() {
-        const modelo = escalaData || {
-          semana_inicio: "",
-          semana_fim: "",
-          atualizado_por: ADMIN_EMAIL_PADRAO,
-          atualizado_em: new Date().toISOString(),
-          afastamentos_html: "",
-          escala: []
-        };
-        document.getElementById("jsonEscalaEditor").value = JSON.stringify(modelo, null, 2);
-      }
-
-      function entrarAdmin() {
-        const email = document.getElementById("adminEmail").value.trim();
-        const senha = document.getElementById("adminSenha").value.trim();
-
-        if (email !== ADMIN_EMAIL_PADRAO || senha !== ADMIN_SENHA_PADRAO) {
-          alert("Credenciais de admin inválidas.");
-          return;
-        }
-
-        adminLogado = true;
-        document.getElementById("adminPanelCard").classList.remove("hidden");
-        document.getElementById("statusAdmin").textContent = "Modo admin ativo e pronto para publicar.";
-        alert("✅ Modo admin liberado.");
-      }
-
-      async function publicarEscalaOnline() {
-        try {
-          if (!adminLogado) {
-            alert("Entre no modo admin primeiro.");
-            return;
-          }
-
-          if (!sbClient) {
-            alert("Biblioteca Supabase não disponível ou configuração ausente.");
-            return;
-          }
-
-          const texto = document.getElementById("jsonEscalaEditor").value.trim();
-          if (!texto) {
-            alert("Nenhum JSON carregado.");
-            return;
-          }
-
-          let bruto;
-          try {
-            bruto = JSON.parse(texto);
-          } catch (e) {
-            alert("JSON inválido.");
-            return;
-          }
-
-          const payload = normalizarEscalaImportada(bruto);
-
-          if (!Array.isArray(payload.escala)) {
-            alert("A estrutura da escala é inválida.");
-            return;
-          }
-
-          const versao = gerarVersaoEscala(payload);
-          const escalaJsonTexto = JSON.stringify(payload.escala);
-
-          const { error } = await sbClient
-            .from("escala_atual")
-            .upsert({
-              slug: REGISTRO_SLUG,
-              semana_inicio: payload.semana_inicio || null,
-              semana_fim: payload.semana_fim || null,
-              atualizado_por: payload.atualizado_por,
-              atualizado_em: payload.atualizado_em,
-              afastamentos_html: payload.afastamentos_html || "",
-              escala: payload.escala,
-              escala_json: escalaJsonTexto,
-              versao: versao
-            }, { onConflict: "slug" });
-
-          if (error) throw error;
-
-          escalaData = payload;
-          limparCacheLocal();
-          salvarCacheLocal(payload);
-          renderEscala();
-          atualizarStatusSync("Escala online sincronizada");
-
-          notificarAtualizacaoGlobal({
-            type: "ESCALA_ATUALIZADA",
-            versao,
-            atualizado_em: payload.atualizado_em
-          });
-
-          document.getElementById("statusAdmin").textContent = "✅ Escala publicada com sucesso.";
-          alert("✅ Escala publicada com sucesso.");
-        } catch (erro) {
-          console.error("Erro ao publicar escala:", erro);
-          alert("Erro ao publicar escala: " + erro.message);
-        }
-      }
-
-      async function recarregarEscalaAgora() {
-        await carregarEscalaOnline(true);
-      }
-
-      async function forcarAtualizacaoTodosDispositivos() {
-        try {
-          notificarAtualizacaoGlobal({
-            type: "FORCAR_RELOAD",
-            timestamp: Date.now()
-          });
-
-          if (sbClient) {
-            await sbClient
-              .from("escala_atual")
-              .update({ atualizado_em: new Date().toISOString() })
-              .eq("slug", REGISTRO_SLUG);
-          }
-
-          alert("✅ Sinal de atualização enviado.");
-        } catch (e) {
-          console.error(e);
-          alert("Erro ao forçar atualização: " + e.message);
-        }
-      }
-
-      async function carregarEscalaOnline(forcar = false) {
-        try {
-          if (!sbClient) {
-            carregarEscalaDoCache();
-            return;
-          }
-
-          const { data, error } = await sbClient
-            .from("escala_atual")
-            .select("*")
-            .eq("slug", REGISTRO_SLUG)
-            .single();
-
-          if (error) throw error;
-
-          if (!data) {
-            carregarEscalaDoCache();
-            return;
-          }
-
-          const escalaArray = Array.isArray(data.escala)
-            ? data.escala
-            : (data.escala_json ? tentarParseJSON(data.escala_json, []) : []);
-
-          const payload = {
-            semana_inicio: data.semana_inicio || "",
-            semana_fim: data.semana_fim || "",
-            atualizado_por: data.atualizado_por || ADMIN_EMAIL_PADRAO,
-            atualizado_em: data.atualizado_em || new Date().toISOString(),
-            afastamentos_html: data.afastamentos_html || "",
-            escala: escalaArray
-          };
-
-          const versaoNova = data.versao || gerarVersaoEscala(payload);
-          const versaoLocal = localStorage.getItem(STORAGE_KEYS.versao);
-
-          if (forcar || versaoLocal !== versaoNova) {
-            escalaData = payload;
-            limparCacheLocal();
-            salvarCacheLocal(payload);
-            renderEscala();
-            atualizarStatusSync("Escala online sincronizada");
-          } else {
-            carregarEscalaDoCache();
-            atualizarStatusSync("Escala local atualizada");
-          }
-        } catch (e) {
-          console.error("Erro ao carregar online:", e);
-          carregarEscalaDoCache();
-        }
-      }
-
-      function carregarEscalaDoCache() {
-        try {
-          const salvo = localStorage.getItem(STORAGE_KEYS.escala);
-          if (salvo) {
-            escalaData = JSON.parse(salvo);
-            renderEscala();
-            atualizarStatusSync("Escala carregada do cache local");
-            return;
-          }
-        } catch (e) {
-          console.error("Erro cache:", e);
-        }
-
-        escalaData = {
-          semana_inicio: "",
-          semana_fim: "",
-          atualizado_por: "-",
-          atualizado_em: null,
-          afastamentos_html: "",
-          escala: []
-        };
-        renderEscala();
-        atualizarStatusSync("Sem dados locais");
-      }
-
-      function iniciarBroadcastChannel() {
-        if ("BroadcastChannel" in window) {
-          canalSync = new BroadcastChannel("escala_sync_channel");
-          canalSync.onmessage = async (event) => {
-            const msg = event?.data || {};
-            if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
-              await carregarEscalaOnline(true);
-            }
-          };
-        }
-      }
-
-      function notificarAtualizacaoGlobal(msg) {
-        try {
-          localStorage.setItem("escala_sync_ping", JSON.stringify({
-            ...msg,
-            timestamp: Date.now()
-          }));
-        } catch (_) {}
-
-        if (canalSync) {
-          canalSync.postMessage(msg);
-        }
-      }
-
-      window.addEventListener("storage", async (event) => {
-        if (event.key === "escala_sync_ping" && event.newValue) {
-          try {
-            const msg = JSON.parse(event.newValue);
-            if (msg.type === "ESCALA_ATUALIZADA" || msg.type === "FORCAR_RELOAD") {
-              await carregarEscalaOnline(true);
-            }
-          } catch (e) {
-            console.error("Erro sync storage:", e);
-          }
-        }
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      document.getElementById('toastText').innerHTML = msg;
+      el.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove('show'), 4200);
+    }
+
+    function hideSplash() {
+      const splash = document.getElementById('splashScreen');
+      if (splash) splash.classList.add('hide');
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(hideSplash, 1800);
+    });
+
+    setTimeout(hideSplash, 3500);
+
+    function showView(view) {
+      const isEscala = view === 'escala';
+      document.getElementById('viewEscala').classList.toggle('hidden', !isEscala);
+      document.getElementById('viewAdmin').classList.toggle('hidden', isEscala);
+      document.getElementById('navEscala').classList.toggle('active', isEscala);
+      document.getElementById('navAdmin').classList.toggle('active', !isEscala);
+      document.getElementById('navTroca').classList.remove('active');
+    }
+
+    function atualizarBotaoExpandir() {
+      const btn = document.getElementById('btnExpandirTodos');
+      btn.textContent = expandirTodos ? 'Recolher todos' : 'Expandir todos';
+    }
+
+    function toggleExpandirTodos() {
+      expandirTodos = !expandirTodos;
+      render();
+    }
+
+    function obterIndiceDiaAtual() {
+      const hoje = new Date();
+      const dd = String(hoje.getDate()).padStart(2, '0');
+      const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+      const yyyy = hoje.getFullYear();
+      const hojeFormatado = `${dd}/${mm}/${yyyy}`;
+      const idx = (escalaData.escala || []).findIndex(item => item.d === hojeFormatado);
+      return idx >= 0 ? idx : 0;
+    }
+
+    function classeMilitar(nome, trocado) {
+      if (trocado) return 'militar-name swapped';
+      if (nome === 'NÃO ESCALADO') return 'militar-name nao-escalado';
+      return 'militar-name';
+    }
+
+    function formatDateBRFromISO(iso) {
+      if (!iso) return '';
+      const partes = String(iso).split('-');
+      if (partes.length !== 3) return iso;
+      const [ano, mes, dia] = partes;
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function atualizarCabecalhoSemana() {
+      const inicio = formatDateBRFromISO(escalaData.semana_inicio);
+      const fim = formatDateBRFromISO(escalaData.semana_fim);
+      document.getElementById('appSubtitle').textContent = `Escala semanal atualizada • ${inicio} a ${fim}`;
+
+      const badge = document.getElementById('ultimaAtualizacaoBadge');
+      const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
+      badge.innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
+
+      document.getElementById('afastamentosHtml').innerHTML = escalaData.afastamentos_html || 'Sem observações.';
+    }
+
+    function render() {
+      if (!escalaData.escala || !escalaData.escala.length) return;
+
+      const dia = escalaData.escala[diaIdx];
+      const search = document.getElementById('searchInput').value.toUpperCase().trim();
+
+      document.getElementById('diaNome').textContent = dia.n;
+      document.getElementById('diaData').textContent = dia.d;
+
+      atualizarBotaoExpandir();
+      atualizarCabecalhoSemana();
+
+      const list = document.getElementById('funcList');
+      list.innerHTML = '';
+
+      dia.f.forEach((func) => {
+        const t0_key = `${dia.d}|${func.n}|0`;
+        const t1_key = `${dia.d}|${func.n}|1`;
+
+        const m0 = trocas[t0_key] || func.t[0];
+        const m1 = trocas[t1_key] || func.t[1];
+
+        if (
+          search &&
+          !func.n.toUpperCase().includes(search) &&
+          !String(m0).toUpperCase().includes(search) &&
+          !String(m1).toUpperCase().includes(search)
+        ) return;
+
+        const card = document.createElement('div');
+        card.className = `func-card ${expandirTodos ? 'expanded' : ''}`;
+        card.innerHTML = `
+          <div class="func-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <div class="func-title"><i class="fas fa-${func.i}"></i> ${func.n}</div>
+            <i class="fas fa-chevron-down chevron" style="color:var(--muted)"></i>
+          </div>
+          <div class="func-content">
+            <div class="turno-box">
+              <div class="turno-label">Turno 23 (Dia)</div>
+              <div class="${classeMilitar(m0, !!trocas[t0_key])}">
+                ${m0} ${trocas[t0_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
+              </div>
+            </div>
+            <div class="turno-box">
+              <div class="turno-label">Turno 41 (Noite)</div>
+              <div class="${classeMilitar(m1, !!trocas[t1_key])}">
+                ${m1} ${trocas[t1_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
       });
 
-      function iniciarRealtime() {
-        if (!sbClient) return;
-
-        sbClient
-          .channel("public:escala_atual")
-          .on(
-            "postgres_changes",
-            { event: "*", schema: "public", table: "escala_atual" },
-            async () => {
-              await carregarEscalaOnline(true);
-            }
-          )
-          .subscribe((status) => {
-            console.log("Realtime status:", status);
-          });
+      if (!list.innerHTML) {
+        list.innerHTML = `
+          <div class="func-card">
+            <div class="func-header">
+              <div class="func-title"><i class="fas fa-search"></i> Nenhum resultado</div>
+            </div>
+          </div>
+        `;
       }
+    }
 
-      async function init() {
-        iniciarBroadcastChannel();
-        iniciarRealtime();
-        await carregarEscalaOnline(false);
-      }
+    function mudarDia(v) {
+      if (!escalaData.escala || !escalaData.escala.length) return;
+      diaIdx = (diaIdx + v + escalaData.escala.length) % escalaData.escala.length;
+      render();
+    }
 
-      window.entrarAdmin = entrarAdmin;
-      window.lerArquivoEscala = lerArquivoEscala;
-      window.publicarEscalaOnline = publicarEscalaOnline;
-      window.carregarModeloAtual = carregarModeloAtual;
-      window.limparCachesManualmente = limparCachesManualmente;
-      window.forcarAtualizacaoTodosDispositivos = forcarAtualizacaoTodosDispositivos;
-      window.recarregarEscalaAgora = recarregarEscalaAgora;
+    function abrirModal() {
+      document.getElementById('navTroca').classList.add('active');
 
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("./sw.js")
-            .then(() => console.log("Service Worker registrado com sucesso."))
-            .catch(err => console.error("Erro ao registrar Service Worker:", err));
+      const sT = document.getElementById('selectTurno');
+      sT.innerHTML = '<option value="">Selecione...</option>';
+
+      if (escalaData.escala && escalaData.escala[diaIdx] && Array.isArray(escalaData.escala[diaIdx].f)) {
+        escalaData.escala[diaIdx].f.forEach((f, fi) => {
+          sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
+          sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
         });
       }
 
-      init();
-    })();
+      const sS = document.getElementById('selectSubstituto');
+      sS.innerHTML = '<option value="">Quem assume?</option>';
+      milLista.forEach(m => {
+        sS.innerHTML += `<option value="${m}">${m}</option>`;
+      });
+
+      document.getElementById('militarSaindo').value = '';
+      document.getElementById('modalTroca').classList.add('show');
+    }
+
+    function updateMilitarOriginal() {
+      const val = document.getElementById('selectTurno').value;
+      if (!val) {
+        document.getElementById('militarSaindo').value = '';
+        return;
+      }
+
+      const [fi, ti] = val.split('|');
+      const func = escalaData.escala[diaIdx].f[fi];
+      const key = `${escalaData.escala[diaIdx].d}|${func.n}|${ti}`;
+      const atual = trocas[key] || func.t[ti];
+      document.getElementById('militarSaindo').value = atual;
+    }
+
+    function toISODate(br) {
+      const partes = String(br).split('/');
+      if (partes.length !== 3) return br;
+      const [dia, mes, ano] = partes;
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    async function salvarTroca() {
+      const turno = document.getElementById('selectTurno').value;
+      const sub = document.getElementById('selectSubstituto').value;
+
+      if (!turno || !sub) {
+        toast('Preencha todos os campos da troca.');
+        return;
+      }
+
+      const [fi, ti] = turno.split('|');
+      const dia = escalaData.escala[diaIdx];
+      const func = dia.f[fi];
+      const key = `${dia.d}|${func.n}|${ti}`;
+      const original = trocas[key] || func.t[ti];
+      const turnoNome = ti === '0' ? 'Dia' : 'Noite';
+
+      if (!supabase) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
+      const { error } = await supabase.from('trocas_escala').insert({
+        data_escala: toISODate(dia.d),
+        funcao: func.n,
+        turno: turnoNome,
+        militar_original: original,
+        militar_substituto: sub
+      });
+
+      if (error) {
+        console.error(error);
+        toast('Erro ao salvar troca online. Confira as policies e a tabela trocas_escala.');
+        return;
+      }
+
+      trocas[key] = sub;
+      fecharModal();
+      render();
+      toast('Troca salva online com sucesso. Agora ela aparece em qualquer dispositivo.');
+    }
+
+    function fecharModal() {
+      document.getElementById('modalTroca').classList.remove('show');
+      document.getElementById('navTroca').classList.remove('active');
+    }
+
+    async function carregarTrocasOnline() {
+      if (!supabase) return;
+
+      const { data, error } = await supabase
+        .from('trocas_escala')
+        .select('*')
+        .order('criado_em', { ascending: true });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      trocas = {};
+
+      (data || []).forEach(item => {
+        const d = new Date(item.data_escala + 'T00:00:00');
+        const br = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        const idx = String(item.turno).toLowerCase().includes('dia') ? '0' : '1';
+        const key = `${br}|${item.funcao}|${idx}`;
+        trocas[key] = item.militar_substituto;
+      });
+    }
+
+    function escalaEhValida(obj) {
+      if (!obj || typeof obj !== 'object') return false;
+      if (!Array.isArray(obj.escala) || obj.escala.length === 0) return false;
+
+      for (const dia of obj.escala) {
+        if (!dia || typeof dia !== 'object') return false;
+        if (!dia.d || !dia.n || !Array.isArray(dia.f)) return false;
+
+        for (const func of dia.f) {
+          if (!func || typeof func !== 'object') return false;
+          if (!func.n || !func.i || !Array.isArray(func.t) || func.t.length !== 2) return false;
+        }
+      }
+
+      return true;
+    }
+
+    function normalizarEscalaData(obj) {
+      const padrao = getEscalaPadrao();
+
+      if (!escalaEhValida(obj)) {
+        return JSON.parse(JSON.stringify(padrao));
+      }
+
+      return {
+        semana_inicio: obj.semana_inicio || padrao.semana_inicio,
+        semana_fim: obj.semana_fim || padrao.semana_fim,
+        atualizado_por: obj.atualizado_por || 'Sistema',
+        atualizado_em: obj.atualizado_em || null,
+        afastamentos_html: obj.afastamentos_html || padrao.afastamentos_html,
+        escala: obj.escala.map(dia => ({
+          d: dia.d || '',
+          n: dia.n || '',
+          f: Array.isArray(dia.f) ? dia.f.map(func => ({
+            n: func.n || '',
+            i: func.i || 'user',
+            t: Array.isArray(func.t)
+              ? [func.t[0] || 'NÃO ESCALADO', func.t[1] || 'NÃO ESCALADO']
+              : ['NÃO ESCALADO', 'NÃO ESCALADO']
+          })) : []
+        }))
+      };
+    }
+
+    async function carregarEscalaOnline(showMessage = false) {
+      if (!supabase) return;
+
+      const { data, error } = await supabase
+        .from('escala_atual')
+        .select('*')
+        .order('atualizado_em', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error(error);
+        document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-slash"></i> Sem leitura online';
+
+        const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+        if (cache) {
+          try {
+            escalaData = normalizarEscalaData(JSON.parse(cache));
+            render();
+          } catch {}
+        }
+
+        if (showMessage) toast('Não foi possível ler a escala online.');
+        return;
+      }
+
+      if (data && data.escala_json) {
+        const bruto = {
+          ...data.escala_json,
+          semana_inicio: data.semana_inicio || data.escala_json.semana_inicio,
+          semana_fim: data.semana_fim || data.escala_json.semana_fim,
+          atualizado_em: data.atualizado_em,
+          atualizado_por: data.atualizado_por
+        };
+
+        escalaData = normalizarEscalaData(bruto);
+        localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
+        document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+        document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-check"></i> Dados online conectados';
+
+        if (showMessage) toast('Escala online sincronizada com sucesso.');
+      } else {
+        const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+        if (cache) {
+          try {
+            escalaData = normalizarEscalaData(JSON.parse(cache));
+          } catch {
+            escalaData = getEscalaPadrao();
+          }
+        } else {
+          escalaData = getEscalaPadrao();
+        }
+      }
+
+      await carregarTrocasOnline();
+      diaIdx = Math.min(obterIndiceDiaAtual(), Math.max((escalaData.escala || []).length - 1, 0));
+      render();
+    }
+
+    async function loginAdmin() {
+      const email = ADMIN_EMAIL_PADRAO;
+      const password = document.getElementById('adminSenha').value;
+
+      if (!password) {
+        toast('Digite a senha do admin.');
+        return;
+      }
+
+      if (!supabase) {
+        toast('Supabase não inicializado.');
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        console.error(error);
+        document.getElementById('adminStatus').textContent = 'Falha no login do admin.';
+        toast('Senha incorreta ou admin não cadastrado.');
+        return;
+      }
+
+      currentSession = data.session;
+      await atualizarPainelAdmin();
+      toast('Admin autenticado com sucesso.');
+    }
+
+    async function logoutAdmin() {
+      if (!supabase) return;
+      await supabase.auth.signOut();
+      currentSession = null;
+      await atualizarPainelAdmin();
+      toast('Sessão do admin encerrada.');
+    }
+
+    async function atualizarPainelAdmin() {
+      const status = document.getElementById('adminStatus');
+      const painel = document.getElementById('adminPanelCard');
+      const trocasCard = document.getElementById('trocasAdminCard');
+
+      if (!supabase) {
+        status.textContent = 'Supabase não inicializado.';
+        painel.classList.add('hidden');
+        trocasCard.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error(error);
+          status.textContent = 'Erro ao verificar sessão do admin.';
+          painel.classList.add('hidden');
+          trocasCard.classList.add('hidden');
+          return;
+        }
+
+        currentSession = data.session;
+
+        if (!currentSession) {
+          status.textContent = 'Admin não autenticado.';
+          painel.classList.add('hidden');
+          trocasCard.classList.add('hidden');
+          return;
+        }
+
+        status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
+        painel.classList.remove('hidden');
+        trocasCard.classList.remove('hidden');
+      } catch (e) {
+        console.error('Erro em atualizarPainelAdmin:', e);
+        status.textContent = 'Erro ao carregar painel admin.';
+        painel.classList.add('hidden');
+        trocasCard.classList.add('hidden');
+      }
+    }
+
+    function carregarModeloAtual() {
+      document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+      toast('Modelo atual carregado no editor JSON.');
+    }
+
+    function salvarJsonLocal() {
+      const txt = document.getElementById('jsonEscalaEditor').value;
+      localStorage.setItem(STORAGE_KEYS.rascunho, txt);
+      toast('Rascunho salvo neste navegador.');
+    }
+
+    async function publicarEscalaOnline() {
+      if (!currentSession) {
+        toast('Faça login como admin antes de publicar a escala.');
+        return;
+      }
+
+      let obj;
+      try {
+        obj = JSON.parse(document.getElementById('jsonEscalaEditor').value);
+      } catch (e) {
+        toast('O JSON da escala está inválido.');
+        return;
+      }
+
+      if (!escalaEhValida(obj)) {
+        toast('JSON incompatível com o modelo da escala. Use o modelo atual e altere somente os nomes/dias.');
+        return;
+      }
+
+      obj = normalizarEscalaData(obj);
+
+      const semanaInicio = obj.semana_inicio || escalaData.semana_inicio;
+      const semanaFim = obj.semana_fim || escalaData.semana_fim;
+
+      const { error } = await supabase.from('escala_atual').insert({
+        semana_inicio: semanaInicio,
+        semana_fim: semanaFim,
+        escala_json: obj,
+        atualizado_por: currentSession.user.email
+      });
+
+      if (error) {
+        console.error(error);
+        toast('Erro ao publicar escala online. Verifique RLS e estrutura da tabela escala_atual.');
+        return;
+      }
+
+      escalaData = {
+        ...obj,
+        semana_inicio: semanaInicio,
+        semana_fim: semanaFim,
+        atualizado_por: currentSession.user.email,
+        atualizado_em: new Date().toISOString()
+      };
+
+      localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
+      render();
+      toast('Escala publicada online com sucesso.');
+      await carregarEscalaOnline();
+    }
+
+    async function limparTrocasOnline() {
+      if (!currentSession) {
+        toast('Faça login admin para limpar trocas.');
+        return;
+      }
+
+      if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
+
+      const { error } = await supabase
+        .from('trocas_escala')
+        .delete()
+        .gte('criado_em', '1900-01-01T00:00:00');
+
+      if (error) {
+        console.error(error);
+        toast('Erro ao limpar trocas online.');
+        return;
+      }
+
+      trocas = {};
+      render();
+      toast('Trocas online removidas com sucesso.');
+    }
+
+    async function lerPdfEscala() {
+      const input = document.getElementById('pdfFile');
+      const file = input.files?.[0];
+
+      if (!file) {
+        toast('Selecione um PDF primeiro.');
+        return;
+      }
+
+      try {
+        if (!window.pdfjsLib) {
+          toast('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
+          return;
+        }
+
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+        let texto = '';
+        for (let p = 1; p <= pdf.numPages; p++) {
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          texto += content.items.map(i => i.str).join(' ') + '\n';
+        }
+
+        const json = parseEscalaText(texto);
+        document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
+        toast('PDF lido. Revise o JSON antes de publicar.');
+      } catch (e) {
+        console.error(e);
+        toast('Não consegui interpretar o PDF automaticamente. Use o modelo atual como base no editor JSON.');
+      }
+    }
+
+    function parseEscalaText(texto) {
+      const base = JSON.parse(JSON.stringify(getEscalaPadrao()));
+
+      const semanaMatch = texto.match(/(\d{1,2}\/\d{1,2}\/\d{4}).*?(\d{1,2}\/\d{1,2}\/\d{4})/);
+      if (semanaMatch) {
+        base.semana_inicio = toISODate(semanaMatch[1]);
+        base.semana_fim = toISODate(semanaMatch[2]);
+      }
+
+      base.texto_extraido_pdf = texto.slice(0, 12000);
+      return base;
+    }
+
+    function handleInstalled() {
+      document.getElementById('installBanner').classList.remove('show');
+      toast('✅ App instalado com sucesso. Agora você pode abrir o Escala CB SLS direto da tela inicial.');
+    }
+
+    function setupPWA() {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBanner').classList.add('show');
+      });
+
+      document.getElementById('btnInstallApp').addEventListener('click', async () => {
+        if (!deferredPrompt) {
+          toast('A opção de instalação ainda não está disponível neste navegador.');
+          return;
+        }
+
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          toast('Instalação iniciada.');
+        }
+
+        deferredPrompt = null;
+        document.getElementById('installBanner').classList.remove('show');
+      });
+
+      window.addEventListener('appinstalled', handleInstalled);
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            await navigator.serviceWorker.register('./sw.js');
+            console.log('Service Worker registrado com sucesso.');
+          } catch (erro) {
+            console.error('Erro ao registrar SW:', erro);
+          }
+        });
+      }
+    }
+
+    async function boot() {
+      try {
+        initSupabase();
+        setupPWA();
+
+        const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
+        document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+
+        const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+        if (cache) {
+          try {
+            escalaData = normalizarEscalaData(JSON.parse(cache));
+          } catch (e) {
+            console.error('Erro ao ler cache local da escala:', e);
+            escalaData = getEscalaPadrao();
+          }
+        }
+
+        diaIdx = obterIndiceDiaAtual();
+        render();
+
+        if (supabase) {
+          try {
+            await atualizarPainelAdmin();
+          } catch (e) {
+            console.error('Erro ao atualizar painel admin:', e);
+          }
+
+          try {
+            await carregarEscalaOnline();
+          } catch (e) {
+            console.error('Erro ao carregar escala online:', e);
+          }
+        } else {
+          console.warn('Supabase não inicializado. App seguirá em modo local.');
+        }
+      } catch (e) {
+        console.error('Erro no boot do app:', e);
+        toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
+      } finally {
+        setTimeout(hideSplash, 1200);
+      }
+    }
+
+    boot();
   </script>
 </body>
 </html>
