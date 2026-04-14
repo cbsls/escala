@@ -1,9 +1,12 @@
-const CACHE_NAME = 'escala-cb-sls-v22';
+const CACHE_NAME = 'escala-cb-sls-v23';
+
 const URLS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './sw.js'
+  './sw.js',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -21,6 +24,7 @@ self.addEventListener('activate', event => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
+          return null;
         })
       )
     )
@@ -31,25 +35,38 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
+  const requestURL = new URL(event.request.url);
+
+  if (requestURL.origin !== location.origin) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
       return fetch(event.request)
-        .then(response => {
+        .then(networkResponse => {
           if (
-            response &&
-            response.status === 200 &&
-            (response.type === 'basic' || response.type === 'cors')
+            networkResponse &&
+            networkResponse.status === 200 &&
+            networkResponse.type === 'basic'
           ) {
-            const clone = response.clone();
+            const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, clone);
+              cache.put(event.request, responseClone);
             });
           }
-          return response;
+
+          return networkResponse;
         })
-        .catch(() => caches.match('./index.html'));
+        .catch(() => {
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
     })
   );
 });
