@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Escala CB SLS" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@sbClient/sbClient-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     :root {
@@ -670,7 +670,7 @@
       console.warn('pdf.js não carregou. A leitura de PDF ficará indisponível até recarregar a página.');
     }
 
-    const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
+    const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.sbClient.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
     const ADMIN_EMAIL_PADRAO = 'admin@escala.com';
 
@@ -679,7 +679,7 @@
       ultimaEscala: 'escala_cbsls_cache_online_v1'
     };
 
-        let sbClient = null;
+    let sbClient = null;
     let currentSession = null;
     let deferredPrompt = null;
     let diaIdx = 0;
@@ -1038,7 +1038,7 @@
     async function carregarTrocasOnline() {
       if (!sbClient) return;
 
-      const { data, error } = await supabase
+      const { data, error } = await sbClient
         .from('trocas_escala')
         .select('*')
         .order('criado_em', { ascending: true });
@@ -1106,7 +1106,7 @@
     async function carregarEscalaOnline(showMessage = false) {
       if (!sbClient) return;
 
-      const { data, error } = await supabase
+      const { data, error } = await sbClient
         .from('escala_atual')
         .select('*')
         .order('atualizado_em', { ascending: false })
@@ -1311,7 +1311,7 @@
 
       if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
 
-      const { error } = await supabase
+      const { error } = await sbClient
         .from('trocas_escala')
         .delete()
         .gte('criado_em', '1900-01-01T00:00:00');
