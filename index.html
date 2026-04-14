@@ -791,8 +791,12 @@
 
     function initSupabase() {
       try {
+        if (!window.supabase || !window.supabase.createClient) {
+          throw new Error('Biblioteca Supabase não carregada.');
+        }
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       } catch (e) {
+        supabase = null;
         toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
         console.error(e);
       }
@@ -1371,7 +1375,8 @@
     }
 
     function handleInstalled() {
-      document.getElementById('installBanner').classList.remove('show');
+      const banner = document.getElementById('installBanner');
+      if (banner) banner.classList.remove('show');
       toast('✅ App instalado com sucesso. Agora você pode abrir o Escala CB SLS direto da tela inicial.');
     }
 
@@ -1403,7 +1408,10 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
           try {
-            await navigator.serviceWorker.register('./sw.js');
+            const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+            if (registration && registration.update) {
+              registration.update().catch(() => {});
+            }
             console.log('Service Worker registrado com sucesso.');
           } catch (erro) {
             console.error('Erro ao registrar SW:', erro);
