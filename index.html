@@ -519,7 +519,7 @@
   </style>
 </head>
 <body>
-  <div class="splash" id="splashScreen">
+  <div class="splash" id="splashScreen" style="display:flex;">
     <div class="splash-box">
       <img src="icon-192.png" alt="Escala CB SLS" class="splash-logo" onerror="this.style.display='none'" />
       <h1 style="margin:0 0 10px 0;">🚒 Bem-vindo ao Escala CB SLS</h1>
@@ -808,14 +808,12 @@
 
     function hideSplash() {
       const splash = document.getElementById('splashScreen');
-      if (splash) splash.classList.add('hide');
+      if (!splash) return;
+      splash.classList.add('hide');
+      setTimeout(() => {
+        splash.style.display = 'none';
+      }, 500);
     }
-
-    window.addEventListener('load', () => {
-      setTimeout(hideSplash, 1800);
-    });
-
-    setTimeout(hideSplash, 3500);
 
     function showView(view) {
       const isEscala = view === 'escala';
@@ -1453,12 +1451,16 @@
       } catch (e) {
         console.error('Erro no boot do app:', e);
         toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
-      } finally {
-        setTimeout(hideSplash, 1200);
       }
+
+      hideSplash();
     }
 
-    boot();
+    window.addEventListener('DOMContentLoaded', boot);
+    window.addEventListener('load', () => {
+      setTimeout(hideSplash, 1200);
+    });
+    setTimeout(hideSplash, 4000);
   </script>
 </body>
 </html>
