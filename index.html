@@ -679,7 +679,7 @@
       ultimaEscala: 'escala_cbsls_cache_online_v1'
     };
 
-    let supabase = null;
+        let sbClient = null;
     let currentSession = null;
     let deferredPrompt = null;
     let diaIdx = 0;
@@ -794,9 +794,9 @@
         if (!window.supabase || !window.supabase.createClient) {
           throw new Error('Biblioteca Supabase não carregada.');
         }
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       } catch (e) {
-        supabase = null;
+        sbClient = null;
         toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
         console.error(e);
       }
@@ -1005,12 +1005,12 @@
       const original = trocas[key] || func.t[ti];
       const turnoNome = ti === '0' ? 'Dia' : 'Noite';
 
-      if (!supabase) {
+      if (!sbClient) {
         toast('Supabase não inicializado.');
         return;
       }
 
-      const { error } = await supabase.from('trocas_escala').insert({
+      const { error } = await sbClient.from('trocas_escala').insert({
         data_escala: toISODate(dia.d),
         funcao: func.n,
         turno: turnoNome,
@@ -1036,7 +1036,7 @@
     }
 
     async function carregarTrocasOnline() {
-      if (!supabase) return;
+      if (!sbClient) return;
 
       const { data, error } = await supabase
         .from('trocas_escala')
@@ -1104,7 +1104,7 @@
     }
 
     async function carregarEscalaOnline(showMessage = false) {
-      if (!supabase) return;
+      if (!sbClient) return;
 
       const { data, error } = await supabase
         .from('escala_atual')
@@ -1171,12 +1171,12 @@
         return;
       }
 
-      if (!supabase) {
+      if (!sbClient) {
         toast('Supabase não inicializado.');
         return;
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
 
       if (error) {
         console.error(error);
@@ -1191,8 +1191,8 @@
     }
 
     async function logoutAdmin() {
-      if (!supabase) return;
-      await supabase.auth.signOut();
+      if (!sbClient) return;
+      await sbClient.auth.signOut();
       currentSession = null;
       await atualizarPainelAdmin();
       toast('Sessão do admin encerrada.');
@@ -1203,7 +1203,7 @@
       const painel = document.getElementById('adminPanelCard');
       const trocasCard = document.getElementById('trocasAdminCard');
 
-      if (!supabase) {
+      if (!sbClient) {
         status.textContent = 'Supabase não inicializado.';
         painel.classList.add('hidden');
         trocasCard.classList.add('hidden');
@@ -1211,7 +1211,7 @@
       }
 
       try {
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await sbClient.auth.getSession();
 
         if (error) {
           console.error(error);
@@ -1276,7 +1276,7 @@
       const semanaInicio = obj.semana_inicio || escalaData.semana_inicio;
       const semanaFim = obj.semana_fim || escalaData.semana_fim;
 
-      const { error } = await supabase.from('escala_atual').insert({
+      const { error } = await sbClient.from('escala_atual').insert({
         semana_inicio: semanaInicio,
         semana_fim: semanaFim,
         escala_json: obj,
@@ -1441,7 +1441,7 @@
         diaIdx = obterIndiceDiaAtual();
         render();
 
-        if (supabase) {
+        if (sbClient) {
           try {
             await atualizarPainelAdmin();
           } catch (e) {
