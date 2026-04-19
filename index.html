@@ -1494,7 +1494,236 @@
     toast('Trocas online removidas com sucesso.');
   }
 
-  async function lerPdfEscala() {
+  
+function normalizarDataBR(d) {
+  const [dia, mes, ano] = String(d).split('/');
+  return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
+}
+
+function dataBROrdenavel(d) {
+  const [dia, mes, ano] = normalizarDataBR(d).split('/');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function nomeDiaSemanaBR(dataBR) {
+  const [dia, mes, ano] = normalizarDataBR(dataBR).split('/').map(Number);
+  const dt = new Date(ano, mes - 1, dia);
+  const nomes = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
+  return nomes[dt.getDay()];
+}
+
+function extrairSequenciaSemanaDoTexto(texto) {
+  const datasEncontradas = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)]
+    .map(m => normalizarDataBR(m[1]));
+
+  const datasUnicas = [];
+  for (const d of datasEncontradas) {
+    if (!datasUnicas.includes(d)) datasUnicas.push(d);
+  }
+
+  let sequencia = [];
+
+  for (let i = 0; i < datasUnicas.length; i++) {
+    const atual = datasUnicas[i];
+    const [diaA, mesA, anoA] = atual.split('/').map(Number);
+    const dataA = new Date(anoA, mesA - 1, diaA);
+
+    if (sequencia.length === 0) {
+      sequencia.push(atual);
+      continue;
+    }
+
+    const anterior = sequencia[sequencia.length - 1];
+    const [diaB, mesB, anoB] = anterior.split('/').map(Number);
+    const dataB = new Date(anoB, mesB - 1, diaB);
+    const diffDias = Math.round((dataA - dataB) / 86400000);
+
+    if (diffDias === 1) {
+      sequencia.push(atual);
+      if (sequencia.length === 7) break;
+    } else if (diffDias !== 0) {
+      sequencia = [atual];
+    }
+  }
+
+  return sequencia.length === 7 ? sequencia : [];
+}
+
+function obterMapaDiasExistentes() {
+  const mapa = new Map();
+  const origem = Array.isArray(escalaData?.escala) && escalaData.escala.length
+    ? escalaData.escala
+    : (Array.isArray(getEscalaPadrao()?.escala) ? getEscalaPadrao().escala : []);
+
+  origem.forEach(dia => {
+    mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
+  });
+
+  return mapa;
+}
+
+function criarDiaBase(dataBR) {
+  return {
+    d: normalizarDataBR(dataBR),
+    n: nomeDiaSemanaBR(dataBR),
+    f: [
+      { n: 'CG', i: 'user-shield', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'COV', i: 'truck', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'CLE', i: 'helmet-safety', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'CLD', i: 'fire-extinguisher', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'COBOM', i: 'headset', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
+    ]
+  };
+}
+
+function atualizarFuncaoDia(diaObj, funcao, turnoDia, turnoNoite) {
+  const idx = diaObj.f.findIndex(f => f.n === funcao.n);
+  if (idx >= 0) {
+    diaObj.f[idx].t = [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'];
+  } else {
+    diaObj.f.push({ n: funcao.n, i: funcao.i, t: [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'] });
+  }
+}
+
+function normalizarNomeLinha(nome) {
+  return String(nome || '')
+    .replace(/\bTEM\b/g, 'TEN')
+    .replace(/\bBARGES\b/g, 'BORGES')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function agruparItensPdfEmLinhas(items) {
+  const tokens = items
+    .map(it => ({
+      text: String(it.str || '').trim(),
+      x: Number(it.transform?.[4] || 0),
+      y: Number(it.transform?.[5] || 0)
+    }))
+    .filter(t => t.text);
+
+  const lines = [];
+  tokens.sort((a, b) => b.y - a.y || a.x - b.x);
+
+  for (const token of tokens) {
+    let line = lines.find(l => Math.abs(l.y - token.y) <= 2.5);
+    if (!line) {
+      line = { y: token.y, items: [] };
+      lines.push(line);
+    }
+    line.items.push(token);
+  }
+
+  lines.forEach(line => line.items.sort((a, b) => a.x - b.x));
+  lines.sort((a, b) => b.y - a.y);
+  return lines;
+}
+
+function extrairTextoEstruturadoPDF(items) {
+  const lines = agruparItensPdfEmLinhas(items);
+  return lines.map(line => line.items.map(i => i.text).join(' ')).join('\n');
+}
+
+function linhaParaColunas(line, dateXs) {
+  const cols = Array(dateXs.length).fill('');
+  for (const item of line.items) {
+    if (item.x < 110) continue;
+    if (/^(23|41|6)$/.test(item.text)) continue;
+    let best = 0;
+    let bestDiff = Infinity;
+    dateXs.forEach((x, idx) => {
+      const diff = Math.abs(item.x - x);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        best = idx;
+      }
+    });
+    if (bestDiff < 70) cols[best] += (cols[best] ? ' ' : '') + item.text;
+  }
+  return cols.map(normalizarNomeLinha);
+}
+
+function extrairEscalaSemanalDoPdfItems(items) {
+  const lines = agruparItensPdfEmLinhas(items);
+  const dateLine = lines.find(line => {
+    const matches = line.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text));
+    return matches.length >= 7;
+  });
+
+  if (!dateLine) return null;
+
+  const dateItems = dateLine.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text)).slice(0, 7);
+  const datasSemana = dateItems.map(i => normalizarDataBR(i.text));
+  const dateXs = dateItems.map(i => i.x);
+
+  const funcoes = [
+    { n: 'CG', i: 'user-shield' },
+    { n: 'COV', i: 'truck' },
+    { n: 'CLE', i: 'helmet-safety' },
+    { n: 'CLD', i: 'fire-extinguisher' },
+    { n: 'COBOM', i: 'headset' }
+  ];
+
+  const labelLines = {};
+  for (const func of funcoes) {
+    const found = lines.find(line => line.items.some(i => i.x < 100 && i.text.toUpperCase() === func.n));
+    if (found) labelLines[func.n] = found;
+  }
+
+  const mapaDias = obterMapaDiasExistentes();
+  datasSemana.forEach(dataBR => {
+    const chave = normalizarDataBR(dataBR);
+    if (!mapaDias.has(chave)) mapaDias.set(chave, criarDiaBase(chave));
+    mapaDias.get(chave).d = chave;
+    mapaDias.get(chave).n = nomeDiaSemanaBR(chave);
+  });
+
+  const orderedLabelLines = funcoes
+    .map(func => ({ func, line: labelLines[func.n] }))
+    .filter(x => x.line)
+    .sort((a, b) => b.line.y - a.line.y);
+
+  orderedLabelLines.forEach((entry, idx) => {
+    const yTop = entry.line.y;
+    const yBottom = idx < orderedLabelLines.length - 1 ? orderedLabelLines[idx + 1].line.y : -Infinity;
+
+    const candidateLines = lines.filter(line =>
+      line.y < yTop - 1 && line.y > yBottom + 1 && line.items.some(i => i.x > 110)
+    );
+
+    const valueLines = [];
+    for (const line of candidateLines) {
+      const cols = linhaParaColunas(line, dateXs);
+      const filled = cols.filter(Boolean).length;
+      if (filled >= 2) valueLines.push(cols);
+      if (valueLines.length === 2) break;
+    }
+
+    const turnoDia = valueLines[0] || Array(7).fill('NÃO ESCALADO');
+    const turnoNoite = valueLines[1] || turnoDia;
+
+    datasSemana.forEach((dataBR, i) => {
+      const diaObj = mapaDias.get(normalizarDataBR(dataBR));
+      atualizarFuncaoDia(diaObj, entry.func, turnoDia[i], turnoNoite[i]);
+    });
+  });
+
+  const escalaFinal = [...mapaDias.values()].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
+
+  return {
+    semana_inicio: toISODate(datasSemana[0]),
+    semana_fim: toISODate(datasSemana[6]),
+    atualizado_por: (escalaData && escalaData.atualizado_por) || 'Sistema local',
+    atualizado_em: null,
+    afastamentos_html: (escalaData && escalaData.afastamentos_html) || getEscalaPadrao().afastamentos_html,
+    escala: escalaFinal
+  };
+}
+
+async function lerPdfEscala() {
   const input = document.getElementById('pdfFile');
   const file = input.files?.[0];
 
@@ -1505,106 +1734,77 @@
 
   try {
     let texto = '';
+    let json = null;
 
-    // 📄 SE FOR TXT
-    if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+    if (file.type === 'text/plain' || file.name.toLowerCase().endsWith('.txt')) {
       texto = await file.text();
-    }
-
-    // 📄 SE FOR PDF
-    else if (file.type === 'application/pdf') {
+      json = parseEscalaText(texto);
+    } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let allItems = [];
+      let textoPaginas = [];
 
       for (let p = 1; p <= pdf.numPages; p++) {
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
-        texto += content.items.map(i => i.str).join(' ') + '\n';
+        allItems = allItems.concat(content.items || []);
+        textoPaginas.push(extrairTextoEstruturadoPDF(content.items || []));
       }
-    }
 
-    // ❌ tipo inválido
-    else {
-      toast('Formato não suportado.');
+      texto = textoPaginas.join('\n');
+      json = extrairEscalaSemanalDoPdfItems(allItems) || parseEscalaText(texto);
+      json.texto_extraido_pdf = texto.slice(0, 12000);
+    } else {
+      toast('Formato não suportado. Use PDF ou TXT.');
       return;
     }
 
-    const json = parseEscalaText(texto);
     document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
     toast('Arquivo lido. Revise o JSON.');
-
   } catch (e) {
     console.error(e);
-    toast('Erro ao ler arquivo.');
+    toast(`Erro ao ler arquivo.\n${e.message || ''}`.trim());
   }
 }
 
-  function parseEscalaText(texto) {
-  const padrao = JSON.parse(JSON.stringify(getEscalaPadrao()));
-  const base = JSON.parse(JSON.stringify(getEscalaPadrao()));
+function parseEscalaText(texto) {
+  const basePadrao = JSON.parse(JSON.stringify(getEscalaPadrao()));
+  const semanaPdf = extrairSequenciaSemanaDoTexto(texto);
 
-  const datasEncontradas = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)].map(m => m[1]);
+  if (!semanaPdf.length) {
+    basePadrao.texto_extraido_pdf = texto.slice(0, 12000);
+    return basePadrao;
+  }
 
-  const normalizarDataBR = (d) => {
-    const [dia, mes, ano] = d.split('/');
-    return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
+  const mapaDias = obterMapaDiasExistentes();
+
+  semanaPdf.forEach(dataBR => {
+    const chave = normalizarDataBR(dataBR);
+    if (!mapaDias.has(chave)) mapaDias.set(chave, criarDiaBase(chave));
+    mapaDias.get(chave).d = chave;
+    mapaDias.get(chave).n = nomeDiaSemanaBR(chave);
+  });
+
+  const escalaFinal = [...mapaDias.values()].sort((a, b) => {
+    return dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d));
+  });
+
+  const primeiraData = escalaFinal[0]?.d || semanaPdf[0];
+  const ultimaData = escalaFinal[escalaFinal.length - 1]?.d || semanaPdf[6];
+
+  return {
+    semana_inicio: toISODate(normalizarDataBR(primeiraData)),
+    semana_fim: toISODate(normalizarDataBR(ultimaData)),
+    atualizado_por: (escalaData && escalaData.atualizado_por) || 'Sistema local',
+    atualizado_em: null,
+    afastamentos_html: (escalaData && escalaData.afastamentos_html) || basePadrao.afastamentos_html,
+    escala: escalaFinal,
+    texto_extraido_pdf: texto.slice(0, 12000)
   };
-
-  const datasUnicas = [];
-  for (const d of datasEncontradas) {
-    const n = normalizarDataBR(d);
-    if (!datasUnicas.includes(n)) datasUnicas.push(n);
-  }
-
-  let sequenciaSemana = [];
-
-  for (let i = 0; i < datasUnicas.length; i++) {
-    const atual = datasUnicas[i];
-    const [diaA, mesA, anoA] = atual.split('/').map(Number);
-    const dataA = new Date(anoA, mesA - 1, diaA);
-
-    if (sequenciaSemana.length === 0) {
-      sequenciaSemana.push(atual);
-      continue;
-    }
-
-    const anterior = sequenciaSemana[sequenciaSemana.length - 1];
-    const [diaB, mesB, anoB] = anterior.split('/').map(Number);
-    const dataB = new Date(anoB, mesB - 1, diaB);
-
-    const diffDias = Math.round((dataA - dataB) / 86400000);
-
-    if (diffDias === 1) {
-      sequenciaSemana.push(atual);
-      if (sequenciaSemana.length === 7) break;
-    } else if (diffDias !== 0) {
-      sequenciaSemana = [atual];
-    }
-  }
-
-  if (sequenciaSemana.length >= 7) {
-    base.semana_inicio = toISODate(sequenciaSemana[0]);
-    base.semana_fim = toISODate(sequenciaSemana[6]);
-
-    const datasSemana = new Set(sequenciaSemana.map(normalizarDataBR));
-
-    const diasDoPadrao = Array.isArray(padrao.escala) ? padrao.escala : [];
-    base.escala = diasDoPadrao.filter(item => datasSemana.has(normalizarDataBR(item.d)));
-  } else {
-    base.semana_inicio = padrao.semana_inicio;
-    base.semana_fim = padrao.semana_fim;
-    base.escala = Array.isArray(padrao.escala) ? padrao.escala : [];
-  }
-
-  if (!Array.isArray(base.escala) || base.escala.length === 0) {
-    base.escala = Array.isArray(padrao.escala) ? padrao.escala : [];
-  }
-
-  base.texto_extraido_pdf = texto.slice(0, 12000);
-  return base;
 }
 
-  function handleInstalled() {
+function handleInstalled() {
     const banner = document.getElementById('installBanner');
     if (banner) banner.classList.remove('show');
     toast('✅ App instalado com sucesso. Agora você pode abrir o Escala CB SLS direto da tela inicial.');
