@@ -1365,87 +1365,12 @@ function nomeDiaSemanaBR(dataBR) {
   return nomes[dt.getDay()];
 }
 
-function extrairSequenciaSemanaDoTexto(texto) {
-  const datasEncontradas = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)]
-    .map(m => normalizarDataBR(m[1]));
-
-  const datasUnicas = [];
-  for (const d of datasEncontradas) {
-    if (!datasUnicas.includes(d)) datasUnicas.push(d);
-  }
-
-  let sequencia = [];
-
-  for (let i = 0; i < datasUnicas.length; i++) {
-    const atual = datasUnicas[i];
-    const [diaA, mesA, anoA] = atual.split('/').map(Number);
-    const dataA = new Date(anoA, mesA - 1, diaA);
-
-    if (sequencia.length === 0) {
-      sequencia.push(atual);
-      continue;
-    }
-
-    const anterior = sequencia[sequencia.length - 1];
-    const [diaB, mesB, anoB] = anterior.split('/').map(Number);
-    const dataB = new Date(anoB, mesB - 1, diaB);
-
-    const diffDias = Math.round((dataA - dataB) / 86400000);
-
-    if (diffDias === 1) {
-      sequencia.push(atual);
-      if (sequencia.length === 7) break;
-    } else if (diffDias !== 0) {
-      sequencia = [atual];
-    }
-  }
-
-  return sequencia.length === 7 ? sequencia : [];
-}
-
-function obterMapaDiasExistentes() {
-  const mapa = new Map();
-  const origem = Array.isArray(escalaData?.escala) && escalaData.escala.length
-    ? escalaData.escala
-    : [];
-
-  origem.forEach(dia => {
-    mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
-  });
-
-  return mapa;
-}
-
-function criarDiaBase(dataBR) {
-  return {
-    d: normalizarDataBR(dataBR),
-    n: nomeDiaSemanaBR(dataBR),
-    f: [
-      { n: 'CG', i: 'user-shield', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'COV', i: 'truck', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'CLE', i: 'helmet-safety', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'CLD', i: 'fire-extinguisher', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'COBOM', i: 'headset', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-      { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-    ]
-  };
-}
-
-function atualizarFuncaoDia(diaObj, funcao, turnoDia, turnoNoite) {
-  const idx = diaObj.f.findIndex(f => f.n === funcao.n);
-  if (idx >= 0) {
-    diaObj.f[idx].t = [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'];
-  } else {
-    diaObj.f.push({ n: funcao.n, i: funcao.i, t: [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'] });
-  }
-}
-
 function normalizarNomeLinha(nome) {
   return String(nome || '')
     .replace(/\bTEM\b/g, 'TEN')
     .replace(/\bBARGES\b/g, 'BORGES')
+    .replace(/\bBM BM\b/g, 'BM')
+    .replace(/\bCM5\b/g, 'CM')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -1476,32 +1401,54 @@ function agruparItensPdfEmLinhas(items) {
   return lines;
 }
 
-function extrairTextoEstruturadoPDF(items) {
-  const lines = agruparItensPdfEmLinhas(items);
-  return lines.map(line => line.items.map(i => i.text).join(' ')).join('\n');
+function obterMapaDiasExistentes() {
+  const mapa = new Map();
+  const origem = Array.isArray(escalaData?.escala) ? escalaData.escala : [];
+  origem.forEach(dia => {
+    mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
+  });
+  return mapa;
 }
 
-function linhaParaColunas(line, dateXs) {
-  const cols = Array(dateXs.length).fill('');
-  for (const item of line.items) {
-    if (item.x < 110) continue;
-    if (/^(23|41|6)$/.test(item.text)) continue;
-    let best = 0;
-    let bestDiff = Infinity;
-    dateXs.forEach((x, idx) => {
-      const diff = Math.abs(item.x - x);
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        best = idx;
-      }
+function criarDiaBase(dataBR) {
+  return {
+    d: normalizarDataBR(dataBR),
+    n: nomeDiaSemanaBR(dataBR),
+    f: [
+      { n: 'CG', i: 'user-shield', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'COV', i: 'truck', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'CLD', i: 'fire-extinguisher', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'CLE', i: 'helmet-safety', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'COBOM', i: 'headset', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+      { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
+    ]
+  };
+}
+
+function atualizarFuncaoDia(diaObj, funcao, turnoDia, turnoNoite) {
+  const idx = diaObj.f.findIndex(f => f.n === funcao.n);
+  if (idx >= 0) {
+    diaObj.f[idx].t = [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'];
+  } else {
+    diaObj.f.push({
+      n: funcao.n,
+      i: funcao.i,
+      t: [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO']
     });
-    if (bestDiff < 70) cols[best] += (cols[best] ? ' ' : '') + item.text;
   }
-  return cols.map(normalizarNomeLinha);
 }
 
-function extrairEscalaSemanalDoPdfItems(items) {
-  const lines = agruparItensPdfEmLinhas(items);
+function toISODate(br) {
+  const partes = String(br).trim().split('/');
+  if (partes.length !== 3) return '';
+  const [dia, mes, ano] = partes.map(p => String(p).trim());
+  if (!dia || !mes || !ano) return '';
+  return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+}
+
+function detectarColunasDatas(lines) {
   const dateLine = lines.find(line => {
     const matches = line.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text));
     return matches.length >= 7;
@@ -1509,23 +1456,101 @@ function extrairEscalaSemanalDoPdfItems(items) {
 
   if (!dateLine) return null;
 
-  const dateItems = dateLine.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text)).slice(0, 7);
-  const datasSemana = dateItems.map(i => normalizarDataBR(i.text));
-  const dateXs = dateItems.map(i => i.x);
+  const dateItems = dateLine.items
+    .filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text))
+    .slice(0, 7);
 
-  const funcoes = [
-    { n: 'CG', i: 'user-shield' },
-    { n: 'COV', i: 'truck' },
-    { n: 'CLE', i: 'helmet-safety' },
-    { n: 'CLD', i: 'fire-extinguisher' },
-    { n: 'COBOM', i: 'headset' }
-  ];
+  return {
+    datasSemana: dateItems.map(i => normalizarDataBR(i.text)),
+    dateXs: dateItems.map(i => i.x)
+  };
+}
 
-  const labelLines = {};
-  for (const func of funcoes) {
-    const found = lines.find(line => line.items.some(i => i.x < 100 && i.text.toUpperCase() === func.n));
-    if (found) labelLines[func.n] = found;
-  }
+function detectarFuncoesNoPdf(lines) {
+  const mapaIcones = {
+    'CG': 'user-shield',
+    'COV': 'truck',
+    'CLD': 'fire-extinguisher',
+    'CLE': 'helmet-safety',
+    'COBOM': 'headset',
+    'CS': 'clipboard-check',
+    'SOBREAVISO': 'phone-volume',
+    'EXP ADM': 'briefcase'
+  };
+
+  const funcoes = Object.keys(mapaIcones)
+    .map(nome => {
+      const line = lines.find(l =>
+        l.items.some(i => i.x < 115 && String(i.text).toUpperCase().trim() === nome)
+      );
+      return line ? { n: nome, i: mapaIcones[nome], y: line.y } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.y - a.y);
+
+  return funcoes;
+}
+
+function detectarMarcadoresTurno(lines) {
+  const marcadores = [];
+
+  lines.forEach(line => {
+    line.items.forEach(item => {
+      const txt = String(item.text).trim().toUpperCase();
+      if (item.x < 115 || item.x > 150) return;
+
+      if (txt === '23' || txt === '41' || txt === '6' || txt === 'CM') {
+        marcadores.push({
+          tipo: txt,
+          x: item.x,
+          y: item.y
+        });
+      }
+    });
+  });
+
+  return marcadores;
+}
+
+function valorMaisProximoDaLinha(lines, yRef, dateXs, yTol = 3.2) {
+  const linha = lines.find(l => Math.abs(l.y - yRef) <= yTol && l.items.some(i => i.x > 150));
+  if (!linha) return Array(dateXs.length).fill('');
+
+  const cols = Array(dateXs.length).fill('');
+
+  linha.items.forEach(item => {
+    if (item.x <= 150) return;
+    const txt = String(item.text || '').trim();
+    if (!txt) return;
+
+    let bestIdx = 0;
+    let bestDiff = Infinity;
+
+    dateXs.forEach((x, idx) => {
+      const diff = Math.abs(item.x - x);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIdx = idx;
+      }
+    });
+
+    if (bestDiff <= 70) {
+      cols[bestIdx] += (cols[bestIdx] ? ' ' : '') + txt;
+    }
+  });
+
+  return cols.map(c => normalizarNomeLinha(c));
+}
+
+function extrairEscalaSemanalDoPdfItems(items) {
+  const lines = agruparItensPdfEmLinhas(items);
+  const infoDatas = detectarColunasDatas(lines);
+
+  if (!infoDatas) return null;
+
+  const { datasSemana, dateXs } = infoDatas;
+  const funcoes = detectarFuncoesNoPdf(lines);
+  const marcadores = detectarMarcadoresTurno(lines);
 
   const mapaDias = obterMapaDiasExistentes();
   datasSemana.forEach(dataBR => {
@@ -1535,41 +1560,81 @@ function extrairEscalaSemanalDoPdfItems(items) {
     mapaDias.get(chave).n = nomeDiaSemanaBR(chave);
   });
 
-  const orderedLabelLines = funcoes
-    .map(func => ({ func, line: labelLines[func.n] }))
-    .filter(x => x.line)
-    .sort((a, b) => b.line.y - a.line.y);
+  funcoes.forEach((funcao, idx) => {
+    const yTop = funcao.y;
+    const yBottom = idx < funcoes.length - 1 ? funcoes[idx + 1].y : -Infinity;
 
-  orderedLabelLines.forEach((entry, idx) => {
-    const yTop = entry.line.y;
-    const yBottom = idx < orderedLabelLines.length - 1 ? orderedLabelLines[idx + 1].line.y : -Infinity;
+    const marcadoresFaixa = marcadores
+      .filter(m => m.y < yTop - 0.5 && m.y > yBottom + 0.5)
+      .sort((a, b) => b.y - a.y);
 
-    const candidateLines = lines.filter(line =>
-      line.y < yTop - 1 && line.y > yBottom + 1 && line.items.some(i => i.x > 110)
-    );
+    let y23 = null;
+    let y41 = null;
 
-    const valueLines = [];
-    for (const line of candidateLines) {
-      const cols = linhaParaColunas(line, dateXs);
-      const filled = cols.filter(Boolean).length;
-      if (filled >= 2) valueLines.push(cols);
-      if (valueLines.length === 2) break;
+    if (funcao.n === 'EXP ADM') {
+      const y6 = marcadoresFaixa.filter(m => m.tipo === '6').map(m => m.y);
+      const yCM = marcadoresFaixa.filter(m => m.tipo === 'CM').map(m => m.y);
+
+      const linha6 = y6.length ? valorMaisProximoDaLinha(lines, y6[0], dateXs, 3.5) : Array(dateXs.length).fill('');
+      const linhaCM = yCM.length ? valorMaisProximoDaLinha(lines, yCM[0], dateXs, 3.5) : Array(dateXs.length).fill('');
+
+      datasSemana.forEach((dataBR, i) => {
+        const diaObj = mapaDias.get(normalizarDataBR(dataBR));
+        const v1 = linha6[i] || linhaCM[i] || 'NÃO ESCALADO';
+        const v2 = linhaCM[i] || linha6[i] || 'NÃO ESCALADO';
+        atualizarFuncaoDia(diaObj, funcao, v1, v2);
+      });
+
+      return;
     }
 
-    const turnoDia = valueLines[0] || Array(7).fill('NÃO ESCALADO');
-    const turnoNoite = valueLines[1] || turnoDia;
+    const lista23 = marcadoresFaixa.filter(m => m.tipo === '23').map(m => m.y).sort((a, b) => b - a);
+    const lista41 = marcadoresFaixa.filter(m => m.tipo === '41').map(m => m.y).sort((a, b) => b - a);
+
+    if (lista23.length) y23 = lista23[0];
+    if (lista41.length) y41 = lista41[0];
+
+    if (!y23 && !y41) {
+      const linhasTexto = lines
+        .filter(l => l.y < yTop - 0.5 && l.y > yBottom + 0.5 && l.items.some(i => i.x > 150))
+        .sort((a, b) => b.y - a.y);
+
+      const primeira = linhasTexto[0] ? valorMaisProximoDaLinha(lines, linhasTexto[0].y, dateXs, 3.5) : Array(dateXs.length).fill('');
+      const segunda = linhasTexto[1] ? valorMaisProximoDaLinha(lines, linhasTexto[1].y, dateXs, 3.5) : Array(dateXs.length).fill('');
+
+      datasSemana.forEach((dataBR, i) => {
+        const diaObj = mapaDias.get(normalizarDataBR(dataBR));
+        atualizarFuncaoDia(
+          diaObj,
+          funcao,
+          primeira[i] || 'NÃO ESCALADO',
+          segunda[i] || 'NÃO ESCALADO'
+        );
+      });
+
+      return;
+    }
+
+    const linha23 = y23 ? valorMaisProximoDaLinha(lines, y23, dateXs, 3.5) : Array(dateXs.length).fill('');
+    const linha41 = y41 ? valorMaisProximoDaLinha(lines, y41, dateXs, 3.5) : Array(dateXs.length).fill('');
 
     datasSemana.forEach((dataBR, i) => {
       const diaObj = mapaDias.get(normalizarDataBR(dataBR));
-      atualizarFuncaoDia(diaObj, entry.func, turnoDia[i], turnoNoite[i]);
+      atualizarFuncaoDia(
+        diaObj,
+        funcao,
+        linha23[i] || 'NÃO ESCALADO',
+        linha41[i] || 'NÃO ESCALADO'
+      );
     });
   });
 
-  const escalaFinal = [...mapaDias.values()].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
+  const escalaFinal = [...mapaDias.values()]
+    .sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
 
   return {
     semana_inicio: toISODate(datasSemana[0]),
-    semana_fim: toISODate(datasSemana[6]),
+    semana_fim: toISODate(datasSemana[datasSemana.length - 1]),
     atualizado_por: (escalaData && escalaData.atualizado_por) || 'Sistema local',
     atualizado_em: null,
     afastamentos_html: (escalaData && escalaData.afastamentos_html) || getEscalaPadrao().afastamentos_html,
