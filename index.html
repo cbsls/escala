@@ -1851,48 +1851,47 @@ function handleInstalled() {
   }
 
   async function boot() {
-    try {
-      initSupabase();
-      setupPWA();
+  try {
+    initSupabase();
+    setupPWA();
 
-      const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
-      document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+    localStorage.removeItem(STORAGE_KEYS.ultimaEscala);
+    localStorage.removeItem(STORAGE_KEYS.rascunho);
 
-      const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
-      if (cache) {
-        try {
-          escalaData = normalizarEscalaData(JSON.parse(cache));
-        } catch (e) {
-          console.error('Erro ao ler cache local da escala:', e);
-          escalaData = getEscalaPadrao();
-        }
+    const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
+    document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+
+    const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+    if (cache) {
+      try {
+        escalaData = normalizarEscalaData(JSON.parse(cache));
+      } catch (e) {
+        console.error('Erro ao ler cache local da escala:', e);
+        escalaData = getEscalaPadrao();
       }
-
-      diaIdx = obterIndiceDiaAtual();
-      render();
-
-      if (sbClient) {
-        try {
-          await atualizarPainelAdmin();
-        } catch (e) {
-          console.error('Erro ao atualizar painel admin:', e);
-        }
-
-        try {
-          await carregarEscalaOnline();
-        } catch (e) {
-          console.error('Erro ao carregar escala online:', e);
-        }
-      } else {
-        console.warn('Supabase não inicializado. App seguirá em modo local.');
-      }
-    } catch (e) {
-      console.error('Erro no boot do app:', e);
-      toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
     }
 
-    hideSplash();
+    diaIdx = obterIndiceDiaAtual();
+    render();
+
+    if (sbClient) {
+      try {
+        await atualizarPainelAdmin();
+      } catch (e) {
+        console.error('Erro ao atualizar painel admin:', e);
+      }
+
+      // await carregarEscalaOnline();
+    } else {
+      console.warn('Supabase não inicializado. App seguirá em modo local.');
+    }
+  } catch (e) {
+    console.error('Erro no boot do app:', e);
+    toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
   }
+
+  hideSplash();
+}
 
   window.addEventListener('DOMContentLoaded', boot);
   window.addEventListener('load', () => { setTimeout(hideSplash, 1200); });
