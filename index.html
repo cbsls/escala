@@ -1121,8 +1121,8 @@ async function zerarBancoCompleto() {
     toast('Faça login admin para zerar o banco.');
     return;
   }
-  const confirma = prompt('Digite ZERAR para confirmar a limpeza total do banco.');
-  if (confirma !== 'ZERAR') {
+  const confirma = prompt('Digite Senha ADMIN para confirmar a limpeza total do banco.');
+  if (confirma !== '123456') {
     toast('Operação cancelada.');
     return;
   }
