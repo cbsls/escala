@@ -14,7 +14,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
 <style>
   :root {
     --bg: #f4f7f6;
@@ -26,498 +25,86 @@
     --mil-blue: #1a237e;
     --orange-swap: #f39c12;
     --success: #2e7d32;
-    --success-dark: #1b5e20;
     --warning: #ff9800;
+    --danger: #b71c1c;
     --shadow: 0 4px 15px rgba(0,0,0,0.1);
     --radius: 16px;
   }
 
-  * {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-  }
-
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding-bottom: 90px;
-  }
-
-  .app-header {
-    background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
-    color: #fff;
-    padding: 20px 15px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .app-header h1 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-
-  .app-subtitle {
-    margin-top: 5px;
-    font-size: 0.8rem;
-    opacity: 0.95;
-    font-weight: 600;
-  }
-
-  .online-indicator {
-    margin-top: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.74rem;
-    font-weight: 700;
-    background: rgba(255,255,255,0.18);
-    padding: 6px 10px;
-    border-radius: 999px;
-  }
-
-  .container {
-    padding: 15px;
-    max-width: 700px;
-    margin: 0 auto;
-  }
-
-  .card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 14px;
-    margin-bottom: 12px;
-    box-shadow: var(--shadow);
-  }
-
-  .install-banner {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
-    border: 1px solid #ffe082;
-  }
-
-  .install-banner.show {
-    display: flex;
-  }
-
-  .install-banner h3,
-  .card h3,
-  .card h2 {
-    margin: 0 0 8px 0;
-  }
-
-  .search-box {
-    background: #fff;
-    border-radius: 12px;
-    padding: 10px 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    box-shadow: var(--shadow);
-  }
-
-  .search-box input,
-  textarea,
-  select,
-  input[type="email"],
-  input[type="password"],
-  input[type="text"] {
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 0.96rem;
-    font-family: inherit;
-    background: #fff;
-    color: var(--text);
-  }
-
-  .search-box input {
-    border: none;
-    padding: 0;
-    background: transparent;
-  }
-
-  textarea {
-    min-height: 220px;
-    resize: vertical;
-  }
-
-  .top-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-
-  .btn-expand,
-  .btn,
-  .btn-nav,
-  .nav-btn,
-  .btn-confirm {
-    cursor: pointer;
-    border: none;
-    transition: 0.2s ease;
-  }
-
-  .btn-expand,
-  .btn {
-    background: #eef2f7;
-    color: var(--muted);
-    font-size: 0.85rem;
-    font-weight: 800;
-    padding: 10px 14px;
-    border-radius: 999px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-
-  .btn.primary,
-  .btn-confirm,
-  .btn-install {
-    background: var(--fire-red);
-    color: #fff;
-  }
-
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+  body { margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; }
+  .app-header { background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%); color: #fff; padding: 20px 15px; text-align: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+  .app-header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; }
+  .app-subtitle { margin-top: 5px; font-size: 0.8rem; opacity: 0.95; font-weight: 600; }
+  .online-indicator { margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; background: rgba(255,255,255,0.18); padding: 6px 10px; border-radius: 999px; }
+  .container { padding: 15px; max-width: 860px; margin: 0 auto; }
+  .card { background: #fff; border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .card h2, .card h3 { margin: 0 0 8px 0; }
+  .install-banner { display: none; align-items: center; justify-content: space-between; gap: 10px; background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%); border: 1px solid #ffe082; }
+  .install-banner.show { display: flex; }
+  .search-box { background: #fff; border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .search-box input, textarea, select, input[type="email"], input[type="password"], input[type="text"] { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 12px; font-size: 0.96rem; font-family: inherit; background: #fff; color: var(--text); }
+  .search-box input { border: none; padding: 0; background: transparent; }
+  textarea { min-height: 220px; resize: vertical; }
+  .top-actions, .toolbar-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .btn, .btn-nav, .nav-btn, .btn-confirm, .btn-expand { cursor: pointer; border: none; transition: 0.2s ease; }
+  .btn-expand, .btn { background: #eef2f7; color: var(--muted); font-size: 0.85rem; font-weight: 800; padding: 10px 14px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .btn.primary, .btn-confirm, .btn-install { background: var(--fire-red); color: #fff; }
   .btn.success { background: var(--success); color: #fff; }
   .btn.warning { background: var(--warning); color: #fff; }
+  .btn.danger { background: var(--danger); color: #fff; }
   .btn.ghost { background: #f3f4f6; color: var(--text); }
-
-  .btn:disabled,
-  .btn-confirm:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
-
-  .day-nav {
-    background: #fff;
-    border-radius: var(--radius);
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    box-shadow: var(--shadow);
-    gap: 10px;
-  }
-
-  .btn-nav {
-    background: var(--bg);
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    color: var(--mil-blue);
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
-
-  .day-info {
-    text-align: center;
-    flex: 1;
-  }
-
-  .day-info h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--mil-blue);
-  }
-
-  .day-info span {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--muted);
-    display: block;
-  }
-
-  .day-info .week-label {
-    font-size: 0.75rem;
-    margin-bottom: 3px;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-
-  .func-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border: 1px solid #edf2f7;
-    overflow: hidden;
-  }
-
-  .func-header {
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    background: #fff;
-  }
-
-  .func-title {
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--mil-blue);
-  }
-
-  .func-title i {
-    color: var(--fire-red);
-    width: 20px;
-    text-align: center;
-  }
-
-  .func-content {
-    display: none;
-    padding: 15px;
-    background: #fcfcfc;
-    border-top: 1px solid #f1f1f1;
-  }
-
-  .func-card.expanded .func-content {
-    display: block;
-  }
-
-  .func-card.expanded .chevron {
-    transform: rotate(180deg);
-  }
-
-  .turno-box {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 8px;
-  }
-
-  .turno-box:last-child {
-    margin-bottom: 0;
-  }
-
-  .turno-label {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-
-  .militar-name {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--fire-red);
-    margin-top: 4px;
-    line-height: 1.35;
-  }
-
+  .btn:disabled, .btn-confirm:disabled { opacity: 0.55; cursor: not-allowed; }
+  .day-nav { background: #fff; border-radius: var(--radius); padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: var(--shadow); gap: 10px; }
+  .btn-nav { background: var(--bg); width: 45px; height: 45px; border-radius: 50%; color: var(--mil-blue); font-size: 1.2rem; flex-shrink: 0; }
+  .day-info { text-align: center; flex: 1; }
+  .day-info h2 { margin: 0; font-size: 1.1rem; color: var(--mil-blue); }
+  .day-info span { font-size: 0.85rem; font-weight: 600; color: var(--muted); display: block; }
+  .day-info .week-label { font-size: 0.75rem; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .4px; }
+  .func-card { background: var(--card); border-radius: var(--radius); margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #edf2f7; overflow: hidden; }
+  .func-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
+  .func-title { font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--mil-blue); }
+  .func-title i { color: var(--fire-red); width: 20px; text-align: center; }
+  .func-content { display: none; padding: 15px; background: #fcfcfc; border-top: 1px solid #f1f1f1; }
+  .func-card.expanded .func-content { display: block; }
+  .func-card.expanded .chevron { transform: rotate(180deg); }
+  .turno-box { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+  .turno-label { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+  .militar-name { font-size: 1rem; font-weight: 700; color: var(--fire-red); margin-top: 4px; line-height: 1.35; }
   .militar-name.swapped { color: var(--orange-swap); }
   .militar-name.nao-escalado { color: var(--muted); }
-
-  .tag-swap {
-    font-size: 0.65rem;
-    background: var(--orange-swap);
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 5px;
-  }
-
-  .afast-card {
-    background: #fff3e0;
-    border-left: 5px solid var(--orange-swap);
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 0.85rem;
-    line-height: 1.55;
-  }
-
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 75px;
-    background: #fff;
-    display: flex;
-    border-top: 1px solid #eee;
-    z-index: 100;
-  }
-
-  .nav-btn {
-    flex: 1;
-    background: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    color: var(--muted);
-    font-weight: 700;
-    font-size: 0.75rem;
-  }
-
-  .nav-btn.active {
-    color: var(--fire-red);
-  }
-
-  .nav-btn i {
-    font-size: 1.4rem;
-  }
-
-  .modal,
-  .splash,
-  .toast {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-  }
-
-  .modal {
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: flex-end;
-  }
-
+  .tag-swap { font-size: 0.65rem; background: var(--orange-swap); color: #fff; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+  .afast-card { background: #fff3e0; border-left: 5px solid var(--orange-swap); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; line-height: 1.55; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 100; }
+  .nav-btn { flex: 1; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: var(--muted); font-weight: 700; font-size: 0.75rem; }
+  .nav-btn.active { color: var(--fire-red); }
+  .nav-btn i { font-size: 1.4rem; }
+  .modal, .splash, .toast { position: fixed; inset: 0; z-index: 200; }
+  .modal { background: rgba(0,0,0,0.6); display: none; align-items: flex-end; }
   .modal.show { display: flex; }
-
-  .modal-body {
-    background: #fff;
-    width: 100%;
-    border-radius: 24px 24px 0 0;
-    padding: 25px;
-    animation: slideUp 0.3s ease;
-    max-height: 88vh;
-    overflow: auto;
-  }
-
+  .modal-body { background: #fff; width: 100%; border-radius: 24px 24px 0 0; padding: 25px; animation: slideUp 0.3s ease; max-height: 88vh; overflow: auto; }
   .form-group { margin-bottom: 15px; }
-  .form-group label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: var(--muted);
-  }
-
-  .btn-confirm {
-    width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 800;
-    margin-top: 10px;
-  }
-
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: var(--muted); }
+  .btn-confirm { width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; margin-top: 10px; }
   .hidden { display: none !important; }
-
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    background: #eef2f7;
-    color: var(--muted);
-  }
-
-  .status-box {
-    font-size: 0.86rem;
-    line-height: 1.5;
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-  }
-
-  .splash {
-    background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 24px;
-    transition: opacity 0.35s ease, visibility 0.35s ease;
-  }
-
-  .splash.hide {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .splash-box {
-    max-width: 420px;
-  }
-
-  .splash-logo {
-    width: 96px;
-    height: 96px;
-    border-radius: 24px;
-    object-fit: cover;
-    box-shadow: 0 8px 26px rgba(0,0,0,0.25);
-    margin-bottom: 16px;
-  }
-
-  .toast {
-    display: none;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 16px;
-    pointer-events: none;
-    z-index: 350;
-  }
-
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; background: #eef2f7; color: var(--muted); }
+  .status-box { font-size: 0.86rem; line-height: 1.5; background: #f8fafc; border-radius: 12px; padding: 12px; border: 1px solid #e5e7eb; }
+  .splash { background: linear-gradient(135deg, var(--fire-red) 0%, var(--fire-red-dark) 100%); color: #fff; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; transition: opacity 0.35s ease, visibility 0.35s ease; }
+  .splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+  .splash-box { max-width: 420px; }
+  .splash-logo { width: 96px; height: 96px; border-radius: 24px; object-fit: cover; box-shadow: 0 8px 26px rgba(0,0,0,0.25); margin-bottom: 16px; }
+  .toast { display: none; align-items: flex-start; justify-content: center; padding: 16px; pointer-events: none; z-index: 350; }
   .toast.show { display: flex; }
-
-  .toast-inner {
-    pointer-events: auto;
-    margin-top: 20px;
-    background: #111827;
-    color: #fff;
-    padding: 14px 16px;
-    border-radius: 14px;
-    max-width: 520px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
-    font-size: 0.92rem;
-    line-height: 1.45;
-    white-space: pre-wrap;
-  }
-
-  .muted {
-    color: var(--muted);
-    font-size: 0.82rem;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-
-  @media (max-width: 560px) {
-    .grid-2 { grid-template-columns: 1fr; }
-    .install-banner { flex-direction: column; align-items: flex-start; }
-  }
+  .toast-inner { pointer-events: auto; margin-top: 20px; background: #111827; color: #fff; padding: 14px 16px; border-radius: 14px; max-width: 560px; box-shadow: 0 12px 35px rgba(0,0,0,0.25); font-size: 0.92rem; line-height: 1.45; white-space: pre-wrap; }
+  .muted { color: var(--muted); font-size: 0.82rem; }
+  .history-list { display: grid; gap: 10px; }
+  .history-item { border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; background: #fcfcfc; }
+  .history-title { font-weight: 800; color: var(--mil-blue); margin-bottom: 6px; }
+  .month-selector { min-width: 210px; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @media (max-width: 700px) { .grid-3 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } .install-banner { flex-direction: column; align-items: flex-start; } }
 </style>
 </head>
 <body>
@@ -526,7 +113,7 @@
       <img src="icon-192.png" alt="Escala CB SLS" class="splash-logo" onerror="this.style.display='none'" />
       <h1 style="margin:0 0 10px 0;">🚒 Bem-vindo ao Escala CB SLS</h1>
       <p style="margin:0; opacity:.95; line-height:1.55;">
-        Central de consulta da escala semanal, trocas sincronizadas e atualização online via admin.<br>
+        Histórico profissional da escala semanal, versões publicadas e consulta por mês.<br>
         Carregando o app...
       </p>
     </div>
@@ -536,7 +123,7 @@
 
   <header class="app-header">
     <h1>ESCALA • CBSLS</h1>
-    <div class="app-subtitle" id="appSubtitle">Escala semanal atualizada • 13/04/2026 a 26/04/2026</div>
+    <div class="app-subtitle" id="appSubtitle">Escala profissional • histórico por mês</div>
     <div class="online-indicator" id="onlineIndicator"><i class="fas fa-cloud"></i> Dados online conectados</div>
   </header>
 
@@ -548,6 +135,14 @@
           <div class="muted">Instale o Escala CB SLS na tela inicial para abrir como aplicativo.</div>
         </div>
         <button class="btn btn-install primary" id="btnInstallApp">Instalar agora</button>
+      </div>
+
+      <div class="toolbar-row">
+        <div class="month-selector">
+          <label class="muted" style="display:block; margin-bottom:6px;">Mês de visualização</label>
+          <select id="monthSelector" onchange="alterarMesSelecionado()"></select>
+        </div>
+        <span class="badge" id="resumoMesBadge"><i class="fas fa-calendar"></i> Sem mês carregado</span>
       </div>
 
       <div class="search-box">
@@ -563,9 +158,9 @@
       <nav class="day-nav">
         <button class="btn-nav" onclick="mudarDia(-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="day-info">
-          <span class="week-label">Semana atual</span>
-          <h2 id="diaNome">Segunda-Feira</h2>
-          <span id="diaData">13/04/2026</span>
+          <span class="week-label" id="monthLabel">Mês atual</span>
+          <h2 id="diaNome">Sem escala</h2>
+          <span id="diaData">-</span>
         </div>
         <button class="btn-nav" onclick="mudarDia(1)"><i class="fas fa-chevron-right"></i></button>
       </nav>
@@ -581,7 +176,7 @@
     <section class="container hidden" id="viewAdmin">
       <div class="card">
         <h2>🔐 Admin da Escala</h2>
-        <div class="muted">Acesso do admin somente por senha. O sistema usa a conta padrão configurada no app.</div>
+        <div class="muted">Modo profissional com histórico de versões, restauração e limpeza total do banco.</div>
       </div>
 
       <div class="card" id="adminLoginCard">
@@ -600,27 +195,38 @@
         <h3>📄 Importar PDF/TXT e publicar escala</h3>
         <div class="form-group">
           <label>Selecionar arquivo da escala (.pdf ou .txt)</label>
-          <input type="file" id="pdfFile" accept=".pdf,.txt,text/plain" />
+          <input type="file" id="pdfFile" accept=".pdf,.txt,text/plain,application/pdf" />
         </div>
-        <div class="grid-2">
+        <div class="grid-3">
           <button class="btn warning" onclick="lerPdfEscala()">Ler arquivo</button>
-          <button class="btn success" onclick="publicarEscalaOnline()">Publicar escala online</button>
+          <button class="btn success" onclick="publicarEscalaOnline()">Publicar acumulando histórico</button>
+          <button class="btn ghost" onclick="carregarModeloAtual()">Carregar modelo atual</button>
         </div>
         <div class="form-group" style="margin-top:14px;">
           <label>JSON da escala para revisão</label>
           <textarea id="jsonEscalaEditor"></textarea>
         </div>
-        <div class="grid-2">
-          <button class="btn ghost" onclick="carregarModeloAtual()">Carregar modelo atual</button>
+        <div class="grid-3">
           <button class="btn ghost" onclick="salvarJsonLocal()">Salvar rascunho local</button>
+          <button class="btn ghost" onclick="carregarEscalaOnline(true)">Sincronizar agora</button>
+          <button class="btn ghost" onclick="carregarHistoricoVersoes()">Atualizar versões</button>
         </div>
       </div>
 
-      <div class="card hidden" id="trocasAdminCard">
-        <h3>🧹 Trocas</h3>
-        <div class="grid-2">
+      <div class="card hidden" id="dbToolsCard">
+        <h3>🧰 Ferramentas do banco</h3>
+        <div class="grid-3">
           <button class="btn warning" onclick="limparTrocasOnline()">Limpar trocas online</button>
-          <button class="btn ghost" onclick="carregarEscalaOnline(true)">Sincronizar agora</button>
+          <button class="btn danger" onclick="zerarBancoCompleto()">Zerar banco completo</button>
+          <button class="btn ghost" onclick="exportarSnapshotAtual()">Copiar snapshot atual</button>
+        </div>
+        <div class="muted" style="margin-top:8px;">“Zerar banco completo” apaga escala atual, histórico de versões e trocas.</div>
+      </div>
+
+      <div class="card hidden" id="historyCard">
+        <h3>🕘 Histórico de versões</h3>
+        <div class="history-list" id="historyList">
+          <div class="status-box">Nenhuma versão carregada.</div>
         </div>
       </div>
     </section>
@@ -659,29 +265,57 @@
   </div>
 
 <script>
-  if (window.pdfjsLib) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 
-  const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
-  const ADMIN_EMAIL_PADRAO = 'admin@escala.com';
+const SUPABASE_URL = 'https://azltlpjyyqecurmebffm.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_ODDfIVnGOb1csV9DA8kURQ_pbKPeQNO';
+const ADMIN_EMAIL_PADRAO = 'admin@escala.com';
 
-  const STORAGE_KEYS = {
-    rascunho: 'escala_cbsls_rascunho_json',
-    ultimaEscala: 'escala_cbsls_cache_online_v2'
-  };
+const STORAGE_KEYS = {
+  rascunho: 'escala_cbsls_rascunho_json',
+  ultimaEscala: 'escala_cbsls_cache_online_v5',
+  selectedMonth: 'escala_cbsls_mes_selecionado'
+};
 
-  let sbClient = null;
-  let currentSession = null;
-  let deferredPrompt = null;
-  let diaIdx = 0;
-  let expandirTodos = true;
-  let trocas = {};
+let sbClient = null;
+let currentSession = null;
+let deferredPrompt = null;
+let diaIdx = 0;
+let expandirTodos = true;
+let trocas = {};
+let escalaData = getEscalaPadrao();
+let todosDias = [];
+let diasVisiveis = [];
+let monthOptions = [];
+let selectedMonth = '';
 
-  const FUNCOES_SEM_TROCA = ['CS', 'SOBREAVISO', 'EXP ADM'];
+const FUNCOES_SEM_TROCA = ['CS', 'SOBREAVISO', 'EXP ADM'];
 
-  function getEscalaPadrao() {
+const milLista = [
+  '1º TEN MARCELO',
+  '1º SGT BATISTA',
+  '1º SGT DIEFERSON',
+  '1º SGT VICENTE',
+  '2º SGT ANDERSON',
+  '2º SGT ANDRE',
+  '2º SGT LISCANO',
+  '2º SGT VINICIUS',
+  'SD BATISTA',
+  'SD BORGES',
+  'SD CAMACHO',
+  'SD ISQUIERDO',
+  'SD MAX',
+  'SD MOTTA',
+  'SD PEGLOW',
+  'SD SOARES',
+  'SD TEMP LARSSON',
+  'SD TOMASCHEWSKI',
+  'SD WILLIAM'
+].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+function getEscalaPadrao() {
   return {
     semana_inicio: '',
     semana_fim: '',
@@ -691,515 +325,560 @@
     escala: []
   };
 }
-  let escalaData = getEscalaPadrao();
 
-  const milLista = [
-    '1º TEN MARCELO',
-    '1º SGT BATISTA',
-    '1º SGT DIEFERSON',
-    '1º SGT VICENTE',
-    '2º SGT ANDERSON',
-    '2º SGT ANDRE',
-    '2º SGT LISCANO',
-    '2º SGT VINICIUS',
-    'SD BATISTA',
-    'SD BORGES',
-    'SD CAMACHO',
-    'SD ISQUIERDO',
-    'SD MAX',
-    'SD MOTTA',
-    'SD PEGLOW',
-    'SD SOARES',
-    'SD TEMP LARSSON',
-    'SD TOMASCHEWSKI',
-    'SD WILLIAM'
-  ].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-
-  function initSupabase() {
-    try {
-      if (!window.supabase || !window.supabase.createClient) {
-        throw new Error('Biblioteca Supabase não carregada.');
-      }
-      sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (e) {
-      sbClient = null;
-      toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
-      console.error(e);
+function initSupabase() {
+  try {
+    if (!window.supabase || !window.supabase.createClient) {
+      throw new Error('Biblioteca Supabase não carregada.');
     }
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (e) {
+    sbClient = null;
+    console.error(e);
+    toast('Erro ao iniciar Supabase. Verifique a biblioteca e as credenciais.');
+  }
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastText').innerHTML = msg;
+  el.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => el.classList.remove('show'), 6500);
+}
+
+function hideSplash() {
+  const splash = document.getElementById('splashScreen');
+  if (!splash) return;
+  splash.classList.add('hide');
+  setTimeout(() => { splash.style.display = 'none'; }, 500);
+}
+
+function showView(view) {
+  const isEscala = view === 'escala';
+  document.getElementById('viewEscala').classList.toggle('hidden', !isEscala);
+  document.getElementById('viewAdmin').classList.toggle('hidden', isEscala);
+  document.getElementById('navEscala').classList.toggle('active', isEscala);
+  document.getElementById('navAdmin').classList.toggle('active', !isEscala);
+  document.getElementById('navTroca').classList.remove('active');
+}
+
+function atualizarBotaoExpandir() {
+  const btn = document.getElementById('btnExpandirTodos');
+  btn.textContent = expandirTodos ? 'Recolher todos' : 'Expandir todos';
+}
+
+function toggleExpandirTodos() {
+  expandirTodos = !expandirTodos;
+  render();
+}
+
+function classeMilitar(nome, trocado) {
+  if (trocado) return 'militar-name swapped';
+  if (!nome || nome === 'NÃO ESCALADO') return 'militar-name nao-escalado';
+  return 'militar-name';
+}
+
+function formatDateBRFromISO(iso) {
+  if (!iso) return '';
+  const partes = String(iso).split('-');
+  if (partes.length !== 3) return iso;
+  const [ano, mes, dia] = partes;
+  return `${dia}/${mes}/${ano}`;
+}
+
+function normalizarDataBR(d) {
+  const [dia, mes, ano] = String(d).split('/');
+  return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
+}
+
+function dataBROrdenavel(d) {
+  const [dia, mes, ano] = normalizarDataBR(d).split('/');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function nomeDiaSemanaBR(dataBR) {
+  const [dia, mes, ano] = normalizarDataBR(dataBR).split('/').map(Number);
+  const dt = new Date(ano, mes - 1, dia);
+  const nomes = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
+  return nomes[dt.getDay()];
+}
+
+function toISODate(br) {
+  const partes = String(br).trim().split('/');
+  if (partes.length !== 3) return '';
+  const [dia, mes, ano] = partes.map(p => String(p).trim());
+  if (!dia || !mes || !ano) return '';
+  return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+}
+
+function monthKeyFromBR(br) {
+  const [d, m, y] = String(br).split('/');
+  if (!d || !m || !y) return '';
+  return `${y}-${String(m).padStart(2, '0')}`;
+}
+
+function monthLabelFromKey(key) {
+  if (!key) return 'Sem mês';
+  const [ano, mes] = key.split('-');
+  const nomes = ['JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'];
+  return `${nomes[Number(mes) - 1] || mes} ${ano}`;
+}
+
+function atualizarDiasVisiveis() {
+  todosDias = Array.isArray(escalaData?.escala) ? [...escalaData.escala].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d))) : [];
+  monthOptions = [...new Set(todosDias.map(d => monthKeyFromBR(d.d)))].filter(Boolean);
+
+  if (!selectedMonth || !monthOptions.includes(selectedMonth)) {
+    selectedMonth = localStorage.getItem(STORAGE_KEYS.selectedMonth) || monthOptions[monthOptions.length - 1] || '';
+  }
+  if (!monthOptions.includes(selectedMonth)) {
+    selectedMonth = monthOptions[0] || '';
   }
 
-  function toast(msg) {
-    const el = document.getElementById('toast');
-    document.getElementById('toastText').innerHTML = msg;
-    el.classList.add('show');
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(() => el.classList.remove('show'), 6000);
+  diasVisiveis = selectedMonth ? todosDias.filter(d => monthKeyFromBR(d.d) === selectedMonth) : todosDias.slice();
+
+  if (diaIdx >= diasVisiveis.length) diaIdx = Math.max(diasVisiveis.length - 1, 0);
+  if (diaIdx < 0) diaIdx = 0;
+
+  renderMonthSelector();
+}
+
+function renderMonthSelector() {
+  const select = document.getElementById('monthSelector');
+  if (!select) return;
+  select.innerHTML = '';
+  if (!monthOptions.length) {
+    select.innerHTML = '<option value="">Sem meses disponíveis</option>';
+    return;
+  }
+  monthOptions.forEach(key => {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = monthLabelFromKey(key);
+    if (key === selectedMonth) opt.selected = true;
+    select.appendChild(opt);
+  });
+  document.getElementById('resumoMesBadge').innerHTML = `<i class="fas fa-calendar"></i> ${monthLabelFromKey(selectedMonth)} • ${diasVisiveis.length} dia(s)`;
+}
+
+function alterarMesSelecionado() {
+  selectedMonth = document.getElementById('monthSelector').value;
+  localStorage.setItem(STORAGE_KEYS.selectedMonth, selectedMonth);
+  diaIdx = 0;
+  atualizarDiasVisiveis();
+  render();
+}
+
+function atualizarCabecalhoSemana() {
+  const inicio = formatDateBRFromISO(escalaData.semana_inicio);
+  const fim = formatDateBRFromISO(escalaData.semana_fim);
+  const subtitulo = (inicio && fim)
+    ? `Histórico vigente • ${inicio} a ${fim}`
+    : 'Escala semanal ainda não carregada';
+  document.getElementById('appSubtitle').textContent = subtitulo;
+
+  const badge = document.getElementById('ultimaAtualizacaoBadge');
+  const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
+  badge.innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
+
+  document.getElementById('afastamentosHtml').innerHTML = escalaData.afastamentos_html || 'Sem observações.';
+  document.getElementById('monthLabel').textContent = selectedMonth ? monthLabelFromKey(selectedMonth) : 'Mês atual';
+}
+
+function render() {
+  atualizarBotaoExpandir();
+  atualizarCabecalhoSemana();
+
+  const list = document.getElementById('funcList');
+
+  if (!diasVisiveis.length) {
+    document.getElementById('diaNome').textContent = 'Sem escala carregada';
+    document.getElementById('diaData').textContent = '-';
+    list.innerHTML = `
+      <div class="func-card">
+        <div class="func-header">
+          <div class="func-title"><i class="fas fa-calendar-times"></i> Nenhuma escala disponível</div>
+        </div>
+      </div>
+    `;
+    return;
   }
 
-  function hideSplash() {
-    const splash = document.getElementById('splashScreen');
-    if (!splash) return;
-    splash.classList.add('hide');
-    setTimeout(() => { splash.style.display = 'none'; }, 500);
-  }
+  const dia = diasVisiveis[diaIdx];
+  const search = document.getElementById('searchInput').value.toUpperCase().trim();
 
-  function showView(view) {
-    const isEscala = view === 'escala';
-    document.getElementById('viewEscala').classList.toggle('hidden', !isEscala);
-    document.getElementById('viewAdmin').classList.toggle('hidden', isEscala);
-    document.getElementById('navEscala').classList.toggle('active', isEscala);
-    document.getElementById('navAdmin').classList.toggle('active', !isEscala);
-    document.getElementById('navTroca').classList.remove('active');
-  }
+  document.getElementById('diaNome').textContent = dia.n;
+  document.getElementById('diaData').textContent = dia.d;
+  list.innerHTML = '';
 
-  function atualizarBotaoExpandir() {
-    const btn = document.getElementById('btnExpandirTodos');
-    btn.textContent = expandirTodos ? 'Recolher todos' : 'Expandir todos';
-  }
+  dia.f.forEach((func) => {
+    const t0_key = `${dia.d}|${func.n}|0`;
+    const t1_key = `${dia.d}|${func.n}|1`;
 
-  function toggleExpandirTodos() {
-    expandirTodos = !expandirTodos;
-    render();
-  }
+    const m0 = trocas[t0_key] || func.t[0];
+    const m1 = trocas[t1_key] || func.t[1];
 
-  function obterIndiceDiaAtual() {
-    const hoje = new Date();
-    const dd = String(hoje.getDate()).padStart(2, '0');
-    const mm = String(hoje.getMonth() + 1).padStart(2, '0');
-    const yyyy = hoje.getFullYear();
-    const hojeFormatado = `${dd}/${mm}/${yyyy}`;
-    const idx = (escalaData.escala || []).findIndex(item => item.d === hojeFormatado);
-    return idx >= 0 ? idx : 0;
-  }
+    if (
+      search &&
+      !func.n.toUpperCase().includes(search) &&
+      !String(m0).toUpperCase().includes(search) &&
+      !String(m1).toUpperCase().includes(search)
+    ) return;
 
-  function classeMilitar(nome, trocado) {
-    if (trocado) return 'militar-name swapped';
-    if (nome === 'NÃO ESCALADO') return 'militar-name nao-escalado';
-    return 'militar-name';
-  }
-
-  function formatDateBRFromISO(iso) {
-    if (!iso) return '';
-    const partes = String(iso).split('-');
-    if (partes.length !== 3) return iso;
-    const [ano, mes, dia] = partes;
-    return `${dia}/${mes}/${ano}`;
-  }
-
-  function atualizarCabecalhoSemana() {
-    const inicio = formatDateBRFromISO(escalaData.semana_inicio);
-    const fim = formatDateBRFromISO(escalaData.semana_fim);
-    const subtitulo = (inicio && fim)
-      ? `Escala semanal atualizada • ${inicio} a ${fim}`
-      : 'Escala semanal ainda não carregada';
-    document.getElementById('appSubtitle').textContent = subtitulo;
-
-    const badge = document.getElementById('ultimaAtualizacaoBadge');
-    const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
-    badge.innerHTML = `<i class="fas fa-clock"></i> Última atualização: ${textoData}`;
-
-    document.getElementById('afastamentosHtml').innerHTML = escalaData.afastamentos_html || 'Sem observações.';
-  }
-
-  function render() {
-    atualizarBotaoExpandir();
-    atualizarCabecalhoSemana();
-
-    const list = document.getElementById('funcList');
-
-    if (!escalaData.escala || !escalaData.escala.length) {
-      document.getElementById('diaNome').textContent = 'Sem escala carregada';
-      document.getElementById('diaData').textContent = '-';
-      list.innerHTML = `
-        <div class="func-card">
-          <div class="func-header">
-            <div class="func-title"><i class="fas fa-calendar-times"></i> Nenhuma escala disponível</div>
+    const card = document.createElement('div');
+    card.className = `func-card ${expandirTodos ? 'expanded' : ''}`;
+    card.innerHTML = `
+      <div class="func-header" onclick="this.parentElement.classList.toggle('expanded')">
+        <div class="func-title"><i class="fas fa-${func.i}"></i> ${func.n}</div>
+        <i class="fas fa-chevron-down chevron" style="color:var(--muted)"></i>
+      </div>
+      <div class="func-content">
+        <div class="turno-box">
+          <div class="turno-label">Turno 23 (Dia)</div>
+          <div class="${classeMilitar(m0, !!trocas[t0_key])}">
+            ${m0 || 'NÃO ESCALADO'} ${trocas[t0_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
           </div>
         </div>
-      `;
-      return;
-    }
-
-    const dia = escalaData.escala[diaIdx];
-    const search = document.getElementById('searchInput').value.toUpperCase().trim();
-
-    document.getElementById('diaNome').textContent = dia.n;
-    document.getElementById('diaData').textContent = dia.d;
-
-    list.innerHTML = '';
-
-    dia.f.forEach((func) => {
-      const t0_key = `${dia.d}|${func.n}|0`;
-      const t1_key = `${dia.d}|${func.n}|1`;
-
-      const m0 = trocas[t0_key] || func.t[0];
-      const m1 = trocas[t1_key] || func.t[1];
-
-      if (
-        search &&
-        !func.n.toUpperCase().includes(search) &&
-        !String(m0).toUpperCase().includes(search) &&
-        !String(m1).toUpperCase().includes(search)
-      ) return;
-
-      const card = document.createElement('div');
-      card.className = `func-card ${expandirTodos ? 'expanded' : ''}`;
-      card.innerHTML = `
-        <div class="func-header" onclick="this.parentElement.classList.toggle('expanded')">
-          <div class="func-title"><i class="fas fa-${func.i}"></i> ${func.n}</div>
-          <i class="fas fa-chevron-down chevron" style="color:var(--muted)"></i>
-        </div>
-        <div class="func-content">
-          <div class="turno-box">
-            <div class="turno-label">Turno 23 (Dia)</div>
-            <div class="${classeMilitar(m0, !!trocas[t0_key])}">
-              ${m0} ${trocas[t0_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
-            </div>
-          </div>
-          <div class="turno-box">
-            <div class="turno-label">Turno 41 (Noite)</div>
-            <div class="${classeMilitar(m1, !!trocas[t1_key])}">
-              ${m1} ${trocas[t1_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
-            </div>
+        <div class="turno-box">
+          <div class="turno-label">Turno 41 (Noite)</div>
+          <div class="${classeMilitar(m1, !!trocas[t1_key])}">
+            ${m1 || 'NÃO ESCALADO'} ${trocas[t1_key] ? '<span class="tag-swap">TROCADO</span>' : ''}
           </div>
         </div>
-      `;
-      list.appendChild(card);
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  if (!list.innerHTML) {
+    list.innerHTML = `
+      <div class="func-card">
+        <div class="func-header">
+          <div class="func-title"><i class="fas fa-search"></i> Nenhum resultado</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function mudarDia(v) {
+  if (!diasVisiveis.length) return;
+  diaIdx = (diaIdx + v + diasVisiveis.length) % diasVisiveis.length;
+  render();
+}
+
+function abrirModal() {
+  if (!diasVisiveis.length) {
+    toast('Nenhum dia disponível no mês selecionado.');
+    return;
+  }
+  document.getElementById('navTroca').classList.add('active');
+  const sT = document.getElementById('selectTurno');
+  sT.innerHTML = '<option value="">Selecione...</option>';
+
+  if (diasVisiveis[diaIdx] && Array.isArray(diasVisiveis[diaIdx].f)) {
+    diasVisiveis[diaIdx].f.forEach((f, fi) => {
+      if (FUNCOES_SEM_TROCA.includes(f.n)) return;
+      sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
+      sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
     });
-
-    if (!list.innerHTML) {
-      list.innerHTML = `
-        <div class="func-card">
-          <div class="func-header">
-            <div class="func-title"><i class="fas fa-search"></i> Nenhum resultado</div>
-          </div>
-        </div>
-      `;
-    }
   }
 
-  function mudarDia(v) {
-    if (!escalaData.escala || !escalaData.escala.length) return;
-    diaIdx = (diaIdx + v + escalaData.escala.length) % escalaData.escala.length;
-    render();
-  }
+  const sS = document.getElementById('selectSubstituto');
+  sS.innerHTML = '<option value="">Quem assume?</option>';
+  milLista.forEach(m => {
+    sS.innerHTML += `<option value="${m}">${m}</option>`;
+  });
 
-  function abrirModal() {
-    document.getElementById('navTroca').classList.add('active');
+  document.getElementById('militarSaindo').value = '';
+  document.getElementById('modalTroca').classList.add('show');
+}
 
-    const sT = document.getElementById('selectTurno');
-    sT.innerHTML = '<option value="">Selecione...</option>';
-
-    if (escalaData.escala && escalaData.escala[diaIdx] && Array.isArray(escalaData.escala[diaIdx].f)) {
-      escalaData.escala[diaIdx].f.forEach((f, fi) => {
-        if (FUNCOES_SEM_TROCA.includes(f.n)) return;
-        sT.innerHTML += `<option value="${fi}|0">${f.n} - Dia</option>`;
-        sT.innerHTML += `<option value="${fi}|1">${f.n} - Noite</option>`;
-      });
-    }
-
-    const sS = document.getElementById('selectSubstituto');
-    sS.innerHTML = '<option value="">Quem assume?</option>';
-    milLista.forEach(m => {
-      sS.innerHTML += `<option value="${m}">${m}</option>`;
-    });
-
+function updateMilitarOriginal() {
+  const val = document.getElementById('selectTurno').value;
+  if (!val || !diasVisiveis.length) {
     document.getElementById('militarSaindo').value = '';
-    document.getElementById('modalTroca').classList.add('show');
+    return;
+  }
+  const [fi, ti] = val.split('|');
+  const func = diasVisiveis[diaIdx].f[fi];
+  const key = `${diasVisiveis[diaIdx].d}|${func.n}|${ti}`;
+  const atual = trocas[key] || func.t[ti];
+  document.getElementById('militarSaindo').value = atual;
+}
+
+function fecharModal() {
+  document.getElementById('modalTroca').classList.remove('show');
+  document.getElementById('navTroca').classList.remove('active');
+}
+
+async function salvarTroca() {
+  const turno = document.getElementById('selectTurno').value;
+  const sub = document.getElementById('selectSubstituto').value;
+  if (!turno || !sub || !diasVisiveis.length) {
+    toast('Preencha todos os campos da troca.');
+    return;
   }
 
-  function updateMilitarOriginal() {
-    const val = document.getElementById('selectTurno').value;
-    if (!val) {
-      document.getElementById('militarSaindo').value = '';
-      return;
-    }
+  const [fi, ti] = turno.split('|');
+  const dia = diasVisiveis[diaIdx];
+  const func = dia.f[fi];
 
-    const [fi, ti] = val.split('|');
-    const func = escalaData.escala[diaIdx].f[fi];
-    const key = `${escalaData.escala[diaIdx].d}|${func.n}|${ti}`;
-    const atual = trocas[key] || func.t[ti];
-    document.getElementById('militarSaindo').value = atual;
+  if (FUNCOES_SEM_TROCA.includes(func.n)) {
+    toast('Essa função não permite troca pelo app.');
+    return;
   }
 
-  function toISODate(br) {
-    const partes = String(br).trim().split('/');
-    if (partes.length !== 3) return '';
-    const [dia, mes, ano] = partes.map(p => String(p).trim());
-    if (!dia || !mes || !ano) return '';
-    return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+  if (!sbClient) {
+    toast('Supabase não inicializado.');
+    return;
   }
 
-  async function salvarTroca() {
-    const turno = document.getElementById('selectTurno').value;
-    const sub = document.getElementById('selectSubstituto').value;
+  const key = `${dia.d}|${func.n}|${ti}`;
+  const original = trocas[key] || func.t[ti];
+  const turnoNome = ti === '0' ? 'Dia' : 'Noite';
 
-    if (!turno || !sub) {
-      toast('Preencha todos os campos da troca.');
-      return;
-    }
+  const { error } = await sbClient.from('trocas_escala').insert({
+    data_escala: toISODate(dia.d),
+    funcao: func.n,
+    turno: turnoNome,
+    militar_original: original,
+    militar_substituto: sub
+  });
 
-    const [fi, ti] = turno.split('|');
-    const dia = escalaData.escala[diaIdx];
-    const func = dia.f[fi];
-
-    if (FUNCOES_SEM_TROCA.includes(func.n)) {
-      toast('Essa função não permite troca pelo app.');
-      return;
-    }
-
-    const key = `${dia.d}|${func.n}|${ti}`;
-    const original = trocas[key] || func.t[ti];
-    const turnoNome = ti === '0' ? 'Dia' : 'Noite';
-
-    if (!sbClient) {
-      toast('Supabase não inicializado.');
-      return;
-    }
-
-    const { error } = await sbClient.from('trocas_escala').insert({
-      data_escala: toISODate(dia.d),
-      funcao: func.n,
-      turno: turnoNome,
-      militar_original: original,
-      militar_substituto: sub
-    });
-
-    if (error) {
-      console.error('Erro troca:', error);
-      toast(`Erro ao salvar troca online.\n${error.message || ''}\n${error.details || ''}`.trim());
-      return;
-    }
-
-    trocas[key] = sub;
-    fecharModal();
-    render();
-    toast('Troca salva online com sucesso.');
+  if (error) {
+    console.error(error);
+    toast(`Erro ao salvar troca online.\n${error.message || ''}\n${error.details || ''}`.trim());
+    return;
   }
 
-  function fecharModal() {
-    document.getElementById('modalTroca').classList.remove('show');
-    document.getElementById('navTroca').classList.remove('active');
+  trocas[key] = sub;
+  fecharModal();
+  render();
+  toast('Troca salva online com sucesso.');
+}
+
+async function carregarTrocasOnline() {
+  if (!sbClient) return;
+  const { data, error } = await sbClient
+    .from('trocas_escala')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
   }
 
-  async function carregarTrocasOnline() {
-    if (!sbClient) return;
+  trocas = {};
+  (data || []).forEach(item => {
+    if (!item.data_escala || !item.funcao) return;
+    const d = new Date(item.data_escala + 'T00:00:00');
+    const br = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    const idx = String(item.turno).toLowerCase().includes('dia') ? '0' : '1';
+    trocas[`${br}|${item.funcao}|${idx}`] = item.militar_substituto;
+  });
+}
 
-    const { data, error } = await sbClient
-      .from('trocas_escala')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) {
-      console.error(error);
-      return;
+function escalaEhValida(obj) {
+  if (!obj || typeof obj !== 'object') return false;
+  if (!Array.isArray(obj.escala) || obj.escala.length === 0) return false;
+  for (const dia of obj.escala) {
+    if (!dia || typeof dia !== 'object') return false;
+    if (!dia.d || !dia.n || !Array.isArray(dia.f)) return false;
+    for (const func of dia.f) {
+      if (!func || typeof func !== 'object') return false;
+      if (!func.n || !func.i || !Array.isArray(func.t) || func.t.length !== 2) return false;
     }
-
-    trocas = {};
-
-    (data || []).forEach(item => {
-      const d = new Date(item.data_escala + 'T00:00:00');
-      const br = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-      const idx = String(item.turno).toLowerCase().includes('dia') ? '0' : '1';
-      const key = `${br}|${item.funcao}|${idx}`;
-      trocas[key] = item.militar_substituto;
-    });
   }
+  return true;
+}
 
-  function escalaEhValida(obj) {
-    if (!obj || typeof obj !== 'object') return false;
-    if (!Array.isArray(obj.escala) || obj.escala.length === 0) return false;
-
-    for (const dia of obj.escala) {
-      if (!dia || typeof dia !== 'object') return false;
-      if (!dia.d || !dia.n || !Array.isArray(dia.f)) return false;
-
-      for (const func of dia.f) {
-        if (!func || typeof func !== 'object') return false;
-        if (!func.n || !func.i || !Array.isArray(func.t) || func.t.length !== 2) return false;
-      }
-    }
-
-    return true;
+function normalizarEscalaData(obj) {
+  const padrao = getEscalaPadrao();
+  if (!escalaEhValida(obj)) {
+    return JSON.parse(JSON.stringify(padrao));
   }
+  return {
+    semana_inicio: obj.semana_inicio || padrao.semana_inicio,
+    semana_fim: obj.semana_fim || padrao.semana_fim,
+    atualizado_por: obj.atualizado_por || 'Sistema',
+    atualizado_em: obj.atualizado_em || null,
+    afastamentos_html: obj.afastamentos_html || padrao.afastamentos_html,
+    escala: obj.escala.map(dia => ({
+      d: normalizarDataBR(dia.d || ''),
+      n: dia.n || nomeDiaSemanaBR(dia.d),
+      f: Array.isArray(dia.f) ? dia.f.map(func => ({
+        n: func.n || '',
+        i: func.i || 'user',
+        t: Array.isArray(func.t)
+          ? [func.t[0] || 'NÃO ESCALADO', func.t[1] || 'NÃO ESCALADO']
+          : ['NÃO ESCALADO', 'NÃO ESCALADO']
+      })) : []
+    })).sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)))
+  };
+}
 
-  function normalizarEscalaData(obj) {
-    const padrao = getEscalaPadrao();
+async function carregarEscalaOnline(showMessage = false) {
+  if (!sbClient) return;
 
-    if (!escalaEhValida(obj)) {
-      return JSON.parse(JSON.stringify(padrao));
+  const { data, error } = await sbClient
+    .from('escala_atual')
+    .select('*')
+    .order('atualizado_em', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-slash"></i> Sem leitura online';
+    const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
+    if (cache) {
+      try {
+        escalaData = normalizarEscalaData(JSON.parse(cache));
+      } catch {}
     }
-
-    return {
-      semana_inicio: obj.semana_inicio || padrao.semana_inicio,
-      semana_fim: obj.semana_fim || padrao.semana_fim,
-      atualizado_por: obj.atualizado_por || 'Sistema',
-      atualizado_em: obj.atualizado_em || null,
-      afastamentos_html: obj.afastamentos_html || padrao.afastamentos_html,
-      escala: obj.escala.map(dia => ({
-        d: dia.d || '',
-        n: dia.n || '',
-        f: Array.isArray(dia.f) ? dia.f.map(func => ({
-          n: func.n || '',
-          i: func.i || 'user',
-          t: Array.isArray(func.t)
-            ? [func.t[0] || 'NÃO ESCALADO', func.t[1] || 'NÃO ESCALADO']
-            : ['NÃO ESCALADO', 'NÃO ESCALADO']
-        })) : []
-      }))
-    };
-  }
-
-  async function carregarEscalaOnline(showMessage = false) {
-    if (!sbClient) return;
-
-    const { data, error } = await sbClient
-      .from('escala_atual')
-      .select('*')
-      .order('atualizado_em', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Erro leitura escala_atual:', error);
-      document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-slash"></i> Sem leitura online';
-
-      const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
-      if (cache) {
-        try {
-          escalaData = normalizarEscalaData(JSON.parse(cache));
-          render();
-        } catch {}
-      }
-
-      if (showMessage) toast(`Não foi possível ler a escala online.\n${error.message || ''}`.trim());
-      return;
-    }
-
-    if (data && data.escala_json) {
-      const bruto = {
-        ...data.escala_json,
-        semana_inicio: data.semana_inicio || data.escala_json.semana_inicio,
-        semana_fim: data.semana_fim || data.escala_json.semana_fim,
-        atualizado_em: data.atualizado_em,
-        atualizado_por: data.atualizado_por
-      };
-
-      escalaData = normalizarEscalaData(bruto);
-      localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
-      document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
-      document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-check"></i> Dados online conectados';
-
-      if (showMessage) toast('Escala online sincronizada com sucesso.');
-    } else {
-      const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
-      if (cache) {
-        try {
-          escalaData = normalizarEscalaData(JSON.parse(cache));
-        } catch {
-          escalaData = getEscalaPadrao();
-        }
-      } else {
-        escalaData = getEscalaPadrao();
-      }
-    }
-
     await carregarTrocasOnline();
-    diaIdx = Math.min(obterIndiceDiaAtual(), Math.max((escalaData.escala || []).length - 1, 0));
+    atualizarDiasVisiveis();
     render();
+    if (showMessage) toast(`Não foi possível ler a escala online.\n${error.message || ''}`.trim());
+    return;
   }
 
-  async function loginAdmin() {
-    const email = ADMIN_EMAIL_PADRAO;
-    const password = document.getElementById('adminSenha').value;
+  if (data && data.escala_json) {
+    const bruto = {
+      ...data.escala_json,
+      semana_inicio: data.semana_inicio || data.escala_json.semana_inicio,
+      semana_fim: data.semana_fim || data.escala_json.semana_fim,
+      atualizado_em: data.atualizado_em,
+      atualizado_por: data.atualizado_por
+    };
+    escalaData = normalizarEscalaData(bruto);
+    localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
+    document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+    document.getElementById('onlineIndicator').innerHTML = '<i class="fas fa-cloud-check"></i> Dados online conectados';
+  } else {
+    escalaData = getEscalaPadrao();
+  }
 
-    if (!password) {
-      toast('Digite a senha do admin.');
-      return;
-    }
+  await carregarTrocasOnline();
+  atualizarDiasVisiveis();
+  render();
+  if (showMessage) toast('Escala online sincronizada com sucesso.');
+}
 
-    if (!sbClient) {
-      toast('Supabase não inicializado.');
-      return;
-    }
+async function loginAdmin() {
+  const email = ADMIN_EMAIL_PADRAO;
+  const password = document.getElementById('adminSenha').value;
+  if (!password) {
+    toast('Digite a senha do admin.');
+    return;
+  }
+  if (!sbClient) {
+    toast('Supabase não inicializado.');
+    return;
+  }
+  const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+  if (error) {
+    console.error(error);
+    document.getElementById('adminStatus').textContent = 'Falha no login do admin.';
+    toast(`Senha incorreta ou admin não cadastrado.\n${error.message || ''}`.trim());
+    return;
+  }
+  currentSession = data.session;
+  await atualizarPainelAdmin();
+  toast('Admin autenticado com sucesso.');
+}
 
-    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+async function logoutAdmin() {
+  if (!sbClient) return;
+  await sbClient.auth.signOut();
+  currentSession = null;
+  await atualizarPainelAdmin();
+  toast('Sessão do admin encerrada.');
+}
 
+async function atualizarPainelAdmin() {
+  const status = document.getElementById('adminStatus');
+  const painel = document.getElementById('adminPanelCard');
+  const dbTools = document.getElementById('dbToolsCard');
+  const historyCard = document.getElementById('historyCard');
+
+  if (!sbClient) {
+    status.textContent = 'Supabase não inicializado.';
+    painel.classList.add('hidden');
+    dbTools.classList.add('hidden');
+    historyCard.classList.add('hidden');
+    return;
+  }
+
+  try {
+    const { data, error } = await sbClient.auth.getSession();
     if (error) {
       console.error(error);
-      document.getElementById('adminStatus').textContent = 'Falha no login do admin.';
-      toast(`Senha incorreta ou admin não cadastrado.\n${error.message || ''}`.trim());
+      status.textContent = 'Erro ao verificar sessão do admin.';
+      painel.classList.add('hidden');
+      dbTools.classList.add('hidden');
+      historyCard.classList.add('hidden');
       return;
     }
 
     currentSession = data.session;
-    await atualizarPainelAdmin();
-    toast('Admin autenticado com sucesso.');
-  }
-
-  async function logoutAdmin() {
-    if (!sbClient) return;
-    await sbClient.auth.signOut();
-    currentSession = null;
-    await atualizarPainelAdmin();
-    toast('Sessão do admin encerrada.');
-  }
-
-  async function atualizarPainelAdmin() {
-    const status = document.getElementById('adminStatus');
-    const painel = document.getElementById('adminPanelCard');
-    const trocasCard = document.getElementById('trocasAdminCard');
-
-    if (!sbClient) {
-      status.textContent = 'Supabase não inicializado.';
+    if (!currentSession) {
+      status.textContent = 'Admin não autenticado.';
       painel.classList.add('hidden');
-      trocasCard.classList.add('hidden');
+      dbTools.classList.add('hidden');
+      historyCard.classList.add('hidden');
       return;
     }
 
-    try {
-      const { data, error } = await sbClient.auth.getSession();
-
-      if (error) {
-        console.error(error);
-        status.textContent = 'Erro ao verificar sessão do admin.';
-        painel.classList.add('hidden');
-        trocasCard.classList.add('hidden');
-        return;
-      }
-
-      currentSession = data.session;
-
-      if (!currentSession) {
-        status.textContent = 'Admin não autenticado.';
-        painel.classList.add('hidden');
-        trocasCard.classList.add('hidden');
-        return;
-      }
-
-      status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
-      painel.classList.remove('hidden');
-      trocasCard.classList.remove('hidden');
-    } catch (e) {
-      console.error('Erro em atualizarPainelAdmin:', e);
-      status.textContent = 'Erro ao carregar painel admin.';
-      painel.classList.add('hidden');
-      trocasCard.classList.add('hidden');
-    }
+    status.innerHTML = `Autenticado como <strong>${currentSession.user.email}</strong>.`;
+    painel.classList.remove('hidden');
+    dbTools.classList.remove('hidden');
+    historyCard.classList.remove('hidden');
+    await carregarHistoricoVersoes();
+  } catch (e) {
+    console.error(e);
+    status.textContent = 'Erro ao carregar painel admin.';
   }
+}
 
-  function carregarModeloAtual() {
-    document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
-    toast('Modelo atual carregado no editor JSON.');
+function carregarModeloAtual() {
+  document.getElementById('jsonEscalaEditor').value = JSON.stringify(escalaData, null, 2);
+  toast('Modelo atual carregado no editor JSON.');
+}
+
+function salvarJsonLocal() {
+  const txt = document.getElementById('jsonEscalaEditor').value;
+  localStorage.setItem(STORAGE_KEYS.rascunho, txt);
+  toast('Rascunho salvo neste navegador.');
+}
+
+function extrairMesesCobertos(escalaArray) {
+  const meses = [...new Set((escalaArray || []).map(d => monthKeyFromBR(d.d)).filter(Boolean))];
+  return meses.map(monthLabelFromKey).join(', ');
+}
+
+async function salvarVersaoHistorica(payloadJson, atualId = null) {
+  if (!sbClient || !currentSession) return;
+  const versaoPayload = {
+    registro_id_atual: atualId,
+    semana_inicio: payloadJson.semana_inicio,
+    semana_fim: payloadJson.semana_fim,
+    meses_cobertos: extrairMesesCobertos(payloadJson.escala),
+    escala_json: payloadJson,
+    publicado_por: currentSession.user.email,
+    publicado_em: new Date().toISOString()
+  };
+  const { error } = await sbClient.from('escala_historico').insert(versaoPayload);
+  if (error) {
+    console.error('Erro ao salvar histórico:', error);
+    toast(`Escala publicada, mas falhou ao salvar a versão histórica.\n${error.message || ''}`.trim());
   }
+}
 
-  function salvarJsonLocal() {
-    const txt = document.getElementById('jsonEscalaEditor').value;
-    localStorage.setItem(STORAGE_KEYS.rascunho, txt);
-    toast('Rascunho salvo neste navegador.');
-  }
-
-  async function publicarEscalaOnline() {
+async function publicarEscalaOnline() {
   if (!currentSession) {
     toast('Faça login como admin antes de publicar a escala.');
     return;
@@ -1220,7 +899,6 @@
 
   semanaImportada = normalizarEscalaData(semanaImportada);
 
-  // 1) lê a escala atual do Supabase
   const { data: atual, error: erroAtual } = await sbClient
     .from('escala_atual')
     .select('*')
@@ -1244,24 +922,16 @@
       })
     : getEscalaPadrao();
 
-  // 2) mescla por data (a semana importada substitui os mesmos dias)
   const mapa = new Map();
-
   (baseOnline.escala || []).forEach(dia => {
-    mapa.set(dia.d, JSON.parse(JSON.stringify(dia)));
+    mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
   });
-
   (semanaImportada.escala || []).forEach(dia => {
     if (!dia || !dia.d || !Array.isArray(dia.f)) return;
-    mapa.set(dia.d, JSON.parse(JSON.stringify(dia)));
+    mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
   });
 
-  const escalaMesclada = [...mapa.values()].sort((a, b) => {
-    const aIso = toISODate(a.d);
-    const bIso = toISODate(b.d);
-    return aIso.localeCompare(bIso);
-  });
-
+  const escalaMesclada = [...mapa.values()].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
   const semanaInicioFinal = escalaMesclada.length ? toISODate(escalaMesclada[0].d) : '';
   const semanaFimFinal = escalaMesclada.length ? toISODate(escalaMesclada[escalaMesclada.length - 1].d) : '';
 
@@ -1283,86 +953,193 @@
   };
 
   let writeError = null;
+  let registroId = atual?.id || null;
 
   if (atual?.id) {
-    const { error } = await sbClient
-      .from('escala_atual')
-      .update(payloadTabela)
-      .eq('id', atual.id);
-
+    const { error } = await sbClient.from('escala_atual').update(payloadTabela).eq('id', atual.id);
     writeError = error || null;
+    registroId = atual.id;
   } else {
-    const { error } = await sbClient
-      .from('escala_atual')
-      .insert(payloadTabela);
-
+    const { data: inserted, error } = await sbClient.from('escala_atual').insert(payloadTabela).select('id').limit(1).maybeSingle();
     writeError = error || null;
+    registroId = inserted?.id || null;
   }
 
   if (writeError) {
     console.error(writeError);
-    toast(
-      `Erro ao publicar escala online.\n` +
-      `${writeError.message || ''}\n` +
-      `${writeError.details || ''}\n` +
-      `${writeError.hint || ''}`
-    .trim());
+    toast(`Erro ao publicar escala online.\n${writeError.message || ''}\n${writeError.details || ''}\n${writeError.hint || ''}`.trim());
     return;
   }
 
-  toast('Escala publicada online com sucesso.');
+  await salvarVersaoHistorica(payloadJson, registroId);
+  toast('Escala publicada online com sucesso e versão histórica salva.');
   await carregarEscalaOnline(true);
+  await carregarHistoricoVersoes();
 }
 
-  async function limparTrocasOnline() {
-    if (!currentSession) {
-      toast('Faça login admin para limpar trocas.');
-      return;
-    }
+async function carregarHistoricoVersoes() {
+  const list = document.getElementById('historyList');
+  if (!sbClient || !list) return;
 
-    if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
+  const { data, error } = await sbClient
+    .from('escala_historico')
+    .select('*')
+    .order('publicado_em', { ascending: false })
+    .limit(20);
 
-    const { error } = await sbClient
-      .from('trocas_escala')
-      .delete()
-      .gte('criado_em', '1900-01-01T00:00:00');
-
-    if (error) {
-      console.error(error);
-      toast(`Erro ao limpar trocas online.\n${error.message || ''}`.trim());
-      return;
-    }
-
-    trocas = {};
-    render();
-    toast('Trocas online removidas com sucesso.');
+  if (error) {
+    console.error(error);
+    list.innerHTML = `<div class="status-box">Não foi possível carregar o histórico.<br>${error.message || ''}</div>`;
+    return;
   }
 
-  
+  if (!data || !data.length) {
+    list.innerHTML = '<div class="status-box">Nenhuma versão encontrada.</div>';
+    return;
+  }
 
-function normalizarDataBR(d) {
-  const [dia, mes, ano] = String(d).split('/');
-  return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
+  list.innerHTML = data.map(item => {
+    const dt = item.publicado_em ? new Date(item.publicado_em).toLocaleString('pt-BR') : '-';
+    const inicio = formatDateBRFromISO(item.semana_inicio);
+    const fim = formatDateBRFromISO(item.semana_fim);
+    return `
+      <div class="history-item">
+        <div class="history-title">Versão ${item.id} • ${inicio} a ${fim}</div>
+        <div class="muted">Meses: ${item.meses_cobertos || '-'}<br>Publicado por: ${item.publicado_por || '-'}<br>Em: ${dt}</div>
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn ghost" onclick="verVersaoHistorica(${item.id})">Ver JSON</button>
+          <button class="btn warning" onclick="restaurarVersaoHistorica(${item.id})">Restaurar versão</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
-function dataBROrdenavel(d) {
-  const [dia, mes, ano] = normalizarDataBR(d).split('/');
-  return `${ano}-${mes}-${dia}`;
+async function verVersaoHistorica(id) {
+  if (!sbClient) return;
+  const { data, error } = await sbClient.from('escala_historico').select('*').eq('id', id).limit(1).maybeSingle();
+  if (error || !data) {
+    toast(`Não foi possível abrir a versão ${id}.`);
+    return;
+  }
+  document.getElementById('jsonEscalaEditor').value = JSON.stringify(data.escala_json, null, 2);
+  showView('admin');
+  toast(`Versão ${id} carregada no editor.`);
 }
 
-function nomeDiaSemanaBR(dataBR) {
-  const [dia, mes, ano] = normalizarDataBR(dataBR).split('/').map(Number);
-  const dt = new Date(ano, mes - 1, dia);
-  const nomes = [
-    'Domingo',
-    'Segunda-Feira',
-    'Terça-Feira',
-    'Quarta-Feira',
-    'Quinta-Feira',
-    'Sexta-Feira',
-    'Sábado'
-  ];
-  return nomes[dt.getDay()];
+async function restaurarVersaoHistorica(id) {
+  if (!currentSession) {
+    toast('Faça login admin para restaurar versão.');
+    return;
+  }
+  if (!confirm(`Deseja restaurar a versão ${id} como escala atual?`)) return;
+
+  const { data, error } = await sbClient.from('escala_historico').select('*').eq('id', id).limit(1).maybeSingle();
+  if (error || !data?.escala_json) {
+    toast(`Não foi possível localizar a versão ${id}.`);
+    return;
+  }
+
+  const json = normalizarEscalaData(data.escala_json);
+  const payloadTabela = {
+    semana_inicio: json.semana_inicio,
+    semana_fim: json.semana_fim,
+    escala_json: {
+      ...json,
+      atualizado_por: currentSession.user.email,
+      atualizado_em: new Date().toISOString()
+    },
+    atualizado_por: currentSession.user.email,
+    atualizado_em: new Date().toISOString()
+  };
+
+  const { data: atual } = await sbClient.from('escala_atual').select('*').order('atualizado_em', { ascending: false }).limit(1).maybeSingle();
+  let restoreError = null;
+  let registroId = atual?.id || null;
+
+  if (atual?.id) {
+    const { error: e2 } = await sbClient.from('escala_atual').update(payloadTabela).eq('id', atual.id);
+    restoreError = e2 || null;
+  } else {
+    const { data: inserted, error: e3 } = await sbClient.from('escala_atual').insert(payloadTabela).select('id').limit(1).maybeSingle();
+    restoreError = e3 || null;
+    registroId = inserted?.id || null;
+  }
+
+  if (restoreError) {
+    toast(`Falha ao restaurar a versão ${id}.\n${restoreError.message || ''}`.trim());
+    return;
+  }
+
+  await salvarVersaoHistorica(payloadTabela.escala_json, registroId);
+  await carregarEscalaOnline(true);
+  await carregarHistoricoVersoes();
+  toast(`Versão ${id} restaurada com sucesso.`);
+}
+
+async function limparTrocasOnline() {
+  if (!currentSession) {
+    toast('Faça login admin para limpar trocas.');
+    return;
+  }
+  if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
+  const { error } = await sbClient.from('trocas_escala').delete().gte('id', 0);
+  if (error) {
+    console.error(error);
+    toast(`Erro ao limpar trocas online.\n${error.message || ''}`.trim());
+    return;
+  }
+  trocas = {};
+  render();
+  toast('Trocas online removidas com sucesso.');
+}
+
+async function zerarBancoCompleto() {
+  if (!currentSession) {
+    toast('Faça login admin para zerar o banco.');
+    return;
+  }
+  const confirma = prompt('Digite ZERAR para confirmar a limpeza total do banco.');
+  if (confirma !== 'ZERAR') {
+    toast('Operação cancelada.');
+    return;
+  }
+
+  const erros = [];
+  const r1 = await sbClient.from('trocas_escala').delete().gte('id', 0);
+  if (r1.error) erros.push(`Trocas: ${r1.error.message}`);
+
+  const r2 = await sbClient.from('escala_historico').delete().gte('id', 0);
+  if (r2.error) erros.push(`Histórico: ${r2.error.message}`);
+
+  const r3 = await sbClient.from('escala_atual').delete().gte('id', 0);
+  if (r3.error) erros.push(`Atual: ${r3.error.message}`);
+
+  if (erros.length) {
+    toast(`A limpeza apresentou erro(s):\n${erros.join('\n')}`);
+    return;
+  }
+
+  escalaData = getEscalaPadrao();
+  todosDias = [];
+  diasVisiveis = [];
+  monthOptions = [];
+  selectedMonth = '';
+  diaIdx = 0;
+  trocas = {};
+  localStorage.removeItem(STORAGE_KEYS.ultimaEscala);
+  document.getElementById('jsonEscalaEditor').value = JSON.stringify(getEscalaPadrao(), null, 2);
+  atualizarDiasVisiveis();
+  render();
+  await carregarHistoricoVersoes();
+  toast('Banco zerado com sucesso. Agora você pode publicar semana a semana acumulando o histórico.');
+}
+
+function exportarSnapshotAtual() {
+  const texto = JSON.stringify(escalaData, null, 2);
+  navigator.clipboard.writeText(texto)
+    .then(() => toast('Snapshot atual copiado para a área de transferência.'))
+    .catch(() => toast('Não foi possível copiar automaticamente.'));
 }
 
 function normalizarNomeLinha(nome) {
@@ -1401,8 +1178,9 @@ function agruparItensPdfEmLinhas(items) {
   return lines;
 }
 
-function obterMapaDiasExistentes() {
+function obterMapaDiasExistentes(aproveitarEscalaAtual = false) {
   const mapa = new Map();
+  if (!aproveitarEscalaAtual) return mapa;
   const origem = Array.isArray(escalaData?.escala) ? escalaData.escala : [];
   origem.forEach(dia => {
     mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
@@ -1432,34 +1210,14 @@ function atualizarFuncaoDia(diaObj, funcao, turnoDia, turnoNoite) {
   if (idx >= 0) {
     diaObj.f[idx].t = [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'];
   } else {
-    diaObj.f.push({
-      n: funcao.n,
-      i: funcao.i,
-      t: [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO']
-    });
+    diaObj.f.push({ n: funcao.n, i: funcao.i, t: [turnoDia || 'NÃO ESCALADO', turnoNoite || 'NÃO ESCALADO'] });
   }
 }
 
-function toISODate(br) {
-  const partes = String(br).trim().split('/');
-  if (partes.length !== 3) return '';
-  const [dia, mes, ano] = partes.map(p => String(p).trim());
-  if (!dia || !mes || !ano) return '';
-  return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-}
-
 function detectarColunasDatas(lines) {
-  const dateLine = lines.find(line => {
-    const matches = line.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text));
-    return matches.length >= 7;
-  });
-
+  const dateLine = lines.find(line => line.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text)).length >= 7);
   if (!dateLine) return null;
-
-  const dateItems = dateLine.items
-    .filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text))
-    .slice(0, 7);
-
+  const dateItems = dateLine.items.filter(i => /\d{1,2}\/\d{1,2}\/\d{4}/.test(i.text)).slice(0, 7);
   return {
     datasSemana: dateItems.map(i => normalizarDataBR(i.text)),
     dateXs: dateItems.map(i => i.x)
@@ -1477,55 +1235,36 @@ function detectarFuncoesNoPdf(lines) {
     'SOBREAVISO': 'phone-volume',
     'EXP ADM': 'briefcase'
   };
-
-  const funcoes = Object.keys(mapaIcones)
-    .map(nome => {
-      const line = lines.find(l =>
-        l.items.some(i => i.x < 115 && String(i.text).toUpperCase().trim() === nome)
-      );
-      return line ? { n: nome, i: mapaIcones[nome], y: line.y } : null;
-    })
-    .filter(Boolean)
-    .sort((a, b) => b.y - a.y);
-
-  return funcoes;
+  return Object.keys(mapaIcones).map(nome => {
+    const line = lines.find(l => l.items.some(i => i.x < 115 && String(i.text).toUpperCase().trim() === nome));
+    return line ? { n: nome, i: mapaIcones[nome], y: line.y } : null;
+  }).filter(Boolean).sort((a, b) => b.y - a.y);
 }
 
 function detectarMarcadoresTurno(lines) {
   const marcadores = [];
-
   lines.forEach(line => {
     line.items.forEach(item => {
       const txt = String(item.text).trim().toUpperCase();
       if (item.x < 115 || item.x > 150) return;
-
       if (txt === '23' || txt === '41' || txt === '6' || txt === 'CM') {
-        marcadores.push({
-          tipo: txt,
-          x: item.x,
-          y: item.y
-        });
+        marcadores.push({ tipo: txt, x: item.x, y: item.y });
       }
     });
   });
-
   return marcadores;
 }
 
 function valorMaisProximoDaLinha(lines, yRef, dateXs, yTol = 3.2) {
   const linha = lines.find(l => Math.abs(l.y - yRef) <= yTol && l.items.some(i => i.x > 150));
   if (!linha) return Array(dateXs.length).fill('');
-
   const cols = Array(dateXs.length).fill('');
-
   linha.items.forEach(item => {
     if (item.x <= 150) return;
     const txt = String(item.text || '').trim();
     if (!txt) return;
-
     let bestIdx = 0;
     let bestDiff = Infinity;
-
     dateXs.forEach((x, idx) => {
       const diff = Math.abs(item.x - x);
       if (diff < bestDiff) {
@@ -1533,26 +1272,28 @@ function valorMaisProximoDaLinha(lines, yRef, dateXs, yTol = 3.2) {
         bestIdx = idx;
       }
     });
-
     if (bestDiff <= 70) {
       cols[bestIdx] += (cols[bestIdx] ? ' ' : '') + txt;
     }
   });
-
   return cols.map(c => normalizarNomeLinha(c));
+}
+
+function extrairTextoEstruturadoPDF(items) {
+  const lines = agruparItensPdfEmLinhas(items);
+  return lines.map(line => line.items.map(i => i.text).join(' ')).join('\n');
 }
 
 function extrairEscalaSemanalDoPdfItems(items) {
   const lines = agruparItensPdfEmLinhas(items);
   const infoDatas = detectarColunasDatas(lines);
-
   if (!infoDatas) return null;
 
   const { datasSemana, dateXs } = infoDatas;
   const funcoes = detectarFuncoesNoPdf(lines);
   const marcadores = detectarMarcadoresTurno(lines);
+  const mapaDias = obterMapaDiasExistentes(false);
 
-  const mapaDias = obterMapaDiasExistentes();
   datasSemana.forEach(dataBR => {
     const chave = normalizarDataBR(dataBR);
     if (!mapaDias.has(chave)) mapaDias.set(chave, criarDiaBase(chave));
@@ -1568,31 +1309,25 @@ function extrairEscalaSemanalDoPdfItems(items) {
       .filter(m => m.y < yTop - 0.5 && m.y > yBottom + 0.5)
       .sort((a, b) => b.y - a.y);
 
-    let y23 = null;
-    let y41 = null;
-
     if (funcao.n === 'EXP ADM') {
       const y6 = marcadoresFaixa.filter(m => m.tipo === '6').map(m => m.y);
       const yCM = marcadoresFaixa.filter(m => m.tipo === 'CM').map(m => m.y);
-
       const linha6 = y6.length ? valorMaisProximoDaLinha(lines, y6[0], dateXs, 3.5) : Array(dateXs.length).fill('');
       const linhaCM = yCM.length ? valorMaisProximoDaLinha(lines, yCM[0], dateXs, 3.5) : Array(dateXs.length).fill('');
-
       datasSemana.forEach((dataBR, i) => {
         const diaObj = mapaDias.get(normalizarDataBR(dataBR));
         const v1 = linha6[i] || linhaCM[i] || 'NÃO ESCALADO';
         const v2 = linhaCM[i] || linha6[i] || 'NÃO ESCALADO';
         atualizarFuncaoDia(diaObj, funcao, v1, v2);
       });
-
       return;
     }
 
     const lista23 = marcadoresFaixa.filter(m => m.tipo === '23').map(m => m.y).sort((a, b) => b - a);
     const lista41 = marcadoresFaixa.filter(m => m.tipo === '41').map(m => m.y).sort((a, b) => b - a);
 
-    if (lista23.length) y23 = lista23[0];
-    if (lista41.length) y41 = lista41[0];
+    const y23 = lista23.length ? lista23[0] : null;
+    const y41 = lista41.length ? lista41[0] : null;
 
     if (!y23 && !y41) {
       const linhasTexto = lines
@@ -1604,14 +1339,8 @@ function extrairEscalaSemanalDoPdfItems(items) {
 
       datasSemana.forEach((dataBR, i) => {
         const diaObj = mapaDias.get(normalizarDataBR(dataBR));
-        atualizarFuncaoDia(
-          diaObj,
-          funcao,
-          primeira[i] || 'NÃO ESCALADO',
-          segunda[i] || 'NÃO ESCALADO'
-        );
+        atualizarFuncaoDia(diaObj, funcao, primeira[i] || 'NÃO ESCALADO', segunda[i] || 'NÃO ESCALADO');
       });
-
       return;
     }
 
@@ -1620,18 +1349,11 @@ function extrairEscalaSemanalDoPdfItems(items) {
 
     datasSemana.forEach((dataBR, i) => {
       const diaObj = mapaDias.get(normalizarDataBR(dataBR));
-      atualizarFuncaoDia(
-        diaObj,
-        funcao,
-        linha23[i] || 'NÃO ESCALADO',
-        linha41[i] || 'NÃO ESCALADO'
-      );
+      atualizarFuncaoDia(diaObj, funcao, linha23[i] || 'NÃO ESCALADO', linha41[i] || 'NÃO ESCALADO');
     });
   });
 
-  const escalaFinal = [...mapaDias.values()]
-    .sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
-
+  const escalaFinal = [...mapaDias.values()].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
   return {
     semana_inicio: toISODate(datasSemana[0]),
     semana_fim: toISODate(datasSemana[datasSemana.length - 1]),
@@ -1642,10 +1364,64 @@ function extrairEscalaSemanalDoPdfItems(items) {
   };
 }
 
+function extrairSequenciaSemanaDoTexto(texto) {
+  const datasEncontradas = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)].map(m => normalizarDataBR(m[1]));
+  const datasUnicas = [];
+  for (const d of datasEncontradas) {
+    if (!datasUnicas.includes(d)) datasUnicas.push(d);
+  }
+  let sequencia = [];
+  for (let i = 0; i < datasUnicas.length; i++) {
+    const atual = datasUnicas[i];
+    const [diaA, mesA, anoA] = atual.split('/').map(Number);
+    const dataA = new Date(anoA, mesA - 1, diaA);
+    if (sequencia.length === 0) {
+      sequencia.push(atual);
+      continue;
+    }
+    const anterior = sequencia[sequencia.length - 1];
+    const [diaB, mesB, anoB] = anterior.split('/').map(Number);
+    const dataB = new Date(anoB, mesB - 1, diaB);
+    const diffDias = Math.round((dataA - dataB) / 86400000);
+    if (diffDias === 1) {
+      sequencia.push(atual);
+      if (sequencia.length === 7) break;
+    } else if (diffDias !== 0) {
+      sequencia = [atual];
+    }
+  }
+  return sequencia.length === 7 ? sequencia : [];
+}
+
+function parseEscalaText(texto) {
+  const semanaPdf = extrairSequenciaSemanaDoTexto(texto);
+  const base = {
+    semana_inicio: '',
+    semana_fim: '',
+    atualizado_por: 'Sistema local',
+    atualizado_em: null,
+    afastamentos_html: '',
+    escala: [],
+    texto_extraido_pdf: texto.slice(0, 12000)
+  };
+
+  if (!semanaPdf.length) return base;
+
+  const mapaExistente = new Map();
+  semanaPdf.forEach(dataBR => {
+    const dataNorm = normalizarDataBR(dataBR);
+    mapaExistente.set(dataNorm, criarDiaBase(dataNorm));
+  });
+
+  base.semana_inicio = toISODate(normalizarDataBR(semanaPdf[0]));
+  base.semana_fim = toISODate(normalizarDataBR(semanaPdf[semanaPdf.length - 1]));
+  base.escala = [...mapaExistente.values()].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)));
+  return base;
+}
+
 async function lerPdfEscala() {
   const input = document.getElementById('pdfFile');
   const file = input.files?.[0];
-
   if (!file) {
     toast('Selecione um arquivo.');
     return;
@@ -1680,56 +1456,11 @@ async function lerPdfEscala() {
     }
 
     document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
-    toast('Arquivo lido. Revise o JSON.');
+    toast('Arquivo lido. Revise o JSON e publique para acumular no histórico.');
   } catch (e) {
     console.error(e);
     toast(`Erro ao ler arquivo.\n${e.message || ''}`.trim());
   }
-}
-
-function parseEscalaText(texto) {
-  const semanaPdf = extrairSequenciaSemanaDoTexto(texto);
-
-  const base = {
-    semana_inicio: '',
-    semana_fim: '',
-    atualizado_por: 'Sistema local',
-    atualizado_em: null,
-    afastamentos_html: '',
-    escala: [],
-    texto_extraido_pdf: texto.slice(0, 12000)
-  };
-
-  if (!semanaPdf.length) {
-    return base;
-  }
-
-  const mapaExistente = new Map();
-
-  semanaPdf.forEach(dataBR => {
-    const dataNorm = normalizarDataBR(dataBR);
-
-    mapaExistente.set(dataNorm, {
-      d: dataNorm,
-      n: nomeDiaSemanaBR(dataNorm),
-      f: [
-        { n: 'CG', i: 'user-shield', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'COV', i: 'truck', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'CLE', i: 'helmet-safety', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'CLD', i: 'fire-extinguisher', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'COBOM', i: 'headset', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-        { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-      ]
-    });
-  });
-
-  base.semana_inicio = toISODate(normalizarDataBR(semanaPdf[0]));
-  base.semana_fim = toISODate(normalizarDataBR(semanaPdf[semanaPdf.length - 1]));
-  base.escala = [...mapaExistente.values()];
-
-  return base;
 }
 
 function handleInstalled() {
@@ -1750,13 +1481,11 @@ function setupPWA() {
       toast('A opção de instalação ainda não está disponível neste navegador.');
       return;
     }
-
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if (choice.outcome === 'accepted') {
       toast('Instalação iniciada.');
     }
-
     deferredPrompt = null;
     document.getElementById('installBanner').classList.remove('show');
   });
@@ -1767,10 +1496,7 @@ function setupPWA() {
     window.addEventListener('load', async () => {
       try {
         const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
-        if (registration && registration.update) {
-          registration.update().catch(() => {});
-        }
-        console.log('Service Worker registrado com sucesso.');
+        if (registration && registration.update) registration.update().catch(() => {});
       } catch (erro) {
         console.error('Erro ao registrar SW:', erro);
       }
@@ -1784,39 +1510,26 @@ async function boot() {
     setupPWA();
 
     const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
-
+    selectedMonth = localStorage.getItem(STORAGE_KEYS.selectedMonth) || '';
     escalaData = getEscalaPadrao();
     diaIdx = 0;
 
     const editor = document.getElementById('jsonEscalaEditor');
-    if (editor) {
-      editor.value = rascunho || JSON.stringify(escalaData, null, 2);
-    }
+    if (editor) editor.value = rascunho || JSON.stringify(escalaData, null, 2);
 
     if (sbClient) {
-      try {
-        await atualizarPainelAdmin();
-      } catch (e) {
-        console.error('Erro ao atualizar painel admin:', e);
-      }
-
-      try {
-        await carregarEscalaOnline();
-      } catch (e) {
-        console.error('Erro ao carregar escala online:', e);
-        toast('Não foi possível carregar a escala online.');
-        render();
-      }
+      try { await atualizarPainelAdmin(); } catch (e) { console.error(e); }
+      try { await carregarEscalaOnline(); } catch (e) { console.error(e); toast('Não foi possível carregar a escala online.'); atualizarDiasVisiveis(); render(); }
     } else {
-      console.warn('Supabase não inicializado. App seguirá em modo local.');
+      atualizarDiasVisiveis();
       render();
     }
   } catch (e) {
-    console.error('Erro no boot do app:', e);
+    console.error(e);
     toast('Erro ao iniciar app.');
+    atualizarDiasVisiveis();
     render();
   }
-
   hideSplash();
 }
 
