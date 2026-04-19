@@ -426,20 +426,41 @@ function monthLabelFromKey(key) {
 }
 
 function atualizarDiasVisiveis() {
-  todosDias = Array.isArray(escalaData?.escala) ? [...escalaData.escala].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d))) : [];
+  todosDias = Array.isArray(escalaData?.escala)
+    ? [...escalaData.escala].sort((a, b) => dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d)))
+    : [];
+
   monthOptions = [...new Set(todosDias.map(d => monthKeyFromBR(d.d)))].filter(Boolean);
 
-  if (!selectedMonth || !monthOptions.includes(selectedMonth)) {
+  // 👉 DATA ATUAL
+  const hoje = new Date();
+  const hojeBR = `${String(hoje.getDate()).padStart(2,'0')}/${String(hoje.getMonth()+1).padStart(2,'0')}/${hoje.getFullYear()}`;
+  const mesHoje = monthKeyFromBR(hojeBR);
+
+  // 👉 DEFINE MÊS
+  if (monthOptions.includes(mesHoje)) {
+    selectedMonth = mesHoje;
+  } else if (!selectedMonth || !monthOptions.includes(selectedMonth)) {
     selectedMonth = localStorage.getItem(STORAGE_KEYS.selectedMonth) || monthOptions[monthOptions.length - 1] || '';
   }
+
   if (!monthOptions.includes(selectedMonth)) {
     selectedMonth = monthOptions[0] || '';
   }
 
-  diasVisiveis = selectedMonth ? todosDias.filter(d => monthKeyFromBR(d.d) === selectedMonth) : todosDias.slice();
+  // 👉 FILTRA DIAS DO MÊS
+  diasVisiveis = selectedMonth
+    ? todosDias.filter(d => monthKeyFromBR(d.d) === selectedMonth)
+    : todosDias.slice();
 
-  if (diaIdx >= diasVisiveis.length) diaIdx = Math.max(diasVisiveis.length - 1, 0);
-  if (diaIdx < 0) diaIdx = 0;
+  // 👉 FORÇA DIA ATUAL
+  const idxHoje = diasVisiveis.findIndex(d => d.d === hojeBR);
+
+  if (idxHoje >= 0) {
+    diaIdx = idxHoje;
+  } else {
+    diaIdx = 0;
+  }
 
   renderMonthSelector();
 }
@@ -465,7 +486,7 @@ function renderMonthSelector() {
 function alterarMesSelecionado() {
   selectedMonth = document.getElementById('monthSelector').value;
   localStorage.setItem(STORAGE_KEYS.selectedMonth, selectedMonth);
-  diaIdx = 0;
+
   atualizarDiasVisiveis();
   render();
 }
