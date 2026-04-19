@@ -600,7 +600,7 @@
         <h3>📄 Importar PDF e publicar escala</h3>
         <div class="form-group">
           <label>Selecionar PDF da escala</label>
-          <input type="file" id="pdfFile" accept="application/pdf" />
+          <input type="file" id="pdfFile" accept=".pdf,.txt,text/plain" />
         </div>
         <div class="grid-2">
           <button class="btn warning" onclick="lerPdfEscala()">Ler PDF</button>
@@ -1495,38 +1495,49 @@
   }
 
   async function lerPdfEscala() {
-    const input = document.getElementById('pdfFile');
-    const file = input.files?.[0];
+  const input = document.getElementById('pdfFile');
+  const file = input.files?.[0];
 
-    if (!file) {
-      toast('Selecione um PDF primeiro.');
-      return;
+  if (!file) {
+    toast('Selecione um arquivo.');
+    return;
+  }
+
+  try {
+    let texto = '';
+
+    // 📄 SE FOR TXT
+    if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      texto = await file.text();
     }
 
-    try {
-      if (!window.pdfjsLib) {
-        toast('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
-        return;
-      }
-
+    // 📄 SE FOR PDF
+    else if (file.type === 'application/pdf') {
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-      let texto = '';
       for (let p = 1; p <= pdf.numPages; p++) {
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
         texto += content.items.map(i => i.str).join(' ') + '\n';
       }
-
-      const json = parseEscalaText(texto);
-      document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
-      toast('PDF lido. Revise o JSON antes de publicar.');
-    } catch (e) {
-      console.error(e);
-      toast('Não consegui interpretar o PDF automaticamente. Use o modelo atual como base no editor JSON.');
     }
+
+    // ❌ tipo inválido
+    else {
+      toast('Formato não suportado.');
+      return;
+    }
+
+    const json = parseEscalaText(texto);
+    document.getElementById('jsonEscalaEditor').value = JSON.stringify(json, null, 2);
+    toast('Arquivo lido. Revise o JSON.');
+
+  } catch (e) {
+    console.error(e);
+    toast('Erro ao ler arquivo.');
   }
+}
 
   function parseEscalaText(texto) {
     const base = JSON.parse(JSON.stringify(getEscalaPadrao()));
