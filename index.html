@@ -1540,57 +1540,64 @@
 }
 
   function parseEscalaText(texto) {
+  const padrao = JSON.parse(JSON.stringify(getEscalaPadrao()));
   const base = JSON.parse(JSON.stringify(getEscalaPadrao()));
 
   const datasEncontradas = [...texto.matchAll(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/g)].map(m => m[1]);
 
-  if (datasEncontradas.length >= 7) {
-    const datasUnicas = [];
-    for (const d of datasEncontradas) {
-      if (!datasUnicas.includes(d)) {
-        datasUnicas.push(d);
-      }
+  const normalizarDataBR = (d) => {
+    const [dia, mes, ano] = d.split('/');
+    return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
+  };
+
+  const datasUnicas = [];
+  for (const d of datasEncontradas) {
+    const n = normalizarDataBR(d);
+    if (!datasUnicas.includes(n)) datasUnicas.push(n);
+  }
+
+  let sequenciaSemana = [];
+
+  for (let i = 0; i < datasUnicas.length; i++) {
+    const atual = datasUnicas[i];
+    const [diaA, mesA, anoA] = atual.split('/').map(Number);
+    const dataA = new Date(anoA, mesA - 1, diaA);
+
+    if (sequenciaSemana.length === 0) {
+      sequenciaSemana.push(atual);
+      continue;
     }
 
-    let sequenciaSemana = [];
+    const anterior = sequenciaSemana[sequenciaSemana.length - 1];
+    const [diaB, mesB, anoB] = anterior.split('/').map(Number);
+    const dataB = new Date(anoB, mesB - 1, diaB);
 
-    for (let i = 0; i < datasUnicas.length; i++) {
-      const atual = datasUnicas[i];
-      const [diaA, mesA, anoA] = atual.split('/').map(Number);
-      const dataA = new Date(anoA, mesA - 1, diaA);
+    const diffDias = Math.round((dataA - dataB) / 86400000);
 
-      if (sequenciaSemana.length === 0) {
-        sequenciaSemana.push(atual);
-        continue;
-      }
-
-      const anterior = sequenciaSemana[sequenciaSemana.length - 1];
-      const [diaB, mesB, anoB] = anterior.split('/').map(Number);
-      const dataB = new Date(anoB, mesB - 1, diaB);
-
-      const diffDias = Math.round((dataA - dataB) / 86400000);
-
-      if (diffDias === 1) {
-        sequenciaSemana.push(atual);
-        if (sequenciaSemana.length === 7) break;
-      } else if (diffDias !== 0) {
-        sequenciaSemana = [atual];
-      }
+    if (diffDias === 1) {
+      sequenciaSemana.push(atual);
+      if (sequenciaSemana.length === 7) break;
+    } else if (diffDias !== 0) {
+      sequenciaSemana = [atual];
     }
+  }
 
-    if (sequenciaSemana.length >= 7) {
-      base.semana_inicio = toISODate(sequenciaSemana[0]);
-      base.semana_fim = toISODate(sequenciaSemana[6]);
+  if (sequenciaSemana.length >= 7) {
+    base.semana_inicio = toISODate(sequenciaSemana[0]);
+    base.semana_fim = toISODate(sequenciaSemana[6]);
 
-      const inicio = new Date(base.semana_inicio + 'T00:00:00');
-      const fim = new Date(base.semana_fim + 'T23:59:59');
+    const datasSemana = new Set(sequenciaSemana.map(normalizarDataBR));
 
-      base.escala = base.escala.filter(item => {
-        const iso = toISODate(item.d);
-        const dt = new Date(iso + 'T00:00:00');
-        return dt >= inicio && dt <= fim;
-      });
-    }
+    const diasDoPadrao = Array.isArray(padrao.escala) ? padrao.escala : [];
+    base.escala = diasDoPadrao.filter(item => datasSemana.has(normalizarDataBR(item.d)));
+  } else {
+    base.semana_inicio = padrao.semana_inicio;
+    base.semana_fim = padrao.semana_fim;
+    base.escala = Array.isArray(padrao.escala) ? padrao.escala : [];
+  }
+
+  if (!Array.isArray(base.escala) || base.escala.length === 0) {
+    base.escala = Array.isArray(padrao.escala) ? padrao.escala : [];
   }
 
   base.texto_extraido_pdf = texto.slice(0, 12000);
