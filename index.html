@@ -1083,7 +1083,7 @@ async function limparTrocasOnline() {
     return;
   }
   if (!confirm('Deseja realmente limpar todas as trocas online?')) return;
-  const { error } = await sbClient.from('trocas_escala').delete().gte('id', 0);
+  const { error } = await sbClient.from('trocas_escala').delete().not('id', 'is', null);
   if (error) {
     console.error(error);
     toast(`Erro ao limpar trocas online.\n${error.message || ''}`.trim());
@@ -1106,13 +1106,13 @@ async function zerarBancoCompleto() {
   }
 
   const erros = [];
-  const r1 = await sbClient.from('trocas_escala').delete().gte('id', 0);
+  const r1 = await sbClient.from('trocas_escala').delete().not('id', 'is', null);
   if (r1.error) erros.push(`Trocas: ${r1.error.message}`);
 
-  const r2 = await sbClient.from('escala_historico').delete().gte('id', 0);
+  const r2 = await sbClient.from('escala_historico').delete().not('id', 'is', null);
   if (r2.error) erros.push(`Histórico: ${r2.error.message}`);
 
-  const r3 = await sbClient.from('escala_atual').delete().gte('id', 0);
+  const r3 = await sbClient.from('escala_atual').delete().not('id', 'is', null);
   if (r3.error) erros.push(`Atual: ${r3.error.message}`);
 
   if (erros.length) {
