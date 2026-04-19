@@ -275,7 +275,7 @@ const ADMIN_EMAIL_PADRAO = 'admin@escala.com';
 
 const STORAGE_KEYS = {
   rascunho: 'escala_cbsls_rascunho_json',
-  ultimaEscala: 'escala_cbsls_cache_online_v5',
+  ultimaEscala: 'escala_cbsls_cache_online_v6',
   selectedMonth: 'escala_cbsls_mes_selecionado'
 };
 
@@ -1007,8 +1007,8 @@ async function carregarHistoricoVersoes() {
         <div class="history-title">Versão ${item.id} • ${inicio} a ${fim}</div>
         <div class="muted">Meses: ${item.meses_cobertos || '-'}<br>Publicado por: ${item.publicado_por || '-'}<br>Em: ${dt}</div>
         <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn ghost" onclick="verVersaoHistorica(${item.id})">Ver JSON</button>
-          <button class="btn warning" onclick="restaurarVersaoHistorica(${item.id})">Restaurar versão</button>
+          <button class="btn ghost" onclick="verVersaoHistorica('${item.id}')">Ver JSON</button>
+          <button class="btn warning" onclick="restaurarVersaoHistorica('${item.id}')">Restaurar versão</button>
         </div>
       </div>
     `;
@@ -1060,6 +1060,7 @@ async function restaurarVersaoHistorica(id) {
   if (atual?.id) {
     const { error: e2 } = await sbClient.from('escala_atual').update(payloadTabela).eq('id', atual.id);
     restoreError = e2 || null;
+    registroId = atual.id;
   } else {
     const { data: inserted, error: e3 } = await sbClient.from('escala_atual').insert(payloadTabela).select('id').limit(1).maybeSingle();
     restoreError = e3 || null;
@@ -1128,6 +1129,7 @@ async function zerarBancoCompleto() {
   diaIdx = 0;
   trocas = {};
   localStorage.removeItem(STORAGE_KEYS.ultimaEscala);
+  localStorage.removeItem(STORAGE_KEYS.selectedMonth);
   document.getElementById('jsonEscalaEditor').value = JSON.stringify(getEscalaPadrao(), null, 2);
   atualizarDiasVisiveis();
   render();
@@ -1357,9 +1359,9 @@ function extrairEscalaSemanalDoPdfItems(items) {
   return {
     semana_inicio: toISODate(datasSemana[0]),
     semana_fim: toISODate(datasSemana[datasSemana.length - 1]),
-    atualizado_por: (escalaData && escalaData.atualizado_por) || 'Sistema local',
+    atualizado_por: 'Sistema local',
     atualizado_em: null,
-    afastamentos_html: (escalaData && escalaData.afastamentos_html) || getEscalaPadrao().afastamentos_html,
+    afastamentos_html: '',
     escala: escalaFinal
   };
 }
