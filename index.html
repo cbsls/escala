@@ -682,218 +682,15 @@
   const FUNCOES_SEM_TROCA = ['CS', 'SOBREAVISO', 'EXP ADM'];
 
   function getEscalaPadrao() {
-    return {
-      semana_inicio: '2026-04-13',
-      semana_fim: '2026-04-26',
-      atualizado_por: 'Sistema local',
-      atualizado_em: null,
-      afastamentos_html: `• LAA: <strong>2º SGT BM ANDRE</strong> - ID Func. 2519976 - desde 18/01/2026<br>
-        • Férias: <strong>SD BM TOMASCHEWSKI</strong> - ID Func. 3218627 - 03/04/2026 a 17/04/2026<br>
-        • Férias: <strong>2º SGT BM LISCANO</strong> - ID Func. 3698530 - 16/04/2026 a 30/04/2026<br>
-        • Férias: <strong>SD BM SOARES</strong> - ID Func. 4625595 - 16/04/2026 a 30/04/2026<br>
-        • Férias: <strong>1º SGT DIEFERSON</strong> - ID Func. 2972719 - 06/04/2026 a 20/04/2026<br>
-        • Sobreaviso / expediente administrativo: <strong>1º TEN MARCELO</strong> de segunda a sexta, com 6h de expediente administrativo.`,
-      escala: [
-        {
-          d: '13/04/2026',
-          n: 'Segunda-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM SOARES', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '14/04/2026',
-          n: 'Terça-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
-            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '15/04/2026',
-          n: 'Quarta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
-            { n: 'COV', i: 'truck', t: ['1º SGT BM BATISTA', '1º SGT BM BATISTA'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '16/04/2026',
-          n: 'Quinta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
-            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BORGES', 'SD BM BORGES'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '17/04/2026',
-          n: 'Sexta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
-            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD TEMP LARSSON', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['1º SGT BM BATISTA', 'SD BM MAX'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '18/04/2026',
-          n: 'Sábado',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
-            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM ISQUIERDO', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '19/04/2026',
-          n: 'Domingo',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM BATISTA', 'SD BM CAMACHO'] },
-            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM CAMACHO', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM BORGES', 'SD BM BORGES'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '20/04/2026',
-          n: 'Segunda-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
-            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM ISQUIERDO', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MAX', 'SD BM MAX'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '21/04/2026',
-          n: 'Terça-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
-            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'NÃO ESCALADO'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '22/04/2026',
-          n: 'Quarta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM DIEFERSON', '1º SGT BM DIEFERSON'] },
-            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '23/04/2026',
-          n: 'Quinta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['2º SGT BM ANDERSON', '2º SGT BM ANDERSON'] },
-            { n: 'COV', i: 'truck', t: ['SD TEMP LARSSON', 'SD TEMP LARSSON'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM BORGES', 'SD BM BORGES'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '24/04/2026',
-          n: 'Sexta-Feira',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM DIEFERSON', '1º SGT BM DIEFERSON'] },
-            { n: 'COV', i: 'truck', t: ['SD BM PEGLOW', 'SD BM PEGLOW'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM TOMASCHEWSKI', 'SD BM TOMASCHEWSKI'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['1º TEN MARCELO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['6 hs', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '25/04/2026',
-          n: 'Sábado',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM VICENTE', '1º SGT BM VICENTE'] },
-            { n: 'COV', i: 'truck', t: ['2º SGT BM VINICIUS', '2º SGT BM VINICIUS'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM MOTTA', 'SD BM MOTTA'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM MAX', 'SD BM MAX'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM BATISTA', 'SD BM BATISTA'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-          ]
-        },
-        {
-          d: '26/04/2026',
-          n: 'Domingo',
-          f: [
-            { n: 'CG', i: 'user-shield', t: ['1º SGT BM DIEFERSON', '1º SGT BM DIEFERSON'] },
-            { n: 'COV', i: 'truck', t: ['1º SGT BM BATISTA', '1º SGT BM BATISTA'] },
-            { n: 'CLE', i: 'helmet-safety', t: ['SD BM WILLIAM', 'SD BM WILLIAM'] },
-            { n: 'CLD', i: 'fire-extinguisher', t: ['SD BM ISQUIERDO', 'SD BM ISQUIERDO'] },
-            { n: 'COBOM', i: 'headset', t: ['SD BM CAMACHO', 'SD BM CAMACHO'] },
-            { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
-            { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
-          ]
-        }
-      ]
-    };
-  }
-
+  return {
+    semana_inicio: '',
+    semana_fim: '',
+    atualizado_por: 'Sistema local',
+    atualizado_em: null,
+    afastamentos_html: '',
+    escala: []
+  };
+}
   let escalaData = getEscalaPadrao();
 
   const milLista = [
@@ -1855,23 +1652,20 @@ function handleInstalled() {
     initSupabase();
     setupPWA();
 
-    localStorage.removeItem(STORAGE_KEYS.ultimaEscala);
-    localStorage.removeItem(STORAGE_KEYS.rascunho);
+    // 🔥 LIMPA TUDO DO APP (cache + rascunho)
+    localStorage.clear();
 
-    const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
-    document.getElementById('jsonEscalaEditor').value = rascunho || JSON.stringify(escalaData, null, 2);
+    // 🔥 força estado inicial vazio
+    escalaData = getEscalaPadrao();
+    diaIdx = 0;
 
-    const cache = localStorage.getItem(STORAGE_KEYS.ultimaEscala);
-    if (cache) {
-      try {
-        escalaData = normalizarEscalaData(JSON.parse(cache));
-      } catch (e) {
-        console.error('Erro ao ler cache local da escala:', e);
-        escalaData = getEscalaPadrao();
-      }
+    // 🔥 limpa editor JSON
+    const editor = document.getElementById('jsonEscalaEditor');
+    if (editor) {
+      editor.value = JSON.stringify(escalaData, null, 2);
     }
 
-    diaIdx = obterIndiceDiaAtual();
+    // 🔥 render inicial sem dados
     render();
 
     if (sbClient) {
@@ -1881,13 +1675,16 @@ function handleInstalled() {
         console.error('Erro ao atualizar painel admin:', e);
       }
 
+      // 🚫 NÃO CARREGA ESCALA DO BANCO DURANTE TESTE
       // await carregarEscalaOnline();
+
     } else {
       console.warn('Supabase não inicializado. App seguirá em modo local.');
     }
+
   } catch (e) {
     console.error('Erro no boot do app:', e);
-    toast('O app iniciou com erro parcial. Verifique a conexão e recarregue a página.');
+    toast('Erro ao iniciar app.');
   }
 
   hideSplash();
