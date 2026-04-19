@@ -799,7 +799,23 @@
   }
 
   function render() {
-    if (!escalaData.escala || !escalaData.escala.length) return;
+    atualizarBotaoExpandir();
+    atualizarCabecalhoSemana();
+
+    const list = document.getElementById('funcList');
+
+    if (!escalaData.escala || !escalaData.escala.length) {
+      document.getElementById('diaNome').textContent = 'Sem escala carregada';
+      document.getElementById('diaData').textContent = '-';
+      list.innerHTML = `
+        <div class="func-card">
+          <div class="func-header">
+            <div class="func-title"><i class="fas fa-calendar-times"></i> Nenhuma escala disponível</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
     const dia = escalaData.escala[diaIdx];
     const search = document.getElementById('searchInput').value.toUpperCase().trim();
@@ -807,10 +823,6 @@
     document.getElementById('diaNome').textContent = dia.n;
     document.getElementById('diaData').textContent = dia.d;
 
-    atualizarBotaoExpandir();
-    atualizarCabecalhoSemana();
-
-    const list = document.getElementById('funcList');
     list.innerHTML = '';
 
     dia.f.forEach((func) => {
@@ -1184,88 +1196,118 @@
   }
 
   async function publicarEscalaOnline() {
-    if (!currentSession) {
-      toast('Faça login como admin antes de publicar a escala.');
-      return;
-    }
-
-    let obj;
-    try {
-      obj = JSON.parse(document.getElementById('jsonEscalaEditor').value);
-    } catch (e) {
-      toast('O JSON da escala está inválido.');
-      return;
-    }
-
-    if (!escalaEhValida(obj)) {
-      toast('JSON incompatível com o modelo da escala. Use o modelo atual e altere somente os nomes/dias.');
-      return;
-    }
-
-    obj = normalizarEscalaData(obj);
-
-    const payload = {
-      semana_inicio: obj.semana_inicio || escalaData.semana_inicio,
-      semana_fim: obj.semana_fim || escalaData.semana_fim,
-      escala_json: obj,
-      atualizado_por: currentSession.user.email,
-      atualizado_em: new Date().toISOString()
-    };
-
-    let writeError = null;
-
-    try {
-      const latest = await sbClient
-        .from('escala_atual')
-        .select('id')
-        .order('atualizado_em', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (!latest.error && latest.data && latest.data.id) {
-        const updateResp = await sbClient
-          .from('escala_atual')
-          .update(payload)
-          .eq('id', latest.data.id);
-
-        writeError = updateResp.error || null;
-
-        if (writeError) {
-          console.warn('Falha no update, tentando insert...', writeError);
-          const insertResp = await sbClient.from('escala_atual').insert(payload);
-          writeError = insertResp.error || null;
-        }
-      } else {
-        const insertResp = await sbClient.from('escala_atual').insert(payload);
-        writeError = insertResp.error || null;
-      }
-    } catch (err) {
-      console.error('Erro inesperado ao publicar:', err);
-      writeError = err;
-    }
-
-    if (writeError) {
-      console.error('Erro ao publicar escala online:', writeError);
-      toast(
-        `Erro ao publicar escala online.\n` +
-        `${writeError.message || ''}\n` +
-        `${writeError.details || ''}\n` +
-        `${writeError.hint || ''}`
-      .trim());
-      return;
-    }
-
-    escalaData = {
-      ...obj,
-      atualizado_por: currentSession.user.email,
-      atualizado_em: payload.atualizado_em
-    };
-
-    localStorage.setItem(STORAGE_KEYS.ultimaEscala, JSON.stringify(escalaData));
-    render();
-    toast('Escala publicada online com sucesso.');
-    await carregarEscalaOnline(true);
+  if (!currentSession) {
+    toast('Faça login como admin antes de publicar a escala.');
+    return;
   }
+
+  let semanaImportada;
+  try {
+    semanaImportada = JSON.parse(document.getElementById('jsonEscalaEditor').value);
+  } catch (e) {
+    toast('O JSON da escala está inválido.');
+    return;
+  }
+
+  if (!escalaEhValida(semanaImportada)) {
+    toast('JSON incompatível com o modelo da escala.');
+    return;
+  }
+
+  semanaImportada = normalizarEscalaData(semanaImportada);
+
+  // 1) lê a escala atual do Supabase
+  const { data: atual, error: erroAtual } = await sbClient
+    .from('escala_atual')
+    .select('*')
+    .order('atualizado_em', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (erroAtual) {
+    console.error(erroAtual);
+    toast(`Erro ao ler escala atual.\n${erroAtual.message || ''}`.trim());
+    return;
+  }
+
+  const baseOnline = atual?.escala_json && Array.isArray(atual.escala_json.escala)
+    ? normalizarEscalaData({
+        ...atual.escala_json,
+        semana_inicio: atual.semana_inicio || atual.escala_json.semana_inicio,
+        semana_fim: atual.semana_fim || atual.escala_json.semana_fim,
+        atualizado_em: atual.atualizado_em,
+        atualizado_por: atual.atualizado_por
+      })
+    : getEscalaPadrao();
+
+  // 2) mescla por data (a semana importada substitui os mesmos dias)
+  const mapa = new Map();
+
+  (baseOnline.escala || []).forEach(dia => {
+    mapa.set(dia.d, JSON.parse(JSON.stringify(dia)));
+  });
+
+  (semanaImportada.escala || []).forEach(dia => {
+    mapa.set(dia.d, JSON.parse(JSON.stringify(dia)));
+  });
+
+  const escalaMesclada = [...mapa.values()].sort((a, b) => {
+    const aIso = toISODate(a.d);
+    const bIso = toISODate(b.d);
+    return aIso.localeCompare(bIso);
+  });
+
+  const semanaInicioFinal = escalaMesclada.length ? toISODate(escalaMesclada[0].d) : '';
+  const semanaFimFinal = escalaMesclada.length ? toISODate(escalaMesclada[escalaMesclada.length - 1].d) : '';
+
+  const payloadJson = {
+    semana_inicio: semanaInicioFinal,
+    semana_fim: semanaFimFinal,
+    atualizado_por: currentSession.user.email,
+    atualizado_em: new Date().toISOString(),
+    afastamentos_html: semanaImportada.afastamentos_html || baseOnline.afastamentos_html || '',
+    escala: escalaMesclada
+  };
+
+  const payloadTabela = {
+    semana_inicio: semanaInicioFinal,
+    semana_fim: semanaFimFinal,
+    escala_json: payloadJson,
+    atualizado_por: currentSession.user.email,
+    atualizado_em: new Date().toISOString()
+  };
+
+  let writeError = null;
+
+  if (atual?.id) {
+    const { error } = await sbClient
+      .from('escala_atual')
+      .update(payloadTabela)
+      .eq('id', atual.id);
+
+    writeError = error || null;
+  } else {
+    const { error } = await sbClient
+      .from('escala_atual')
+      .insert(payloadTabela);
+
+    writeError = error || null;
+  }
+
+  if (writeError) {
+    console.error(writeError);
+    toast(
+      `Erro ao publicar escala online.\n` +
+      `${writeError.message || ''}\n` +
+      `${writeError.details || ''}\n` +
+      `${writeError.hint || ''}`
+    .trim());
+    return;
+  }
+
+  toast('Escala publicada online com sucesso.');
+  await carregarEscalaOnline(true);
+}
 
   async function limparTrocasOnline() {
     if (!currentSession) {
@@ -1292,6 +1334,7 @@
   }
 
   
+
 function normalizarDataBR(d) {
   const [dia, mes, ano] = String(d).split('/');
   return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
@@ -1305,7 +1348,15 @@ function dataBROrdenavel(d) {
 function nomeDiaSemanaBR(dataBR) {
   const [dia, mes, ano] = normalizarDataBR(dataBR).split('/').map(Number);
   const dt = new Date(ano, mes - 1, dia);
-  const nomes = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
+  const nomes = [
+    'Domingo',
+    'Segunda-Feira',
+    'Terça-Feira',
+    'Quarta-Feira',
+    'Quinta-Feira',
+    'Sexta-Feira',
+    'Sábado'
+  ];
   return nomes[dt.getDay()];
 }
 
@@ -1333,6 +1384,7 @@ function extrairSequenciaSemanaDoTexto(texto) {
     const anterior = sequencia[sequencia.length - 1];
     const [diaB, mesB, anoB] = anterior.split('/').map(Number);
     const dataB = new Date(anoB, mesB - 1, diaB);
+
     const diffDias = Math.round((dataA - dataB) / 86400000);
 
     if (diffDias === 1) {
@@ -1350,7 +1402,7 @@ function obterMapaDiasExistentes() {
   const mapa = new Map();
   const origem = Array.isArray(escalaData?.escala) && escalaData.escala.length
     ? escalaData.escala
-    : (Array.isArray(getEscalaPadrao()?.escala) ? getEscalaPadrao().escala : []);
+    : [];
 
   origem.forEach(dia => {
     mapa.set(normalizarDataBR(dia.d), JSON.parse(JSON.stringify(dia)));
@@ -1566,106 +1618,111 @@ async function lerPdfEscala() {
 }
 
 function parseEscalaText(texto) {
-  const basePadrao = JSON.parse(JSON.stringify(getEscalaPadrao()));
   const semanaPdf = extrairSequenciaSemanaDoTexto(texto);
 
-  if (!semanaPdf.length) {
-    basePadrao.texto_extraido_pdf = texto.slice(0, 12000);
-    return basePadrao;
-  }
-
-  const mapaDias = obterMapaDiasExistentes();
-
-  semanaPdf.forEach(dataBR => {
-    const chave = normalizarDataBR(dataBR);
-    if (!mapaDias.has(chave)) mapaDias.set(chave, criarDiaBase(chave));
-    mapaDias.get(chave).d = chave;
-    mapaDias.get(chave).n = nomeDiaSemanaBR(chave);
-  });
-
-  const escalaFinal = [...mapaDias.values()].sort((a, b) => {
-    return dataBROrdenavel(a.d).localeCompare(dataBROrdenavel(b.d));
-  });
-
-  const primeiraData = escalaFinal[0]?.d || semanaPdf[0];
-  const ultimaData = escalaFinal[escalaFinal.length - 1]?.d || semanaPdf[6];
-
-  return {
-    semana_inicio: toISODate(normalizarDataBR(primeiraData)),
-    semana_fim: toISODate(normalizarDataBR(ultimaData)),
-    atualizado_por: (escalaData && escalaData.atualizado_por) || 'Sistema local',
+  const base = {
+    semana_inicio: '',
+    semana_fim: '',
+    atualizado_por: 'Sistema local',
     atualizado_em: null,
-    afastamentos_html: (escalaData && escalaData.afastamentos_html) || basePadrao.afastamentos_html,
-    escala: escalaFinal,
+    afastamentos_html: '',
+    escala: [],
     texto_extraido_pdf: texto.slice(0, 12000)
   };
+
+  if (!semanaPdf.length) {
+    return base;
+  }
+
+  const mapaExistente = new Map();
+
+  semanaPdf.forEach(dataBR => {
+    const dataNorm = normalizarDataBR(dataBR);
+
+    mapaExistente.set(dataNorm, {
+      d: dataNorm,
+      n: nomeDiaSemanaBR(dataNorm),
+      f: [
+        { n: 'CG', i: 'user-shield', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'COV', i: 'truck', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'CLE', i: 'helmet-safety', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'CLD', i: 'fire-extinguisher', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'COBOM', i: 'headset', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'CS', i: 'clipboard-check', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'SOBREAVISO', i: 'phone-volume', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] },
+        { n: 'EXP ADM', i: 'briefcase', t: ['NÃO ESCALADO', 'NÃO ESCALADO'] }
+      ]
+    });
+  });
+
+  base.semana_inicio = toISODate(normalizarDataBR(semanaPdf[0]));
+  base.semana_fim = toISODate(normalizarDataBR(semanaPdf[semanaPdf.length - 1]));
+  base.escala = [...mapaExistente.values()];
+
+  return base;
 }
 
 function handleInstalled() {
-    const banner = document.getElementById('installBanner');
-    if (banner) banner.classList.remove('show');
-    toast('✅ App instalado com sucesso. Agora você pode abrir o Escala CB SLS direto da tela inicial.');
-  }
+  const banner = document.getElementById('installBanner');
+  if (banner) banner.classList.remove('show');
+  toast('✅ App instalado com sucesso. Agora você pode abrir o Escala CB SLS direto da tela inicial.');
+}
 
-  function setupPWA() {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById('installBanner').classList.add('show');
-    });
+function setupPWA() {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBanner').classList.add('show');
+  });
 
-    document.getElementById('btnInstallApp').addEventListener('click', async () => {
-      if (!deferredPrompt) {
-        toast('A opção de instalação ainda não está disponível neste navegador.');
-        return;
-      }
-
-      deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice.outcome === 'accepted') {
-        toast('Instalação iniciada.');
-      }
-
-      deferredPrompt = null;
-      document.getElementById('installBanner').classList.remove('show');
-    });
-
-    window.addEventListener('appinstalled', handleInstalled);
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
-          if (registration && registration.update) {
-            registration.update().catch(() => {});
-          }
-          console.log('Service Worker registrado com sucesso.');
-        } catch (erro) {
-          console.error('Erro ao registrar SW:', erro);
-        }
-      });
+  document.getElementById('btnInstallApp').addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      toast('A opção de instalação ainda não está disponível neste navegador.');
+      return;
     }
-  }
 
-  async function boot() {
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      toast('Instalação iniciada.');
+    }
+
+    deferredPrompt = null;
+    document.getElementById('installBanner').classList.remove('show');
+  });
+
+  window.addEventListener('appinstalled', handleInstalled);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+        if (registration && registration.update) {
+          registration.update().catch(() => {});
+        }
+        console.log('Service Worker registrado com sucesso.');
+      } catch (erro) {
+        console.error('Erro ao registrar SW:', erro);
+      }
+    });
+  }
+}
+
+async function boot() {
   try {
     initSupabase();
     setupPWA();
 
-    // 🔥 LIMPA TUDO DO APP (cache + rascunho)
-    localStorage.clear();
+    const rascunho = localStorage.getItem(STORAGE_KEYS.rascunho);
 
-    // 🔥 força estado inicial vazio
     escalaData = getEscalaPadrao();
     diaIdx = 0;
 
-    // 🔥 limpa editor JSON
     const editor = document.getElementById('jsonEscalaEditor');
     if (editor) {
-      editor.value = JSON.stringify(escalaData, null, 2);
+      editor.value = rascunho || JSON.stringify(escalaData, null, 2);
     }
 
-    // 🔥 render inicial sem dados
     render();
 
     if (sbClient) {
@@ -1675,13 +1732,15 @@ function handleInstalled() {
         console.error('Erro ao atualizar painel admin:', e);
       }
 
-      // 🚫 NÃO CARREGA ESCALA DO BANCO DURANTE TESTE
-      // await carregarEscalaOnline();
-
+      try {
+        await carregarEscalaOnline();
+      } catch (e) {
+        console.error('Erro ao carregar escala online:', e);
+        toast('Não foi possível carregar a escala online.');
+      }
     } else {
       console.warn('Supabase não inicializado. App seguirá em modo local.');
     }
-
   } catch (e) {
     console.error('Erro no boot do app:', e);
     toast('Erro ao iniciar app.');
@@ -1690,9 +1749,9 @@ function handleInstalled() {
   hideSplash();
 }
 
-  window.addEventListener('DOMContentLoaded', boot);
-  window.addEventListener('load', () => { setTimeout(hideSplash, 1200); });
-  setTimeout(hideSplash, 4000);
+window.addEventListener('DOMContentLoaded', boot);
+window.addEventListener('load', () => { setTimeout(hideSplash, 1200); });
+setTimeout(hideSplash, 4000);
 </script>
 </body>
 </html>
