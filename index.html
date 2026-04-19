@@ -597,13 +597,13 @@
       </div>
 
       <div class="card hidden" id="adminPanelCard">
-        <h3>📄 Importar PDF e publicar escala</h3>
+        <h3>📄 Importar PDF/TXT e publicar escala</h3>
         <div class="form-group">
-          <label>Selecionar PDF da escala</label>
+          <label>Selecionar arquivo da escala (.pdf ou .txt)</label>
           <input type="file" id="pdfFile" accept=".pdf,.txt,text/plain" />
         </div>
         <div class="grid-2">
-          <button class="btn warning" onclick="lerPdfEscala()">Ler PDF</button>
+          <button class="btn warning" onclick="lerPdfEscala()">Ler arquivo</button>
           <button class="btn success" onclick="publicarEscalaOnline()">Publicar escala online</button>
         </div>
         <div class="form-group" style="margin-top:14px;">
@@ -789,7 +789,10 @@
   function atualizarCabecalhoSemana() {
     const inicio = formatDateBRFromISO(escalaData.semana_inicio);
     const fim = formatDateBRFromISO(escalaData.semana_fim);
-    document.getElementById('appSubtitle').textContent = `Escala semanal atualizada • ${inicio} a ${fim}`;
+    const subtitulo = (inicio && fim)
+      ? `Escala semanal atualizada • ${inicio} a ${fim}`
+      : 'Escala semanal ainda não carregada';
+    document.getElementById('appSubtitle').textContent = subtitulo;
 
     const badge = document.getElementById('ultimaAtualizacaoBadge');
     const textoData = escalaData.atualizado_em ? new Date(escalaData.atualizado_em).toLocaleString('pt-BR') : 'sem data online';
@@ -920,10 +923,11 @@
   }
 
   function toISODate(br) {
-    const partes = String(br).split('/');
-    if (partes.length !== 3) return br;
-    const [dia, mes, ano] = partes;
-    return `${ano}-${mes}-${dia}`;
+    const partes = String(br).trim().split('/');
+    if (partes.length !== 3) return '';
+    const [dia, mes, ano] = partes.map(p => String(p).trim());
+    if (!dia || !mes || !ano) return '';
+    return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
   }
 
   async function salvarTroca() {
@@ -984,7 +988,7 @@
     const { data, error } = await sbClient
       .from('trocas_escala')
       .select('*')
-      .order('criado_em', { ascending: true });
+      .order('id', { ascending: true });
 
     if (error) {
       console.error(error);
@@ -1248,6 +1252,7 @@
   });
 
   (semanaImportada.escala || []).forEach(dia => {
+    if (!dia || !dia.d || !Array.isArray(dia.f)) return;
     mapa.set(dia.d, JSON.parse(JSON.stringify(dia)));
   });
 
@@ -1723,8 +1728,6 @@ async function boot() {
       editor.value = rascunho || JSON.stringify(escalaData, null, 2);
     }
 
-    render();
-
     if (sbClient) {
       try {
         await atualizarPainelAdmin();
@@ -1737,13 +1740,16 @@ async function boot() {
       } catch (e) {
         console.error('Erro ao carregar escala online:', e);
         toast('Não foi possível carregar a escala online.');
+        render();
       }
     } else {
       console.warn('Supabase não inicializado. App seguirá em modo local.');
+      render();
     }
   } catch (e) {
     console.error('Erro no boot do app:', e);
     toast('Erro ao iniciar app.');
+    render();
   }
 
   hideSplash();
